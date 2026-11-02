@@ -1,0 +1,36 @@
+/*
+  Tarjeta de KPIs (patrón .period-card / .period-kpis): cifras con divisores en una tarjeta destacada, con su etiqueta
+  (.kpi-label + pill o icono), la cifra (.value) y, opcional, una barra (.track.goal-bar) y un resumen debajo (.period-ai).
+  La usan Olibia (tarjeta del periodo) y Bia (resumen de la factura).
+*/
+/* Tarjeta del periodo (period.jsx): 4 KPIs con divisores y el Resumen AI debajo, CTA a la derecha */
+/* Filtros → KPIs: 32 px, más aire que el resto (24) para separar los controles de los resultados */
+.period-card { padding: 0; margin: var(--space-8) 0 var(--space-section); }
+.period-kpis { display: grid; grid-template-columns: repeat(4, 1fr); }
+.period-kpis > div { position: relative; padding: var(--space-panel); }
+/* Divisores con aire: no tocan el borde de la tarjeta, así se lee como una sola tarjeta con varios datos */
+.period-kpis > div + div::before { content: ''; position: absolute; left: 0; top: var(--space-panel); bottom: var(--space-panel); width: 1px; background: var(--color-border); }
+/* margin 0: anula el margen de bloque de .ai-widget para que el relleno inferior sea igual al superior */
+.period-ai { position: relative; padding: var(--space-panel); margin: 0; }
+.period-ai::before { content: ''; position: absolute; top: 0; left: var(--space-panel); right: var(--space-panel); height: 1px; background: var(--color-border); }
+/* Resumen AI desplegable: sin margen bajo el último párrafo, así cerrado y abierto el relleno es igual arriba y abajo */
+.period-ai .ai-text > p:last-of-type { margin-bottom: 0; }
+/* Encabezado compacto, a la medida del botón small (24 px de alto, texto de 12 px, iconos de 16 px; el área táctil sigue en 44 px): el resumen acompaña a las cifras, no compite con ellas */
+.period-ai .expandable-heading { font-size: var(--font-size-12); }
+.period-ai .expandable-trigger { min-height: 24px; }
+.period-ai .expandable-trigger > .icon { width: 16px; height: 16px; }
+.track.goal-bar { flex: none; height: 6px; margin-top: var(--space-2); }
+.goal-bar .fill { transition: none; }
+/* Marca de KPI filtrado: icono de filtro en la misma posición que la pill de variación */
+/* Sin fondo para no parecer un botón; solo el icono en gris */
+.pill.filtered-badge { padding: 0; min-height: 20px; background: none; --pill-color: var(--color-text-muted); }
+/* Móvil: los KPIs pasan a una lista de filas. Etiqueta (con su pill al lado) a la izquierda y cifra a la derecha;
+   la barra de la meta ocupa todo el ancho bajo su fila. Divisor entre filas, alineado al relleno de la tarjeta */
+@media (max-width: 850px) {
+  .period-kpis { grid-template-columns: 1fr; }
+  .period-kpis > div { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: var(--space-4); padding: var(--space-4) var(--space-panel); }
+  .period-kpis > div + div::before { top: 0; bottom: auto; left: var(--space-panel); right: var(--space-panel); width: auto; height: 1px; }
+  .period-kpis .kpi-label { justify-content: flex-start; }
+  .period-kpis .value { margin: 0; font-size: var(--font-size-24); text-align: right; }
+  .period-kpis .goal-bar { grid-column: 1 / -1; margin-top: var(--space-3); }
+}

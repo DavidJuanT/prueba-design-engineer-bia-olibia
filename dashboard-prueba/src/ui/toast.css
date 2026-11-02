@@ -1,0 +1,60 @@
+/*
+  Componente Toast (snackbar)
+
+  Tamaño: 58 px de alto en una línea (base Material 3 de 48 px + 10 px de aire).
+  Ancho fijo de 450 px en todos los casos (regulado, no depende del texto). Posición: abajo al centro, a 24 px del borde; en móvil, ancho completo
+  con 16 px de margen. Superficie oscura igual en ambos temas (como el tooltip); el icono indica el tipo.
+  El tiempo restante es una línea fina abajo, en un lavanda apagado, que se vacía (se pausa con hover o foco).
+*/
+.toast-region {
+  position: fixed; left: 50%; bottom: var(--space-6); z-index: var(--z-toast); transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: var(--space-2); align-items: center; pointer-events: none;
+}
+.toast {
+  position: relative; overflow: hidden; pointer-events: auto;
+  display: flex; align-items: center; gap: var(--space-3);
+  width: 450px; min-height: 58px; /* Ancho fijo para todos los casos, sin importar el texto */ padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid var(--color-toast-border);
+  background: var(--color-toast-bg); color: var(--color-toast-text); box-shadow: var(--shadow-lg);
+  font: var(--font-body); animation: toast-in var(--duration-base) var(--ease-out);
+}
+/* Con mensaje (dos líneas) gana relleno vertical */
+.toast:has(.toast-text span) { padding-block: calc(var(--space-3) + 5px); }
+.toast.is-leaving { animation: toast-out var(--duration-fast) ease-in forwards; }
+.toast > .icon:first-child { color: var(--toast-accent); }
+.toast--success { --toast-accent: var(--color-toast-success); }
+.toast--error { --toast-accent: var(--color-toast-error); }
+.toast--neutral { --toast-accent: var(--color-toast-neutral); }
+.toast > * { position: relative; z-index: 1; }
+/* Con mensaje, el icono se alinea con la línea del título y no con el centro del bloque */
+.toast:has(.toast-text span) > .icon:first-child { align-self: flex-start; margin-top: 1px; }
+.toast-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.toast-text strong { font-weight: var(--font-weight-medium); }
+.toast-text span { font: var(--font-caption); color: var(--color-toast-text); opacity: .8; }
+
+/* Acción y cerrar: transparentes sobre la superficie oscura, con 44×44 de área táctil */
+.toast-action, .toast-close {
+  position: relative; flex-shrink: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius-md);
+  color: var(--color-toast-neutral); transition: background-color var(--duration-fast) var(--ease-out);
+}
+.toast-action { height: 32px; padding: 0 var(--space-3); font: inherit; font-weight: var(--font-weight-medium); letter-spacing: var(--letter-spacing-wide); }
+.toast-close { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: var(--color-toast-text); }
+.toast-action::after, .toast-close::after { content: ''; position: absolute; top: 50%; left: 50%; width: max(100%, 44px); height: 44px; transform: translate(-50%, -50%); }
+.toast-action:not(.btn):hover, .toast-close:not(.btn):hover { background: var(--color-toast-hover); }
+.toast-action:focus-visible, .toast-close:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-toast-neutral); }
+
+/* Tiempo restante: línea de 2 px abajo que se vacía de derecha a izquierda, en un lavanda apagado
+   (--color-toast-timer) poco más claro que el fondo: indica el tiempo sin robar atención al mensaje */
+.toast-timer { position: absolute; z-index: 1; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--color-toast-timer); transform-origin: left; animation: toast-timer var(--toast-duration) linear forwards; }
+.toast.is-paused .toast-timer { animation-play-state: paused; }
+
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes toast-out { to { opacity: 0; transform: translateY(8px); } }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+@media (max-width: 850px) {
+  .toast-region { left: var(--space-4); right: var(--space-4); bottom: var(--space-4); transform: none; }
+  .toast { width: 100%; }
+}
+/* La guía muestra los toasts en línea, no fijos abajo */
+.toast-static-list { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }

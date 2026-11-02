@@ -1,0 +1,18 @@
+/*
+  Pill de seguimiento (StatusPill): transformación de «Pendiente» a «Al día»
+  Color (fondo y texto) funde en 320 ms · el ancho se ajusta en 320 ms · el texto viejo sale hacia arriba (220 ms)
+  y el nuevo entra desde abajo (320 ms) · el check aparece con un pequeño rebote (360 ms, desde 140 ms).
+*/
+.status-pill { transition: background-color var(--duration-slow) var(--ease-out), color var(--duration-slow) var(--ease-out); }
+.status-pill-box { position: relative; display: inline-flex; overflow: hidden; transition: width var(--duration-slow) var(--ease-out); }
+.status-pill-label { display: inline-flex; align-items: center; gap: var(--space-1); white-space: nowrap; }
+.status-pill-label .icon { color: currentColor; }
+.status-pill-label.is-out { position: absolute; top: 0; left: 0; animation: status-out 220ms var(--ease-out) both; }
+.status-pill-label.is-in { animation: status-in var(--duration-slow) var(--ease-out) 60ms both; }
+.status-pill-label.is-in .icon { animation: status-check 360ms var(--ease-spring) 140ms both; }
+@keyframes status-out { to { opacity: 0; transform: translateY(-100%); } }
+@keyframes status-in { from { opacity: 0; transform: translateY(100%); } }
+@keyframes status-check { from { transform: scale(0) rotate(-45deg); } }
+
+@media (prefers-reduced-motion: reduce) { .status-pill-label.is-out { display: none; } }
+[data-motion=reduced] .status-pill-label.is-out { display: none; }

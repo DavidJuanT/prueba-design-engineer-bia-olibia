@@ -1,0 +1,70 @@
+/*
+  Gráfica de líneas (LineChart)
+
+  Anatomía: leyenda arriba a la derecha (punto de 8 px + nombre); eje vertical (0 · mitad · tope) y línea base en
+  --color-border-strong, con una guía tenue a la mitad; líneas de 2 px en --color-series-N con área degradada (28 % → 0)
+  y un punto de 8 px con anillo de superficie al inicio y al final. Bandas: zona sombreada con su rótulo arriba a la
+  izquierda (alto del área: --linechart-height, 220 px por defecto). Tooltip: línea vertical, un punto por serie y la caja del tooltip del sistema con todos los valores.
+  Margen: 32 px desde el título (como la gráfica de columnas). Movimiento: las líneas se descubren de izquierda a derecha en 900 ms al entrar en
+  pantalla y el área aparece después; con movimiento reducido, sin animación.
+*/
+.linechart-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2) var(--space-5); margin: 0 0 var(--space-4); padding: 0; list-style: none; font: var(--font-caption); color: var(--color-text); }
+.linechart-legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
+.linechart-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); flex-shrink: 0; }
+
+.linechart-chart { display: grid; grid-template-columns: 32px 1fr; grid-template-rows: var(--linechart-height, 220px) auto; column-gap: var(--space-2); margin: 0 0 var(--space-4); }
+.linechart-yaxis { position: relative; border-right: 1px solid var(--color-border-strong); }
+.linechart-yaxis span { position: absolute; right: var(--space-2); transform: translateY(50%); font: var(--font-caption); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.linechart-plot { position: relative; border-bottom: 1px solid var(--color-border-strong); outline-offset: 4px; touch-action: pan-y; }
+.linechart-grid { position: absolute; left: 0; right: 0; height: 1px; background: var(--color-border); }
+
+.linechart-band { position: absolute; top: 0; bottom: 0; background: var(--color-surface-sunken); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.linechart-band-label { position: absolute; top: var(--space-3); left: var(--space-3); display: flex; align-items: center; gap: var(--space-2); font: var(--font-caption); color: var(--color-text-muted); }
+.linechart-band-label > span { white-space: pre-line; } /* «\n» en el rótulo: dos líneas, junto al icono */
+.linechart-band .icon { color: var(--color-primary-link); }
+
+.linechart-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.linechart-line { fill: none; stroke: var(--line); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.linechart-point { position: absolute; z-index: 2; width: 8px; height: 8px; margin: 0 0 -4px -4px; border-radius: 50%; background: var(--dot); box-shadow: 0 0 0 2px var(--color-surface); pointer-events: none; }
+.linechart-point.is-active { z-index: 4; width: 10px; height: 10px; margin: 0 0 -5px -5px; }
+.linechart-cursor { position: absolute; top: 0; bottom: 0; z-index: 3; width: 1px; background: var(--color-border-strong); pointer-events: none; }
+
+/* Tooltip: superficie del tooltip del sistema, arriba del cursor; en los extremos se alinea hacia dentro */
+.linechart-tip {
+  position: absolute; top: 0; z-index: 5; transform: translate(-50%, calc(-100% - 8px)); display: grid; gap: var(--space-1);
+  width: max-content; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); pointer-events: none;
+  background: var(--color-tooltip-bg); color: var(--color-tooltip-text); border: 1px solid var(--color-tooltip-border); font: var(--font-caption);
+}
+.linechart-tip[data-edge=start] { transform: translate(-12px, calc(-100% - 8px)); }
+.linechart-tip[data-edge=end] { transform: translate(calc(-100% + 12px), calc(-100% - 8px)); }
+.linechart-tip span { display: flex; align-items: center; gap: var(--space-2); }
+.linechart-tip b { margin-left: auto; padding-left: var(--space-4); font-weight: var(--font-weight-medium); font-variant-numeric: var(--font-numeric); }
+
+.linechart-xaxis { position: relative; grid-column: 2; height: 24px; font: var(--font-caption); color: var(--color-text-muted); }
+.linechart-xaxis span { position: absolute; top: var(--space-2); transform: translateX(-50%); }
+/* Títulos de los ejes (opcionales): qué se mide. El vertical, arriba del eje y en horizontal (se lee sin girar la cabeza);
+   el horizontal, centrado bajo las etiquetas. Caption en gris, como las etiquetas */
+.linechart-ytitle, .linechart-xtitle { margin: 0; font: var(--font-caption); color: var(--color-text-muted); }
+.linechart-ytitle { margin-bottom: var(--space-2); }
+.linechart-xtitle { grid-column: 2; margin-top: var(--space-1); text-align: center; }
+
+/* Entrada, en pausa hasta que la gráfica entra en pantalla (.is-in) */
+/* Las líneas se descubren de izquierda a derecha (recorte del SVG); el área y los puntos aparecen al final */
+.linechart-svg { clip-path: inset(-8px 100% -8px 0); }
+.linechart-area, .linechart-point { opacity: 0; }
+.is-in .linechart-svg { animation: linechart-draw 900ms var(--ease-in-out) forwards; }
+.is-in .linechart-area, .is-in .linechart-point { animation: linechart-fade 400ms var(--ease-out) 600ms forwards; }
+.is-in .linechart-point.is-active { animation: none; opacity: 1; }
+@keyframes linechart-draw { to { clip-path: inset(-8px -8px -8px 0); } }
+@keyframes linechart-fade { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .linechart-svg { clip-path: none; animation: none !important; }
+  .linechart-area, .linechart-point { opacity: 1; animation: none !important; }
+}
+
+/* Móvil: menos alto y una etiqueta del eje de cada tres */
+@media (max-width: 600px) {
+  .linechart-chart { grid-template-rows: min(var(--linechart-height, 220px), 180px) auto; }
+  .linechart-xaxis span:not(:nth-child(3n + 1)) { display: none; }
+  .linechart-band-label { display: none; } /* La banda es angosta: el rótulo no cabe; el horario lo dicen el título o la ayuda */
+}

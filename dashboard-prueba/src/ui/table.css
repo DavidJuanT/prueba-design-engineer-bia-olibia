@@ -1,0 +1,41 @@
+/*
+  Tabla de datos (DataTable)
+
+  Cabecera de la tabla: banda --color-surface-sunken con esquinas --radius-md, sin bordes; texto label en --color-text-muted.
+  Filas: celdas de 12 px de relleno (8 × 12 en densidad compacta), divisor 1 px --color-border, sin divisor en la última;
+  hover en --color-surface-hover (150 ms). Cifras tabulares y sin cortes de línea: en pantallas angostas se desplaza en horizontal.
+  Máximo 10 filas por página, sin scroll vertical; con más, paginador abajo (rango + anterior/siguiente, secundarios small).
+*/
+.tabletools { display: flex; align-items: center; justify-content: space-between; gap: var(--space-inline); margin-bottom: var(--space-8); }
+.tabletools h2 { margin: 0; }
+/* Solo desplazamiento horizontal (pantallas angostas). En vertical nunca: con alturas de fila fraccionarias la tabla
+   medía medio píxel más que su contenedor y aparecía una barra de scroll vertical sin contenido que desplazar */
+.scroll { overflow-x: auto; overflow-y: hidden; }
+table { font-variant-numeric: var(--font-numeric); width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; white-space: nowrap; }
+th, td { padding: var(--space-3); border-bottom: 1px solid var(--color-border); font-size: var(--font-size-14); }
+th { background: var(--color-surface-sunken); font: var(--font-label); color: var(--color-text-muted); border-bottom: 0; }
+th:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+th:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+tbody tr:last-child td { border-bottom: 0; }
+td { vertical-align: middle; transition: background-color var(--duration-fast) var(--ease-out); }
+tbody tr:hover td { background: var(--color-surface-hover); }
+/* Paginador: más de 10 filas. Rango a la izquierda de los botones, alineado a la derecha, 16 px bajo la tabla */
+.table-pager { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); font: var(--font-caption); color: var(--color-text-muted); font-variant-numeric: var(--font-numeric); }
+.table-pager > span { margin-right: var(--space-2); }
+.table-empty { margin: 0; padding: var(--space-6) var(--space-3); font: var(--font-body); color: var(--color-text-muted); text-align: center; }
+
+/* Densidad compacta (Configuración) */
+[data-density=compact] th, [data-density=compact] td { padding: var(--space-2) var(--space-3); }
+
+/* Móvil: título arriba y herramientas a lo ancho */
+@media (max-width: 850px) {
+  /* Título arriba (16 px hasta el buscador) y buscador a lo ancho; 24 px hasta la tabla. `div.tabletools` gana a la
+     altura fija de la fila de título en escritorio (styles.css), que en columna hacía montar el buscador sobre la tabla */
+  div.tabletools { flex-direction: column; align-items: stretch; gap: var(--space-4); height: auto; margin-bottom: var(--space-6); }
+  .tabletools .search-field { width: 100%; }
+}
+
+/* Fila destacada (p. ej. las que cubren la brecha): franja de 3 px --color-action a la izquierda */
+tr.is-closer td:first-child { box-shadow: inset 3px 0 0 var(--color-action); }
+/* Aire entre la cabecera y la primera fila: una fila vacía de 8 px */
+thead::after { content: ''; display: table-row; height: var(--space-2); }

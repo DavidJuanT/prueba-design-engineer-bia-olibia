@@ -1,0 +1,36 @@
+/*
+  Componente Campo de búsqueda
+
+  Mismo lenguaje que el Desplegable: sin caja, solo borde inferior de 1 px que pasa a morado (2 px) con foco.
+  Lupa de 20 px a la izquierda; con texto aparece un botón para borrar (24×24, área táctil de 44×44).
+  Texto a 13 px: medium al escribir, regular y atenuado en el placeholder.
+  Las clases .is-hover / .is-focus fuerzan el estado para mostrarlo en la guía.
+*/
+.search-field {
+  display: flex; align-items: center; gap: var(--space-2);
+  width: 240px; height: 32px; padding-right: var(--space-1);
+  border-bottom: 1px solid var(--color-border-strong); color: var(--color-text-muted);
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.search-field:hover, .search-field.is-hover { border-bottom-color: var(--color-text-muted); }
+.search-field:focus-within, .search-field.is-focus { border-bottom-color: var(--color-primary-600); box-shadow: 0 1px 0 0 var(--color-primary-600); }
+.search-field:focus-within > .icon:first-child, .search-field.is-focus > .icon:first-child { color: var(--color-primary-600); }
+.search-field > .icon:first-child { transition: color var(--duration-fast) var(--ease-out); }
+
+.search-field input {
+  flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 0; background: none;
+  color: var(--color-text); font: var(--font-body); font-size: var(--font-size-13); font-weight: var(--font-weight-medium);
+}
+.search-field input:focus-visible { outline: none; box-shadow: none; }
+.search-field input::placeholder { color: var(--color-text-muted); font-weight: var(--font-weight-regular); opacity: 1; }
+/* Se oculta la «x» nativa: usamos un botón propio, igual en todos los navegadores */
+.search-field input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+.search-clear { width: 24px; height: 24px; padding: 0; border-radius: var(--radius-full); --btn-fg: var(--color-text-muted); animation: search-clear-in var(--duration-fast) var(--ease-out); }
+.search-clear:hover { --btn-fg: var(--color-text); }
+@keyframes search-clear-in { from { opacity: 0; transform: scale(.6); } }
+
+/* Deshabilitado */
+.search-field:has(input:disabled) { border-bottom-color: var(--color-border); color: var(--color-neutral-400); }
+.search-field input:disabled { color: var(--color-neutral-400); cursor: not-allowed; }
+.search-field input:disabled::placeholder { color: var(--color-neutral-400); }

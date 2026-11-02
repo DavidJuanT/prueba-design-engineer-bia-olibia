@@ -1,0 +1,16 @@
+/*
+  Entrada tras el skeleton (carga inicial): barrido sincronizado.
+  El skeleton se queda encima (.entry-ghost) y un único borde difuso recorre la pantalla de izquierda a derecha en
+  900 ms: a su izquierda ya está el contenido, a su derecha sigue el skeleton. Las dos capas usan la misma máscara,
+  una invertida, así que salida y entrada van exactamente al mismo paso.
+  Máscara 2,5 veces más ancha que la pantalla: de 0 a 40 % opaca, de 40 a 60 % el borde difuso y luego transparente.
+  Al moverla de 100 % a 0 el borde cruza la pantalla. Movimiento reducido: el contenido aparece al instante.
+*/
+@keyframes entry-sweep { from { mask-position: 100% 0; } to { mask-position: 0 0; } }
+.shell.is-entering, .entry-ghost { mask-size: 250% 100%; mask-repeat: no-repeat; animation: entry-sweep 900ms cubic-bezier(.4, 0, .2, 1) both; }
+.shell.is-entering { mask-image: linear-gradient(90deg, #000 40%, transparent 60%); }
+.entry-ghost { mask-image: linear-gradient(90deg, transparent 40%, #000 60%); position: absolute; top: var(--header-height); left: 0; right: 0; z-index: var(--z-fade); background: var(--color-bg); pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) { .shell.is-entering { animation: none; mask: none; } .entry-ghost { display: none; } }
+[data-motion=reduced] .shell.is-entering { animation: none; mask: none; }
+[data-motion=reduced] .entry-ghost { display: none; }

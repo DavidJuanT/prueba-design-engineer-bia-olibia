@@ -1,0 +1,55 @@
+/*
+  Selector de tema (ThemeSwitch)
+
+  Pista en píldora con borde --color-border-strong y fondo --color-surface-sunken; tres opciones de 40 × 40
+  (área táctil de 44 por ::after). La perilla es un círculo de 40 px en --color-surface con borde y sombra suave
+  que se desliza a la opción elegida (320 ms, salida suave). Icono de 20 px: contorno en --color-text-muted;
+  el elegido pasa a relleno en --color-primary-link. Tooltip: la burbuja del sistema, centrada bajo la opción.
+*/
+.theme-switch {
+  --size: 40px;
+  position: relative; display: inline-flex; padding: 2px; border-radius: var(--radius-full);
+  background: var(--color-surface-sunken); border: 1px solid var(--color-border-strong);
+}
+.theme-switch-knob {
+  position: absolute; top: 2px; left: 2px; width: var(--size); height: var(--size); border-radius: 50%;
+  background: var(--color-surface); border: 1px solid var(--color-border-strong); box-shadow: var(--shadow-sm);
+  transform: translateX(calc(var(--index) * var(--size)));
+  transition: transform var(--duration-slow) var(--ease-out), background-color var(--duration-slow) var(--ease-out), border-color var(--duration-slow) var(--ease-out);
+}
+.theme-switch-item { position: relative; display: inline-flex; }
+.theme-switch-option {
+  position: relative; z-index: 1; display: grid; place-items: center; width: var(--size); height: var(--size); padding: 0;
+  border: 0; border-radius: 50%; background: none; cursor: pointer; color: var(--color-text-muted);
+  transition: color var(--duration-slow) var(--ease-out);
+}
+/* Neutraliza márgenes heredados de contenedores (p. ej. márgenes de botones de un formulario) */
+.theme-switch .theme-switch-option { margin: 0; }
+.theme-switch-option::after { content: ''; position: absolute; inset: -2px; } /* Área táctil de 44 × 44 */
+.theme-switch-option:hover:not(.is-selected) { color: var(--color-text); }
+.theme-switch-option.is-selected { color: var(--color-primary-link); }
+.theme-switch-option:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+
+/* Contorno y relleno en la misma celda: el elegido funde al relleno y da un pequeño giro al llegar la perilla */
+.theme-switch-icon { display: grid; }
+.theme-switch-icon .icon { grid-area: 1 / 1; transition: opacity var(--duration-slow) var(--ease-out); }
+.theme-switch-icon .icon:last-child { opacity: 0; }
+.is-selected .theme-switch-icon .icon:first-child { opacity: 0; }
+.is-selected .theme-switch-icon .icon:last-child { opacity: 1; }
+.is-selected .theme-switch-icon { animation: theme-switch-icon 420ms var(--ease-emphasized) 120ms; }
+@keyframes theme-switch-icon { 40% { transform: scale(1.18) rotate(-12deg); } 70% { transform: scale(.96) rotate(6deg); } }
+
+/* Tooltip centrado bajo la opción, con la flecha al centro */
+.theme-switch-tip { position: absolute; top: calc(100% + var(--space-2) + 2px); left: 50%; z-index: var(--z-popover); width: max-content; transform: translateX(-50%); pointer-events: none; }
+.theme-switch-tip[hidden] { display: none; }
+.theme-switch-tip .infotip-bubble { --arrow-x: calc(50% - 4.5px); position: relative; top: 0; left: 0; max-width: 240px; transform-origin: top center; }
+
+/* Fundido de la página al cambiar de tema (View Transitions) */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 360ms; animation-timing-function: ease-in-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch-knob, .theme-switch-option, .theme-switch-icon .icon { transition: none; }
+  .is-selected .theme-switch-icon { animation: none; }
+}
+[data-motion=reduced] :is(.theme-switch-knob, .theme-switch-option, .theme-switch-icon .icon) { transition: none; }
+[data-motion=reduced] .is-selected .theme-switch-icon { animation: none; }

@@ -1,0 +1,115 @@
+/*
+  Skeleton «circuito» (carga con concepto de energía)
+
+  Base: contornos y líneas continuas en gris tenue.
+  Movimiento: UNA sola banda de corriente morada (primario → secundario) recorre toda la pantalla de
+  izquierda a derecha, despacio. Todas las líneas comparten la misma banda (background-attachment: fixed),
+  así que se ve una única corriente atravesando a la vez filtros, KPIs, resumen y tabla, no muchas animaciones.
+  Contenedores: borde punteado; una línea de corriente con cola que se desvanece (la mueve skeleton.jsx)
+  recorre el primero en sentido horario hasta su esquina inferior izquierda y ahí da origen a la del
+  siguiente, que nace en su esquina superior izquierda y lo recorre en sentido antihorario.
+  Banda: 3,2 s con entrada y salida suaves; llega a cada línea con un retraso según su altura (ola). Contornos: velocidad constante. Sin esquinas ni rótulos.
+  Movimiento reducido: sin movimiento; solo las líneas grises.
+*/
+.sk-root {
+  --sk-line: var(--color-border); --sk-cycle: 3.2s;
+  /* La banda: transparente salvo un tramo de ~240 px en los morados del sistema, centrada a 100vw dentro de una imagen de 200vw */
+  /* Jerarquía: la línea de los contenedores pesa más (3 px con halo lavanda) que la banda de los elementos
+     internos, que usa lavandas claros con un toque del morado primario */
+  --sk-b1: var(--color-primary-100); --sk-b2: color-mix(in srgb, var(--color-action) 45%, var(--color-primary-200)); --sk-b3: var(--color-primary-200);
+  --sk-band: linear-gradient(90deg, transparent calc(100vw - 160px), var(--sk-b1) calc(100vw - 80px), var(--sk-b2) 100vw, var(--sk-b3) calc(100vw + 50px), transparent calc(100vw + 110px));
+  --sk-wire-width: 3px; --sk-wire-glow: drop-shadow(0 0 3px var(--color-primary-200));
+}
+
+/* Pieza: contorno continuo gris tenue + pulso de corriente en SVG, una vez por ciclo */
+.sk-block { position: relative; border-radius: var(--radius-lg); border: 1.5px dotted var(--color-border-strong); }
+.sk-wire { position: absolute; inset: -1.5px; width: calc(100% + 3px); height: calc(100% + 3px); overflow: visible; pointer-events: none; }
+.sk-wire rect { width: calc(100% - 2px); height: calc(100% - 2px); fill: none; }
+.sk-wire-pulse { stroke: var(--color-action); stroke-width: var(--sk-wire-width); stroke-linecap: round; opacity: 0; }
+.sk-wire { filter: var(--sk-wire-glow); }
+.sk-block-wire { position: absolute; inset: 0; pointer-events: none; }
+
+/* Líneas y subrayados de campo: gris tenue con la banda compartida encima */
+.sk-line, .sk-field::after {
+  background-color: var(--sk-line); background-image: var(--sk-band);
+  background-size: 200vw 100%; background-repeat: no-repeat; background-attachment: fixed;
+  animation: sk-band var(--sk-cycle) ease-in-out infinite; animation-delay: var(--sk-wave, 0ms);
+}
+/* El subrayado del campo hereda el retraso de su campo */
+.sk-field::after { animation-delay: var(--sk-wave, 0ms); }
+.sk-line { display: block; height: 6px; margin: var(--space-3) 0; border-radius: var(--radius-full); }
+.sk-line--value { height: 14px; border-radius: var(--radius-sm); }
+.sk-line--title { height: 20px; border-radius: var(--radius-sm); }
+.sk-line--button { height: 32px; margin: 0; border-radius: var(--radius-md); }
+.sk-line--bar { height: 12px; }
+
+@keyframes sk-band { from { background-position: -110vw 0; } to { background-position: 10vw 0; } }
+
+/* Composición del dashboard en carga: cabecera de la página, aviso, periodo, filtros, tarjeta, tabla y gráficas */
+.sk-toolbar { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); }
+.sk-toolbar-date .sk-line { margin-left: auto; }
+.sk-banner { padding: var(--space-4) var(--space-5); margin-top: var(--space-5); }
+.sk-periodbar { display: flex; justify-content: space-between; align-items: flex-end; margin-top: var(--space-section); }
+.sk-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-grid); margin-top: var(--space-section); }
+.sk-chart { padding: var(--space-panel); }
+.sk-chart .sk-line--bar { margin: var(--space-4) 0; }
+/* Anillo en carga: el mismo contorno de 16 px que el anillo real, con la leyenda en líneas a su derecha */
+.chart-skeleton--ring { display: grid; grid-template-columns: 176px minmax(0, 1fr); align-items: center; gap: var(--space-6); }
+.sk-ring { width: 176px; height: 176px; border-radius: var(--radius-full); border: 16px solid var(--sk-line); box-sizing: border-box; }
+@media (max-width: 850px) { .chart-skeleton--ring { grid-template-columns: 1fr; justify-items: center; } .chart-skeleton--ring > div { width: 100%; } }
+
+.sk-filters { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-grid); margin-top: var(--space-section); }
+.sk-field { position: relative; height: 32px; }
+.sk-field::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1.5px; }
+.sk-period { padding: var(--space-panel); margin-top: var(--space-8); }
+.sk-period-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-6); }
+.sk-period-ai { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--sk-line); }
+.sk-table { padding: var(--space-panel); margin-top: var(--space-section); }
+.sk-row { display: grid; grid-template-columns: 2fr 1.4fr 1fr 1.2fr 1.6fr 1fr .6fr; gap: var(--space-5); align-items: center; padding: var(--space-2) 0; border-bottom: 1px solid var(--sk-line); }
+.sk-row:last-child { border-bottom: 0; }
+
+@media (max-width: 850px) {
+  /* KPIs en lista de filas, como la tarjeta real en móvil: etiqueta a la izquierda y cifra a la derecha */
+  .sk-period-kpis { grid-template-columns: 1fr; gap: 0; }
+  .sk-period-kpis > .sk-step { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); border-bottom: 1px solid var(--sk-line); }
+  .sk-period-kpis > .sk-step:last-child { border-bottom: 0; }
+  .sk-period-kpis > .sk-step > :first-child { width: 45% !important; }
+  .sk-period-kpis > .sk-step > :nth-child(2) { width: 22% !important; }
+  .sk-period-kpis > .sk-step > :nth-child(3) { display: none; }
+  /* Filtros: un solo botón, como el real en móvil */
+  .sk-filters { grid-template-columns: 1fr; }
+  .sk-filters > .sk-step:not(:first-child), .sk-filters .sk-field { display: none; }
+  .sk-filters > .sk-step:first-child > .sk-line { width: 112px !important; height: 32px; border-radius: var(--radius-md); }
+  .sk-split { grid-template-columns: 1fr; }
+  .sk-toolbar { flex-direction: column; }
+  .sk-toolbar-date .sk-line { margin-left: 0; }
+  .sk-row { grid-template-columns: 2fr 1fr 1fr; }
+  .sk-row > :nth-child(n+4) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .sk-line, .sk-field::after { background-image: none; } }
+[data-motion=reduced] .sk-line, [data-motion=reduced] .sk-field::after { background-image: none; }
+
+/* En la primera carga, la corriente también recorre las líneas divisorias de la cabecera (de izquierda a
+   derecha) y del menú lateral (de arriba abajo), con el mismo ritmo que la banda y en los morados fuertes:
+   son estructura, como los contenedores */
+.top.is-loading::after, aside.is-loading::after {
+  content: ''; position: absolute; pointer-events: none;
+  background-repeat: no-repeat; animation: sk-divider 3.2s var(--ease-in-out) infinite;
+}
+.top.is-loading::after { left: 0; right: 0; bottom: -1px; height: 2px; background-image: linear-gradient(90deg, transparent, var(--color-primary-200), var(--color-action), var(--color-primary-text), transparent); background-size: 280px 100%; --sk-from: -280px 0; --sk-to: calc(100% + 280px) 0; }
+aside.is-loading::after { top: 0; bottom: 0; right: -1px; width: 2px; background-image: linear-gradient(180deg, transparent, var(--color-primary-200), var(--color-action), var(--color-primary-text), transparent); background-size: 100% 280px; --sk-from: 0 -280px; --sk-to: 0 calc(100% + 280px); animation-delay: .4s; }
+@keyframes sk-divider { from { background-position: var(--sk-from); } to { background-position: var(--sk-to); } }
+@media (prefers-reduced-motion: reduce) { .top.is-loading::after, aside.is-loading::after { display: none; } }
+[data-motion=reduced] .top.is-loading::after, [data-motion=reduced] aside.is-loading::after { display: none; }
+
+/* Menú lateral en la primera carga: las opciones son líneas de skeleton */
+.sk-menu-root { display: flex; flex-direction: column; flex: 1; }
+.sk-menu { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-3) var(--space-2); }
+.sk-menu .sk-line { margin: var(--space-2) 0; }
+.sk-menu-settings { margin-top: auto; padding: var(--space-3) var(--space-2); border-top: 1px solid var(--color-border); }
+
+/* Recarga en el sitio (cambio de periodo): el componente real se mantiene y solo sus datos son skeleton;
+   su borde pasa a punteado y lleva la línea de corriente */
+.sk-root .card.sk-block, .sk-root .panel.sk-block { border: 1.5px dotted var(--color-border-strong); }
+.chart-skeleton { padding-top: var(--space-2); }
+.chart-skeleton .sk-line--bar { margin: var(--space-4) 0; }

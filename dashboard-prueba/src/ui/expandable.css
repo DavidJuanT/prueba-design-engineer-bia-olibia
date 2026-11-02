@@ -1,0 +1,35 @@
+/*
+  Componente Expandable (desplegable de contenido)
+
+  Encabezado: botón que abarca solo el título y la flecha (22 px, pegada al título, gira 180° al abrir).
+  Hover: título y flecha juntos en morado de enlace sobre un fondo suave (--color-primary-50), para que
+  se lea como un único elemento pulsable. Foco: anillo de foco del sistema.
+  Contenido: se despliega animando la altura (grid-template-rows 0fr → 1fr) con fundido, 200 ms.
+  Las clases .is-hover / .is-focus fuerzan el estado para mostrarlo en la guía.
+*/
+.expandable-heading { margin: 0; font: var(--font-heading); font-weight: var(--font-weight-medium); }
+/* El margen negativo compensa el relleno: el título queda alineado con el resto del contenido */
+.expandable-trigger {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  min-height: 36px; margin: 0 calc(-1 * var(--space-2)); padding: 0 var(--space-2); border: 0; border-radius: var(--radius-md);
+  background: none; color: var(--color-text); font: inherit; text-align: left; cursor: pointer; position: relative;
+  transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+/* Área táctil de 44 px de alto sin cambiar el tamaño visible */
+.expandable-trigger::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.expandable-trigger:not(.btn):hover, .expandable.is-hover .expandable-trigger { background: var(--color-primary-50); color: var(--color-primary-link); }
+.expandable-trigger:focus-visible, .expandable.is-focus .expandable-trigger { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+.expandable-trigger > .icon { color: var(--color-text-muted); transition: transform var(--duration-base) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.expandable-trigger:hover > .icon, .expandable.is-hover .expandable-trigger > .icon { color: currentColor; }
+.expandable.is-open .expandable-trigger > .icon:last-child { transform: rotate(180deg); }
+/* Icono previo al título (p. ej. IA) en morado; en hover sigue al texto */
+.expandable-trigger > .icon:first-child:not(:last-child) { color: var(--color-primary-600); }
+.expandable-trigger:hover > .icon:first-child, .expandable.is-hover .expandable-trigger > .icon:first-child { color: currentColor; }
+
+.expandable-panel {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+}
+.expandable.is-open .expandable-panel { grid-template-rows: 1fr; opacity: 1; }
+.expandable-inner { min-height: 0; overflow: hidden; }
+.expandable-inner > :first-child > :first-child { margin-top: var(--space-2); }

@@ -1,0 +1,66 @@
+/*
+  Componente Botón
+
+  Una sola familia de color (morado de marca) y tres variantes por jerarquía:
+  - primary: relleno morado principal (#6E4CED), texto blanco. La acción principal de la vista.
+  - secondary: relleno morado suave, texto morado. Acciones que acompañan a la principal.
+  - transparent: sin relleno, texto morado; el fondo aparece en hover. Acciones terciarias.
+  Disabled es un estado común a las tres.
+
+  Tamaños: large (48 px) · medium (32 px) · small (24 px). El ancho se ajusta al contenido.
+  Estados: idle · hover · press · disabled (+ foco visible).
+  Las clases .is-hover y .is-press fuerzan el estado para mostrarlo en la guía.
+*/
+.btn {
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-bg-press: transparent;
+  --btn-fg: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: auto;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font: inherit;
+  font-weight: var(--font-weight-medium); /* Medium con tracking abierto, igual que las pills de etapa */
+  letter-spacing: var(--letter-spacing-wide);
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.btn:not(:disabled):hover, .btn.is-hover { background: var(--btn-bg-hover); }
+.btn:not(:disabled):active, .btn.is-press { background: var(--btn-bg-press); }
+.btn > * { position: relative; }
+/* Área táctil mínima de 44×44 px (WCAG 2.2 · 2.5.5, nivel AAA) sin cambiar el tamaño visible */
+.btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+
+/* Ancho completo: opcional, para la acción principal de un panel o modal */
+.btn--full { width: 100%; }
+
+/* Tamaños: alto fijo, ancho según el contenido, contenido centrado */
+.btn--large { height: 48px; padding: 0 var(--space-6); font-size: var(--font-size-16); }
+.btn--medium { height: 32px; padding: 0 var(--space-4); font-size: var(--font-size-14); }
+.btn--small { height: 24px; padding: 0 var(--space-3); font-size: var(--font-size-12); }
+
+/* Botón de solo icono: cuadrado de 40×40 px con icono de 20 px, en todas las variantes */
+.btn--icon { width: 40px; height: 40px; padding: 0; flex-shrink: 0; }
+
+/* Iconos (Material Symbols): heredan el color del texto */
+.icon { display: inline-flex; width: var(--icon-size, 20px); height: var(--icon-size, 20px); flex-shrink: 0; }
+.icon svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* Variantes */
+.btn--primary { --btn-bg: var(--color-action); --btn-bg-hover: var(--color-action-hover); --btn-bg-press: var(--color-action-press); --btn-fg: var(--color-on-primary); }
+.btn--secondary { --btn-bg: var(--color-primary-50); --btn-bg-hover: var(--color-primary-100); --btn-bg-press: var(--color-primary-200); --btn-fg: var(--color-primary-text); }
+.btn--transparent { --btn-bg-hover: var(--color-primary-50); --btn-bg-press: var(--color-primary-100); --btn-fg: var(--color-primary-link); }
+
+/* Deshabilitado: lavanda suave (#E3E0FF / #B6B2DE) en todas las variantes; transparent sin fondo */
+.btn:disabled { cursor: not-allowed; background: var(--color-disabled-bg); color: var(--color-disabled-text); }
+.btn--transparent:disabled { background: none; }
+.btn.btn--hc:disabled, .is-stuck .btn:disabled { color: var(--color-disabled-text-hc); }   /* Alto contraste: sobre superficies tintadas (filtros fijos) el disabled normal se pierde */

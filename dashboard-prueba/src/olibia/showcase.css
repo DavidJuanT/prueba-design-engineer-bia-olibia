@@ -1,0 +1,73 @@
+/* Guía de componentes (#componentes) */
+.showcase { max-width: 1100px; margin: 0 auto; width: 100%; }
+.showcase-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-5); }
+.showcase-section { margin-bottom: var(--space-section); }
+.showcase-table td { vertical-align: middle; }
+.showcase-sizes { display: flex; align-items: flex-end; gap: var(--space-6); flex-wrap: wrap; margin-bottom: var(--space-5); }
+.showcase-sizes > div { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.showcase-hc { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-4); }
+.showcase-hc-surface { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-4); border-radius: var(--radius-md); background: var(--glass-sticky, var(--color-surface-sunken)); } /* La misma superficie tintada del filtro fijo */
+.showcase-dropdowns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: var(--space-6); align-items: start; }
+.showcase-dropdowns label { display: flex; flex-direction: column; gap: var(--space-stack); font: var(--font-label); }
+.showcase-dropdowns--multi { padding-bottom: 260px; }
+/* Menús abiertos fijos de la guía: forman parte de la página y pasan bajo la barra fija al hacer scroll */
+.showcase-dropdowns--open .dropdown-menu { z-index: 1; }
+.showcase-applied { font: var(--font-body); font-weight: var(--font-weight-regular); padding-top: var(--space-2); }
+.showcase-narrow { max-width: 180px; }
+/* Página con todos los componentes */
+.showcase-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-section); padding: var(--space-3) 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+.showcase-index { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+/* Menú lateral de la guía: el <aside> de la librería, fijo desde arriba (la guía no tiene cabecera) y con scroll propio.
+   Un grupo por parte (Fundamentos, Componentes…), con su rótulo encima. En escritorio sustituye al índice de botones */
+.showcase-shell { min-height: 100vh; }
+.showcase-shell > .showcase { margin: 0; flex: 1; max-width: none; }
+.showcase-shell > .showcase > * { max-width: 1100px; }
+aside.showcase-menu { top: 0; height: 100vh; gap: var(--space-4); overflow-y: auto; scrollbar-width: thin; }
+.showcase-nav-title { margin: 0 0 var(--space-2); padding-inline: var(--space-4); font: var(--font-label); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-text-muted); }
+.showcase-menu a { padding-block: var(--space-2); }
+.showcase-head-actions { display: flex; align-items: center; gap: var(--space-4); }
+/* Escritorio: el menú lateral sustituye al índice y el selector de tema sube a la cabecera. Móvil: la barra de siempre */
+@media (min-width: 851px) { .showcase-bar--nav { display: none; } }
+@media (max-width: 850px) { .showcase-shell .showcase-head-actions .theme-switch { display: none; } }
+/* Volver al inicio: fijo abajo a la derecha, aparece tras 400 px de scroll */
+.btn.showcase-top { position: fixed; right: var(--space-6); bottom: var(--space-6); z-index: 10; border-radius: var(--radius-full); box-shadow: var(--shadow-md);
+  opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out), background-color var(--duration-fast) var(--ease-out); }
+.btn.showcase-top.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.showcase-group { margin-bottom: var(--space-section); scroll-margin-top: 64px; }
+/* Partes de la página del sistema (Fundamentos, Componentes…): rótulo con divisor encima */
+.showcase-part + .showcase-part { margin-top: var(--space-8); }
+.showcase-part-title { margin: 0 0 var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border); font: var(--font-label); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-text-muted); }
+.showcase-group-title { font: var(--font-title); margin: 0; }
+.showcase-group-note { margin: var(--space-1) 0 var(--space-4); }
+.showcase-avatars > span { display: inline-flex; align-items: center; gap: var(--space-2); }
+.showcase-avatars .avatar { --avatar-size: inherit; }
+.showcase-avatars small { font: var(--font-caption); color: var(--color-text-muted); }
+.showcase-featured { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-5); margin-top: var(--space-3); }
+.showcase-featured > .card { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); padding: var(--space-panel); }
+.showcase-featured .value, .showcase-featured .showcase-tip-name { margin: 0; }
+.showcase-featured .kpi-label { align-self: stretch; }
+.showcase-row { display: flex; flex-wrap: wrap; gap: var(--space-5); margin-top: var(--space-3); }
+.showcase-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-5); }
+.showcase-icons > div { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
+.showcase-subtitle { font: var(--font-heading); margin: 0 0 var(--space-4); }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-5); }
+.swatch { display: flex; gap: var(--space-3); align-items: flex-start; }
+.swatch-chip { width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--radius-md); border: 1px solid var(--color-border); }
+.swatch code { display: block; font: var(--font-caption); } /* Nombre del token en Geist, como el resto del texto */
+.swatch-value { font: var(--font-label); text-transform: uppercase; }
+.swatch p { font: var(--font-caption); margin: var(--space-1) 0 0; }
+.showcase-replay { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.showcase-expandables { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: var(--space-6); align-items: start; }
+.showcase-state { display: flex; flex-direction: column; gap: var(--space-stack); }
+.showcase-state .search-field { width: 100%; }
+.showcase-tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); gap: var(--space-6); }
+.showcase-tips--open > div { padding-bottom: 96px; }
+.showcase-tips h3 { font: var(--font-heading); }
+.showcase-tips .heading-info { margin: var(--space-3) 0 0; }
+.showcase-tip-name { font: var(--font-label); margin: 0; }
+.showcase-tip-note { font: var(--font-caption); margin: var(--space-1) 0 0; }
+.showcase-dropdowns--open { grid-template-columns: minmax(0, 240px); margin-top: var(--space-6); padding-bottom: 232px; }
+
+/* Menú lateral de muestra: sin la posición fija ni el alto de pantalla del menú real */
+.showcase-sidenavs { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+aside.showcase-aside { position: static; height: auto; display: flex; width: 220px; padding: 0; background: none; border: 0; }

@@ -1,0 +1,148 @@
+/*
+  Capa visual «vidrio» del producto (clase skin-glass en <html>, desde index.html). Va después de todos los estilos
+  de componente y solo reviste: tokens y superficies bajo html.skin-glass, el tema sigue en data-theme.
+
+  Claro: fondo degradado lavanda → rosa, tarjetas de vidrio translúcido, títulos en tipo oración, menú en grupos con el
+  ítem activo en blanco, CTA morado con gradación y resplandor suave, pills con su propio resplandor.
+  Oscuro: tinta violeta profunda con halos morados, vidrio oscuro con borde de luz y degradado oscuro al pie.
+  Capas flotantes (header, menús, modales, toasts) translúcidas con desenfoque; el tooltip es opaco y oscuro en ambos.
+  Ver docs/02-design-system.md › 2.2.
+*/
+/* Los tokens de la capa (marca, superficies, etiquetas, capas flotantes) viven en tokens.css. */
+
+/* El lienzo lleva el tono base sólido: el desenfoque del vidrio en el borde de la ventana toma este color
+   (en oscuro, oscuro) en lugar del blanco por defecto, que se veía como un resplandor claro abajo */
+html.skin-glass { background: var(--glass-base); }
+html.skin-glass body { background: var(--glass-page); background-attachment: fixed; min-height: 100vh; }
+/* Oscuro: el resplandor del borde inferior de la ventana es una sombra (tinta violeta casi negra), no luz */
+html.skin-glass[data-theme=dark] body::after { content: ''; position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-fade); height: 96px; pointer-events: none;
+  background: var(--glass-foot-shade); }
+/* El menú lateral queda por encima de la sombra para que «Configuración» no pierda contraste */
+@media (min-width: 851px) { html.skin-glass[data-theme=dark] aside { z-index: var(--z-sidebar); } } /* En móvil el cajón conserva su z-index 20, sobre el fondo oscurecido */
+
+/* Cabecera y menú: sin bordes, sobre el degradado; el menú es una pastilla de vidrio con el activo en blanco */
+.skin-glass .top { border-bottom: 0; background: var(--glass-chrome); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+/* Filtros: sin contenedor en reposo; fijos, la tinta --glass-sticky (98 %) y sombra flotante. Sin backdrop-filter: el
+   desenfoque sobre las tarjetas de vidrio que pasan por debajo (también desenfocadas, sobre el fondo fijo) se repintaba
+   con cada hover dentro de los filtros y la tabla de debajo parecía vibrar */
+.skin-glass .panel.filter-panel { border-radius: var(--radius-xl); }
+.skin-glass .panel.filter-panel.is-stuck { box-shadow: var(--glass-float-shadow); background: var(--glass-sticky); border-color: var(--glass-sticky-edge); }
+html.skin-glass:not([data-theme=dark]) .is-stuck .btn--transparent { --btn-fg: var(--color-primary-700); }   /* «Limpiar filtros» un paso más oscuro sobre el gris lavanda: ≥ 4,5:1 */
+/* Hueco sobre los filtros fijos: el mismo degradado de la página, fijo a la ventana, para que empalme sin costura */
+.skin-glass .panel.filter-panel::before { background: var(--glass-page); background-attachment: fixed; }
+@media (max-width: 850px) { .skin-glass .panel.filter-panel { background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; } }
+.skin-glass .brand { letter-spacing: var(--letter-spacing-tighter); }
+.skin-glass aside { border-right: 0; padding: var(--space-6) var(--space-4); background: transparent; }
+/* Sin backdrop-filter: en escritorio el menú no pasa por encima de nada (solo del fondo fijo de la página), así que el
+   desenfoque no aportaba nada y hacía que Chrome repintara las pastillas con cada animación de la página (fallback,
+   skeleton, texto de IA): con el fondo fijo, ese repintado se veía como una vibración del menú sin tocar nada */
+.skin-glass aside nav, .skin-glass aside .settings { background: var(--glass-nav); border: 1px solid var(--glass-edge); border-radius: var(--radius-lg); padding: var(--space-1); }
+/* El grupo de navegación ocupa solo su alto; Configuración se apoya al pie del menú lateral */
+.skin-glass aside nav { flex: none; }
+.skin-glass aside .settings { margin-top: auto; }
+.skin-glass aside a, .skin-glass aside .soon, .skin-glass .settings-toggle { border-radius: var(--radius-md); padding-inline: var(--space-4); }
+.skin-glass aside .active { background: var(--glass-nav-active); color: var(--color-text); box-shadow: var(--glass-nav-active-shadow); }
+
+/* Tarjetas y paneles: vidrio translúcido, borde de luz, radio xl (20 px) */
+.skin-glass .card, .skin-glass .panel, .skin-glass .banner { border-radius: var(--radius-xl); }
+.skin-glass .card, .skin-glass .panel:not(.filter-panel):not(.ai-widget), .skin-glass .banner {
+  background: var(--glass-card); border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-card-blur); -webkit-backdrop-filter: var(--glass-card-blur);
+}
+/* Tarjeta destacada (.card--featured + data-theme="dark"): el resumen principal de una pantalla. Dentro rigen los tokens
+   oscuros, así que texto, pills, barras y botones se adaptan solos. Claro: el vidrio oscuro sobre el fondo oscuro de la
+   página, opaco y con más sombra. Oscuro: violeta opaco --glass-featured con el borde más claro */
+html.skin-glass:not([data-theme=dark]) .card--featured {
+  background: linear-gradient(var(--glass-card), var(--glass-card)), var(--glass-page); border-color: var(--glass-edge); color: var(--color-text);
+  box-shadow: var(--glass-featured-on-light-shadow);
+}
+/* Variante clara (opt-in): .card--featured SIN data-theme. En el tema claro destaca por el tinte y no por la luminosidad,
+   como la violeta en el oscuro: lavanda --brand-sticky agrisada con un 40 % de --color-neutral-100. Como ese tono es casi
+   el del fondo de la página, se separa con el borde violeta al 32 %, el brillo blanco arriba y la sombra flotante.
+   Dentro rigen los tokens claros. En el tema oscuro es la misma violeta de siempre */
+html.skin-glass:not([data-theme=dark]) .card--featured:not([data-theme]) {
+  background: color-mix(in srgb, var(--brand-sticky) 60%, var(--color-neutral-100));
+  border-color: rgb(from var(--brand-cta-to) r g b / .32); box-shadow: var(--glass-float-shadow);
+}
+html.skin-glass[data-theme=dark] .card--featured {
+  background: var(--glass-featured); border-color: var(--glass-featured-edge);
+  box-shadow: var(--glass-featured-shadow);
+}
+/* Banner: todo el borde de aviso, con un resplandor ligero */
+.skin-glass .banner { border: 1px solid var(--color-banner-border); box-shadow: var(--glass-banner-glow), var(--glass-shadow); }
+
+/* Tipografía: ningún título en mayúsculas (solo la inicial); gruesos y compactos. Las mayúsculas quedan para etiquetas de KPI, cabecera de tabla y pills */
+.skin-glass h1 { font-size: var(--font-size-32); letter-spacing: var(--letter-spacing-tight); }
+.skin-glass h2, .skin-glass .panel > h3, .skin-glass .card h2 { font-weight: var(--font-weight-bold); }
+.skin-glass .kpi-label { text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-11); }
+.skin-glass .period-kpis .value { font-size: var(--font-size-28); letter-spacing: var(--letter-spacing-tighter); }
+
+/* Botones: pastillas; el principal con degradado naranja → rosa → violeta y brillo suave */
+/* Botones según la escala: md (32–48 px) y sm los pequeños (24 px); nunca pastilla */
+.skin-glass .btn { border-radius: var(--radius-md); }
+.skin-glass .btn--small { border-radius: var(--radius-sm); }
+.skin-glass .btn--primary { background: var(--glass-cta); border: 0; color: var(--color-on-primary); box-shadow: var(--glass-cta-shadow); }
+/* Botones sin mayúsculas: solo la inicial (el texto ya viene así); las mayúsculas quedan para etiquetas y pills */
+.skin-glass .btn--primary:hover { filter: brightness(1.05) saturate(1.1); }
+.skin-glass .btn--secondary { background: color-mix(in srgb, var(--glass-card-strong) 70%, transparent); border-color: var(--glass-edge); }
+
+/* Etiquetas: la pill «Al día» y el estado del periodo en lima, como el «PAID» de la referencia */
+.skin-glass .badge, .skin-glass .chip { border-radius: var(--radius-sm); }
+/* Pills: 16 px de alto, 10 px en mayúsculas y radio 4, igual en la tabla y en los KPIs. El botón más pequeño mide 24 px, radio 6 y va en tipo oración:
+   tamaño, radio y caja distinguen una etiqueta de una acción */
+.skin-glass .status-pill, .skin-glass .badge.period-status, .skin-glass .pill.delta {
+  min-height: 16px; padding: 0 var(--space-1); border-radius: var(--radius-xs); line-height: 16px;
+  text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-10); font-weight: var(--font-weight-bold);
+}
+.skin-glass .pill.delta { gap: 2px; }
+.skin-glass .pill .pill-unit { text-transform: none; } /* La unidad conserva su escritura: kWh, no KWH */
+.skin-glass .pill.delta .icon { width: 10px; height: 10px; font-size: var(--font-size-10); }
+.skin-glass .kpi-label .pill { min-height: 16px; }
+.skin-glass .status-al-dia { --pill-color: var(--glass-tag-text); background: var(--glass-tag); color: var(--glass-tag-text); box-shadow: inset 0 0 0 1px var(--glass-tag-edge); }
+/* El delta de «Cierres del mes» usa el mismo verde lima que «En curso» */
+.skin-glass .pill.delta.delta--up { --pill-color: var(--glass-tag-text); background: var(--glass-tag); color: var(--glass-tag-text); box-shadow: inset 0 0 0 1px var(--glass-tag-edge); }   /* Éxito tonal, como el aviso */
+.skin-glass .pill.delta.delta--up .icon { color: var(--glass-tag-text); }
+/* Periodo cerrado: ya no pide atención, así que pasa a morado oscuro (en claro, un tinte morado apagado) */
+/* Estado del periodo: informativo, no pide acción. En curso en morado suave de la marca (--color-primary-100 /
+   --color-primary-text, sin resplandor) para no competir con el lima de «Al día» y la variación positiva; Cerrado, gris */
+.skin-glass .badge.period-status { --pill-color: var(--color-primary-text); background: var(--color-primary-100); color: var(--color-primary-text); box-shadow: none; }
+.skin-glass .badge.period-status.is-closed { background: var(--glass-tag-closed); color: var(--glass-tag-closed-text); box-shadow: var(--glass-tag-closed-glow); }
+.skin-glass .status-pendiente { --pill-color: var(--glass-tag-warn-text); background: var(--glass-tag-warn); box-shadow: inset 0 0 0 1px var(--glass-tag-warn-edge); }
+.skin-glass .pill.delta--down { box-shadow: inset 0 0 0 1px var(--glass-tag-warn-edge); }   /* Aviso tonal: borde fino como el botón secundario */
+
+/* Barras de datos y columna destacada (cierres por mes): el mismo morado con gradación más clara */
+.skin-glass .fill { background: var(--glass-data); }
+.skin-glass .colchart-bar.is-highlight .colchart-fill { background: var(--glass-data-v); }
+
+/* Tabla: cabecera sin fondo, en mayúsculas pequeñas */
+/* Cabecera de tabla: banda gris sólida (la de la pill neutra) y texto en el color principal, para distinguirla de las filas (≥ 12:1 en claro, 9:1 en oscuro) */
+.skin-glass th { background: var(--color-neutral-100); color: var(--color-text); text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-11); }
+
+/* Capas flotantes: modal, menú desplegable, tooltip y toast comparten superficie, borde, sombra y radios. Tinta al 98 %:
+   al 88 % el contenido de detrás se leía a través, sobre todo en los menús de los filtros, que viven dentro de un
+   contenedor con backdrop-filter y por eso no pueden desenfocar lo que queda fuera de él */
+.skin-glass .dialog { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.skin-glass .dialog .dialog-window, .skin-glass .dropdown-menu, .skin-glass .infotip-bubble, .skin-glass .toast, .skin-glass .colchart-bar::after {
+  background: var(--glass-float-tint); border: 1px solid var(--glass-float-edge); box-shadow: var(--glass-float-shadow);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+}
+.skin-glass .dialog .dialog-window { border-radius: var(--radius-xl); }
+/* Bottom sheet (móvil): apoyado en el borde inferior, solo esquinas de arriba redondeadas y sin borde abajo ni a los lados */
+@media (max-width: 850px) { .skin-glass .dialog.sheet .dialog-window { border-radius: var(--radius-xl) var(--radius-xl) 0 0; border-width: 1px 0 0; } }
+.skin-glass .dropdown-menu, .skin-glass .toast { border-radius: var(--radius-md); }
+.skin-glass .dropdown-menu { padding: var(--space-1); }
+.skin-glass .dropdown-menu li { border-radius: var(--radius-sm); }
+.skin-glass .infotip-bubble, .skin-glass .colchart-bar::after { background: var(--color-tooltip-bg); border-color: var(--color-tooltip-border); color: var(--color-tooltip-text); box-shadow: var(--color-tooltip-shadow); /* Sombra corta: solo separa del fondo */ backdrop-filter: none; -webkit-backdrop-filter: none; }
+.skin-glass .infotip-bubble, .skin-glass .colchart-bar::after { border-radius: var(--radius-md); text-transform: none; letter-spacing: normal; font: var(--font-caption); line-height: var(--line-height-relaxed); }
+.skin-glass .dialog-header h2 { font-weight: var(--font-weight-bold); }
+@media (max-width: 850px) {
+  .skin-glass aside { background: var(--glass-chrome); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+  .skin-glass aside.open { border-right: 1px solid var(--glass-float-edge); }
+}
+
+/* Conmutador de la vista previa */
+
+/* Empty states y fallbacks: ilustración de línea limpia, sin halo ni resplandor; la carga baja en el naranja del aviso
+   con títulos en tipo oración */
+.skin-glass .fallback-charge { fill: var(--glass-charge); }
+.skin-glass .page-fallback h1 { font-size: var(--font-size-24); letter-spacing: var(--letter-spacing-tight); font-weight: var(--font-weight-extrabold); }

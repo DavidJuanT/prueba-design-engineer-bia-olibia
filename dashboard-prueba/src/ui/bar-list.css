@@ -1,0 +1,41 @@
+/*
+  Ranking (<BarList>) · referencia Apple Salud / Tiempo de uso
+
+  Fila: nombre (136 px, 112 en móvil) con su marcador —punto de 8 px o avatar de 24 px (foto o iniciales, avatar.css)— y, a la derecha, la barra.
+  Barra de 12 px, radio 4 (`--radius-xs`), degradado morado con brillo superior de 1 px, sin pista;
+  ocupa hasta el 58 % del carril para dejar sitio al valor (Saira 16 px) y a la meta gris. Resumen abajo con el pie de
+  ColumnChart. Entrada: las barras crecen, 60 ms entre filas. Puntero o foco en una fila: las demás bajan a 35 %.
+  Movimiento reducido: sin crecimiento ni transición. Marcador, nombre, meta y valor también los usa la leyenda del anillo.
+*/
+.bar-list { display: flex; flex-direction: column; gap: var(--space-5); }
+.bar-list ul { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.bar-list li {
+  display: grid; grid-template-columns: 136px minmax(0, 1fr); align-items: center; gap: var(--space-3);
+  border-radius: var(--radius-sm); outline: none; transition: opacity var(--duration-base) var(--ease-out);
+}
+.bar-list li:focus-visible { box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus); }
+.bar-list.has-active li:not(.is-active) { opacity: .35; }
+
+.bar-list-name { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.bar-list-dot { flex: none; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--dot); }
+.bar-list-label { font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-list-meta { font: var(--font-caption); color: var(--color-text-muted); white-space: nowrap; }
+.bar-list-value, .bar-list-lane b { font: var(--font-weight-regular) var(--font-size-16)/1 var(--font-family-base); font-variant-numeric: var(--font-numeric); color: var(--color-text); white-space: nowrap; }   /* Valores de lista y leyenda en la fuente base (Geist regular), no en la de cifras clave */
+.bar-list-value { margin-left: auto; }
+
+.bar-list-lane { display: flex; align-items: center; gap: var(--space-2); min-width: 0; height: 24px; }
+.bar-list-fill {
+  flex: none; display: block; height: 12px; width: calc(var(--w) * .58); min-width: 8px; border-radius: var(--radius-xs, 4px);
+  background: linear-gradient(90deg, var(--color-chart-bar-from), var(--color-chart-bar-to)); box-shadow: inset 0 1px 0 var(--color-chart-bar-shine);
+  transform-origin: left; animation: bar-list-grow 720ms var(--ease-out) both; animation-delay: calc(var(--i) * 60ms);
+}
+@keyframes bar-list-grow { from { transform: scaleX(0); } }
+/* Tooltip opcional (item.tip): la burbuja del sistema bajo el final de la barra, con la flecha apuntando a ese final */
+.bar-list-fill { position: relative; }
+.bar-list-tip { left: calc(100% - 20px); pointer-events: none; }
+.bar-list li.is-active:has(.bar-list-tip) { position: relative; z-index: 1; } /* Encima de las filas siguientes (la opacidad crea capas) */
+
+@media (prefers-reduced-motion: reduce) { .bar-list-fill, .bar-list li { animation: none; transition: none; } }
+[data-motion=reduced] .bar-list-fill, [data-motion=reduced] .bar-list li { animation: none; transition: none; }
+@media (max-width: 850px) { .bar-list li { grid-template-columns: 112px minmax(0, 1fr); } .bar-list-lane .bar-list-meta { display: none; } } /* En móvil, solo el valor */
+

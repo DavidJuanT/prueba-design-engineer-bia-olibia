@@ -1,0 +1,17 @@
+/*
+  Chip
+
+  Pill de 32 px de alto, --radius-full, fondo --color-primary-50, texto --font-label en --color-primary-text.
+  Con onRemove lleva una × de 16 px en un círculo de 24 px (área táctil de 44 × 44): hover --color-primary-100,
+  foco con el anillo del sistema. Entra con fundido y escala (200 ms).
+*/
+.chip { display: inline-flex; align-items: center; gap: var(--space-1); height: 32px; padding: 0 var(--space-3); border-radius: var(--radius-full); background: var(--color-primary-50); color: var(--color-primary-text); font: var(--font-label); animation: chip-in var(--duration-base) var(--ease-out); }
+.chip--removable { padding-right: var(--space-1); }
+.chip-remove { position: relative; display: grid; place-items: center; width: 24px; height: 24px; margin: 0; padding: 0; border: 0; border-radius: var(--radius-full); background: none; color: inherit; cursor: pointer; }
+.chip-remove::after { content: ''; position: absolute; inset: -10px; } /* Área táctil de 44 × 44 */
+.chip .chip-remove:hover, .chip.is-hover .chip-remove { background: var(--color-primary-100); }
+.chip .chip-remove:focus-visible, .chip.is-focus .chip-remove { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+@keyframes chip-in { from { opacity: 0; transform: scale(.9); } }
+
+/* Grupo de chips: se ajustan en varias líneas */
+.chip-list { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }

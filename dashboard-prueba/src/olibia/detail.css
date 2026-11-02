@@ -1,0 +1,20 @@
+/*
+  Detalle de oportunidad (OpportunityDetail)
+
+  Cifras clave: dos columnas como la tarjeta del periodo; etiqueta (.kpi-label) con pill opcional a la derecha y cifra
+  en --font-display; divisor vertical --color-border entre las dos.
+  Atributos: filas de 56 px con etiqueta --font-caption gris a la izquierda y valor a la derecha, divisor --color-border.
+*/
+.detail-figures { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: var(--space-6); }
+.detail-figures > div { position: relative; padding-right: var(--space-5); }
+.detail-figures > div + div { padding: 0 0 0 var(--space-5); }
+.detail-figures > div + div::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--color-border); }
+.detail-figures .value { margin: var(--space-3) 0 0; }
+
+.detail-list { margin: 0; border-top: 1px solid var(--color-border); }
+.detail-list > div { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 56px; border-bottom: 1px solid var(--color-border); }
+.detail-list > div:last-child { border-bottom: 0; }
+.detail-list dt { font: var(--font-caption); color: var(--color-text-muted); }
+.detail-list dd { margin: 0; }
+/* La última fila llega hasta el divisor del pie, como la última fila de una tabla: sin relleno inferior extra */
+.dialog-body:has(> .detail) { padding-bottom: 0; }

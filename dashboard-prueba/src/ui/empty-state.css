@@ -1,0 +1,28 @@
+/*
+  Estado vacío (EmptyState)
+
+  Centrado, alto mínimo 240 px. Ilustración 112 × 64 en línea (2 px, extremos redondeados, misma familia que el
+  Fallback): filas vacías punteadas y mango en --color-border-strong; lente y brillo en --color-primary-link.
+  Título --font-body semibold en --color-text; sugerencia --font-body en --color-text-muted (máx. 360 px);
+  acción transparent medium.
+  Movimiento (ciclo de 3,2 s): la lupa recorre las filas de derecha a izquierda y vuelve; el brillo destella.
+  Movimiento reducido: quieta.
+*/
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; padding: var(--space-6) var(--space-4) var(--space-4); text-align: center; }
+.empty-state-art { margin-bottom: var(--space-4); overflow: visible; }
+.empty-state-art path, .empty-state-art circle { stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.empty-state-row { stroke: var(--color-border-strong); stroke-dasharray: 2 6; }
+.empty-state-glass { stroke: var(--color-primary-link); fill: var(--color-surface); }
+.empty-state-glint { stroke: var(--color-primary-link); opacity: .5; }
+.empty-state-handle { stroke: var(--color-border-strong); stroke-width: 4 !important; }
+.empty-state-title { margin: 0; font: var(--font-body); font-weight: var(--font-weight-semibold); color: var(--color-text); }
+.empty-state-text { max-width: 360px; margin: var(--space-1) 0 0; font: var(--font-body); color: var(--color-text-muted); text-wrap: balance; }
+.empty-state .btn { margin-top: var(--space-3); }
+
+.empty-state-lens { animation: empty-state-scan 3.2s var(--ease-in-out) infinite; }
+.empty-state-glint { animation: empty-state-glint 3.2s var(--ease-in-out) infinite; }
+@keyframes empty-state-scan { 0%, 10% { transform: translate(0, 0); } 40% { transform: translate(-28px, 6px); } 60% { transform: translate(-28px, 6px); } 90%, 100% { transform: translate(0, 0); } }
+@keyframes empty-state-glint { 0%, 45% { opacity: .5; } 52% { opacity: 1; } 60%, 100% { opacity: .5; } }
+
+@media (prefers-reduced-motion: reduce) { .empty-state-art * { animation: none !important; } }
+[data-motion=reduced] .empty-state-art * { animation: none !important; }

@@ -1,0 +1,72 @@
+/*
+  KPI «Negociaciones al día» (segundo KPI de la tarjeta del periodo, solo con negociaciones que cierran la brecha)
+
+  Cinco columnas iguales. Cifra «0 de 2» en el estilo display de los demás KPIs (morado; verde
+  --color-success al completar) y el CTA «Dar seguimiento» (primary small, a todo el ancho de la columna).
+  Móvil: etiqueta y cifra en la misma fila, como los demás KPIs; el CTA a todo el ancho debajo.
+
+  Modal «Negociaciones que cierran la brecha» (mediano, modelo del detalle de oportunidad): cifras clave (valor sumado
+  y seguimiento) y filas de 56 px, una por negociación: avatar con foto (32 px; iniciales de respaldo, avatar.css), responsable y
+  debajo empresa · valor · cuándo; a la derecha «Registrar» (secondary small); registrado, la pill «Al día» y «Deshacer» (transparent small).
+*/
+.period-kpis.has-extra { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+/* Escritorio: los 5 KPIs comparten tres filas (subgrid): etiqueta, cifra y pie. Si una etiqueta ocupa dos líneas,
+   todas las cifras siguen alineadas; la barra de la meta y el CTA se apoyan al pie, alineados abajo */
+@media (min-width: 851px) {
+  .period-kpis.has-extra { grid-template-rows: auto auto auto; }
+  .period-kpis.has-extra > div { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+  .period-kpis.has-extra .kpi-label { align-self: start; }
+  .period-kpis.has-extra .goal-bar, .period-kpis.has-extra .followup-cta { align-self: end; }
+}
+.followup-value { color: var(--color-primary-link); transition: color var(--duration-slow) var(--ease-out); }
+.followup-value.is-complete { color: var(--color-success); }
+
+/* Modal: mismo modelo que el detalle de oportunidad (filas de 56 px con divisor). Sin pie, así que el cuerpo deja
+   16 px abajo: con el aire propio de la última fila, el texto queda a ~24 px del borde, como arriba */
+.dialog-body:has(> .negotiations) { padding-bottom: var(--space-4); }
+.negotiations-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-border); }
+.negotiations-list > li { display: flex; align-items: center; gap: var(--space-3); min-height: 56px; padding: var(--space-2) 0; border-bottom: 1px solid var(--color-border); }
+.negotiations-list > li:last-child { border-bottom: 0; }
+.negotiations-list > li > .btn, .negotiations-list > li > .status-pill { flex: none; margin: 0 0 0 auto; }
+/* Con la pill delante, «Deshacer» va pegado a ella (4 px) */
+.negotiations-list > li > .status-pill + .btn { margin-left: calc(-1 * var(--space-2)); }
+.negotiations-list .avatar { --avatar-size: 32px; }
+.negotiations-name { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; background: none; color: var(--color-text); font: var(--font-body); font-weight: var(--font-weight-semibold); text-align: left; cursor: pointer; }
+.negotiations-name:not(.btn):hover { background: none; }
+.negotiations-name:hover > :first-child { text-decoration: underline; text-underline-offset: 3px; }
+.negotiations-name:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; border-radius: var(--radius-sm); box-shadow: none; }
+.negotiations-meta { font: var(--font-caption); color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Barra fija (móvil): «Negociaciones al día» sale de la tarjeta y queda fija abajo, con la tarjeta destacada como
+   superficie. Etiqueta y cifra en una fila, el CTA debajo. 16 px a los bordes (más el área segura). */
+.followup-dock { display: none; }
+@media (max-width: 850px) {
+  /* En la tarjeta solo se oculta mientras está la barra; al retirarse vuelve a su fila */
+  body:has(.followup-dock) .period-kpis.has-extra .kpi-extra { display: none; }
+  .followup-dock {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: var(--space-4);
+    position: fixed; z-index: var(--z-drawer); left: var(--space-4); right: var(--space-4); bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+    margin: 0; padding: var(--space-4) var(--space-5);
+    animation: followup-dock-in 400ms var(--ease-out) backwards;
+  }
+  html.skin-glass .followup-dock { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .followup-dock .kpi-label { justify-content: flex-start; }
+  .followup-dock .value { margin: 0; font-size: var(--font-size-28); text-align: right; }
+  .followup-dock .followup-cta { grid-column: 1 / -1; margin-top: var(--space-3); }
+  /* Toasts encima de la barra (8 px), no sobre ella */
+  body:has(.followup-dock) .toast-region { bottom: calc(var(--space-4) + env(safe-area-inset-bottom) + var(--dock-h, 112px) + var(--space-2)); }
+  /* Aire al final de la página para que la barra no tape lo último */
+  body:has(.followup-dock) main { padding-bottom: 144px; }
+}
+@keyframes followup-dock-in { from { opacity: 0; transform: translateY(16px); } }
+/* Retirada: baja 16 px con fundido */
+.followup-dock.is-leaving { animation: followup-dock-out var(--duration-slow) var(--ease-out) forwards; pointer-events: none; }
+@keyframes followup-dock-out { to { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .followup-dock, .followup-dock.is-leaving { animation: none; } }
+:root[data-motion=reduced] :is(.followup-dock, .followup-dock.is-leaving) { animation: none; }
+
+@media (max-width: 850px) {
+  .period-kpis.has-extra { grid-template-columns: 1fr; }
+  .kpi-extra .btn.followup-cta { grid-column: 1 / -1; margin-top: var(--space-3); }
+  .negotiations-meta { white-space: normal; }
+}

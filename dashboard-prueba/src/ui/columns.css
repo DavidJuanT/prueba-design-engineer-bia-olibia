@@ -1,0 +1,70 @@
+/*
+  Gráfica de columnas (ColumnChart)
+
+  Anatomía: eje vertical (0 · mitad · máximo) y línea base en --color-border-strong; columnas de 32 px con carril
+  --color-primary-50 (la escala completa) y relleno en --color-chart-history; la destacada en --color-action.
+  Meta: línea verde punteada (2 px, 6/5). Tendencia: punteada gris discreta (1,5 px, 3/4, 70 %) con un punto de 6 px
+  y anillo de superficie en cada tope. Resumen abajo, separado por un divisor.
+  Margen: 32 px desde el título (el del h2), 16 px hasta el resumen.
+  Movimiento: columnas 600 ms con 60 ms de desfase · tendencia 700 ms desde 500 ms · puntos 240 ms cada 120 ms.
+*/
+.colchart-chart { display: grid; grid-template-columns: 24px 1fr; grid-template-rows: 180px auto; column-gap: var(--space-2); margin: var(--space-8) 0 var(--space-4); }
+.colchart-yaxis { position: relative; border-right: 1px solid var(--color-border-strong); }
+/* Título del eje vertical (opcional): caption en gris, como en LineChart; la gráfica pierde su margen superior para que no se sumen */
+.colchart-ytitle { margin: var(--space-8) 0 var(--space-2); font: var(--font-caption); color: var(--color-text-muted); }
+.colchart-ytitle + .colchart-chart { margin-top: 0; }
+.colchart-yaxis span { position: absolute; right: var(--space-2); transform: translateY(50%); font: var(--font-caption); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.colchart-plot { position: relative; border-bottom: 1px solid var(--color-border-strong); }
+.colchart-overlay { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+.colchart-goal { stroke: var(--color-chart-goal); stroke-width: 2; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+.colchart-trend { fill: none; stroke: var(--color-text-muted); stroke-width: 1.5; stroke-dasharray: 3 4; stroke-linejoin: round; opacity: .7; vector-effect: non-scaling-stroke; }
+.colchart-cols, .colchart-xaxis { display: grid; grid-template-columns: repeat(var(--cols), 1fr); }
+.colchart-cols { height: 100%; }
+.colchart-col { position: relative; display: flex; justify-content: center; }
+.colchart-bar { position: relative; display: flex; align-items: flex-end; width: 32px; height: 100%; border-radius: 4px 4px 0 0; background: var(--color-primary-50); cursor: default; outline-offset: 2px; }
+.colchart-fill { display: block; width: 100%; background: var(--color-chart-history); border-radius: 4px 4px 0 0; }
+.colchart-bar.is-highlight .colchart-fill { background: var(--color-action); }
+.colchart-bar[role=button] { cursor: pointer; }
+.colchart--no-track .colchart-bar { background: none; } /* Conteos sin meta: solo el relleno */
+.colchart-bar:hover .colchart-fill, .colchart-bar:focus-visible .colchart-fill { filter: brightness(1.15); }
+.colchart-dots { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.colchart-dot { position: absolute; width: 6px; height: 6px; margin: 0 0 -3px -3px; border-radius: 50%; background: var(--color-text-muted); box-shadow: 0 0 0 2px var(--color-surface); }
+.colchart-xaxis { grid-column: 2; padding-top: var(--space-2); font: var(--font-caption); color: var(--color-text-muted); text-align: center; }
+.colchart-footer { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); margin: 0; padding-top: var(--space-4); border-top: 1px solid var(--color-border); font: var(--font-caption); color: var(--color-text-muted); }
+.colchart-footer { align-items: center; }
+/* Valor del resumen: palabras en la tipografía del texto; las cifras, en la de los KPI (Saira medium) a 20 px, entre
+   los 16 px de los valores de las leyendas y los 24 px del centro del anillo */
+.colchart-footer b { font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); white-space: nowrap; }
+.colchart-figure { font: var(--font-weight-medium) var(--font-size-20)/var(--line-height-none) var(--font-family-figure); font-variant-numeric: var(--font-numeric); }
+
+/* Tooltip: superficie del tooltip del sistema, junto al puntero. Uno a la vez: con el puntero sobre la gráfica
+   solo vale la columna bajo él. La columna activa sube de capa para que la vecina no lo tape */
+.colchart-bar:hover, .colchart-bar:focus-visible { z-index: 6; }
+.colchart-bar::after {
+  position: absolute; left: var(--tip-x, 50%); top: var(--tip-y, 0); z-index: 5; transform: translate(-50%, calc(-100% - 12px));
+  width: max-content; max-width: 220px; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md);
+  background: var(--color-tooltip-bg); color: var(--color-tooltip-text); border: 1px solid var(--color-tooltip-border);
+  font: var(--font-caption); text-align: left; pointer-events: none;
+}
+/* El tooltip solo existe mientras se muestra (content), así los ocultos no ensanchan la página en móvil; entra con un fundido */
+.colchart-bar:hover::after, .colchart-bar:focus-visible::after { content: attr(data-tip); animation: colchart-tip-in var(--duration-fast) var(--ease-out); }
+.colchart-chart:hover .colchart-bar:not(:hover)::after { content: none; }
+@keyframes colchart-tip-in { from { opacity: 0; transform: translate(-50%, calc(-100% - 8px)); } }
+/* Pantallas táctiles: tocar la columna la enfoca y muestra el tooltip; en los extremos se alinea hacia dentro */
+@media (hover: none) {
+  .colchart-bar:focus { z-index: 6; }
+  .colchart-bar:focus::after { content: attr(data-tip); }
+  .colchart-bar[data-edge=start]:focus::after { left: 0; transform: translate(0, calc(-100% - 12px)); animation: none; }
+  .colchart-bar[data-edge=end]:focus::after { left: auto; right: 0; transform: translate(0, calc(-100% - 12px)); animation: none; }
+}
+
+/* Entrada, en pausa hasta que la gráfica entra en pantalla (.is-in) */
+.colchart-fill { transform-origin: bottom; animation: colchart-grow 600ms var(--ease-out) calc(var(--i) * 60ms) both; }
+.colchart-trend { animation: colchart-draw 700ms var(--ease-in-out) 500ms both; }
+.colchart-dot { animation: colchart-pop var(--duration-enter) var(--ease-out) calc(500ms + var(--i) * 120ms) both; }
+.colchart-chart:not(.is-in) :is(.colchart-fill, .colchart-trend, .colchart-dot) { animation-play-state: paused; }
+@keyframes colchart-grow { from { transform: scaleY(0); } }
+@keyframes colchart-draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes colchart-pop { from { opacity: 0; transform: scale(0); } }
+@media (prefers-reduced-motion: reduce) { .colchart-fill, .colchart-trend, .colchart-dot, .colchart-bar::after { animation: none; } }
+[data-motion=reduced] :is(.colchart-fill, .colchart-trend, .colchart-dot) { animation: none; }

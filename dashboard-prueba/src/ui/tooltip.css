@@ -1,0 +1,50 @@
+/*
+  Componente Tooltip (InfoTip)
+
+  Disparador: icono «info» de 18 px en un botón transparent de 24×24 (área táctil de 44×44 por .btn::after).
+  Burbuja: tinte morado oscuro (--color-tooltip-*) igual en ambos temas, con borde y sin sombra.
+  Texto caption con interlineado amplio y padding de 12 × 16 px, máx. 300 px. Debajo del icono,
+  alineada a su inicio, con una flecha que apunta al icono.
+*/
+.infotip { position: relative; display: inline-flex; vertical-align: middle; }
+.infotip-trigger { width: 24px; height: 24px; padding: 0; border-radius: var(--radius-full); --btn-fg: var(--color-text-muted); }
+.infotip.is-open .infotip-trigger { --btn-fg: var(--color-primary-link); background: var(--color-primary-50); }
+
+.infotip-bubble {
+  --arrow-x: 12px; /* Se recalcula al abrir para quedar centrada bajo el icono */
+  position: absolute; top: calc(100% + var(--space-2)); left: calc(-1 * var(--space-2) + var(--shift, 0px)); z-index: var(--z-popover);
+  width: max-content; max-width: min(300px, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+  background: var(--color-tooltip-bg); color: var(--color-tooltip-text); border: 1px solid var(--color-tooltip-border);
+  font: var(--font-caption); line-height: var(--line-height-relaxed); letter-spacing: var(--letter-spacing-normal);
+  text-align: left; white-space: normal;
+  transform-origin: calc(var(--arrow-x) + 4px) top;
+  animation: infotip-in var(--duration-emphasis) var(--ease-emphasized) both;
+}
+.infotip-bubble[hidden] { display: none; }
+/* Flecha hacia el icono, con el mismo borde que la burbuja */
+.infotip-bubble::before {
+  content: ''; position: absolute; top: -5px; left: var(--arrow-x); width: 8px; height: 8px;
+  background: inherit; border-left: 1px solid var(--color-tooltip-border); border-top: 1px solid var(--color-tooltip-border);
+  transform: rotate(45deg); border-radius: 1px;
+}
+/* Puente invisible entre icono y burbuja: el puntero puede pasar a la burbuja sin que se cierre */
+.infotip-bubble::after { content: ''; position: absolute; left: 0; right: 0; top: calc(-1 * var(--space-2)); height: var(--space-2); }
+
+/* «Wooo»: la burbuja brota desde la flecha con un pequeño rebote elástico
+   y el icono da un giro con salto al abrirse. Instantáneo con Movimiento reducido. */
+@keyframes infotip-in {
+  0% { opacity: 0; transform: translateY(-8px) scale(.6); }
+  50% { opacity: 1; transform: translateY(2px) scale(1.04); }
+  75% { transform: translateY(-1px) scale(.99); }
+  100% { opacity: 1; transform: none; }
+}
+.infotip.is-open .infotip-trigger .icon { animation: infotip-icon var(--duration-emphasis) var(--ease-emphasized); }
+@keyframes infotip-icon {
+  40% { transform: scale(1.25) rotate(-16deg); }
+  70% { transform: scale(.95) rotate(8deg); }
+}
+
+/* Tooltip sobre un elemento cualquiera (pill de variación): el disparador recibe foco visible */
+.tooltip-trigger { display: inline-flex; border-radius: var(--radius-sm); cursor: default; } /* Flecha normal: el cursor «?» casi no se usa y confunde */
+.tooltip-trigger:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }

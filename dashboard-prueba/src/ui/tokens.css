@@ -1,0 +1,504 @@
+/*
+  Design tokens · Espaciado
+
+  Escala base de 4 px. El número del token es el multiplicador:
+  --space-{n} = n × 4 px  →  --space-3 = 12 px, --space-6 = 24 px.
+
+  Úsalos para padding, margin y gap. Nada de valores sueltos:
+  si un valor no está en la escala, es una señal para revisar el diseño.
+*/
+:root {
+  /* Escala primitiva */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+
+  /* Tokens semánticos: dicen para qué se usa el espacio */
+  --space-control: var(--space-2);   /* Relleno interno de botones e inputs */
+  --space-inline: var(--space-3);    /* Separación entre elementos en una misma fila */
+  --space-stack: var(--space-2);     /* Separación entre etiqueta y control, o título y texto */
+  --space-panel: var(--space-5);     /* Relleno interno de tarjetas y paneles */
+  --space-section: var(--space-6);   /* Separación vertical entre bloques del dashboard (filtros → KPIs: --space-8) */
+  --space-grid: var(--space-6);      /* Separación entre tarjetas y filtros de una misma fila */
+  --space-page: var(--space-8);      /* Margen interior de la página: 32 px en escritorio, 20 px en móvil */
+
+  /* Medidas de estructura */
+  --header-height: 56px;             /* Alto fijo de la cabecera (14 × 4) */
+  --sidebar-width: max(15vw, 200px); /* Menú lateral: 15 % de la pantalla, nunca menos de 200 px */
+}
+
+/*
+  Design tokens · Tipografía
+
+  Familias: Geist para todo el texto y Saira para las cifras clave (ambas variables).
+  El número del tamaño es su valor en px: --font-size-14 = 14 px.
+  Los estilos de texto (--font-*) combinan peso, tamaño, interlineado y familia en un solo token,
+  para usarlos con la propiedad `font`.
+*/
+:root {
+  --font-family-base: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-family-figure: 'Saira', 'Geist', system-ui, sans-serif;   /* Cifras clave: KPIs, gasto, consumo */
+
+  /* Cifras de ancho fijo: alinean columnas de números sin cambiar de familia */
+  --font-numeric: tabular-nums;
+
+  /* Pesos */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Tamaños */
+  --font-size-10: 10px;             /* Insignias en mayúsculas (delta) */
+  --font-size-11: 11px;             /* Etiquetas en mayúsculas: KPI y cabeceras de tabla */
+  --font-size-12: 12px;
+  --font-size-13: 13px;
+  --font-size-14: 14px;
+  --font-size-16: 16px;
+  --font-size-20: 20px;
+  --font-size-24: 24px;
+  --font-size-28: 28px;
+  --font-size-32: 32px;             /* Cifra KPI del periodo en escritorio; título de página (vidrio) */
+  --font-size-34: 34px;
+
+  /* Interlineado */
+  --line-height-none: 1;            /* Cifras dentro de gráficos */
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --line-height-relaxed: 1.6;
+
+  /* Espaciado entre letras: abre el texto pequeño para ganar legibilidad */
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.03em;
+  --letter-spacing-caps: .06em;     /* Texto en mayúsculas: etiquetas KPI, cabeceras, insignias */
+  --letter-spacing-tight: -.01em;   /* Títulos grandes */
+  --letter-spacing-tighter: -.02em; /* Cifras display */
+
+  /* Estilos de texto */
+  --font-display: var(--font-weight-medium) var(--font-size-34)/var(--line-height-tight) var(--font-family-figure); /* Cifras clave: KPIs (tarea 1) y gasto, consumo, tarifa (tarea 2) */
+  --font-title: var(--font-weight-extrabold) var(--font-size-24)/var(--line-height-tight) var(--font-family-base);   /* Título de página */
+  --font-heading: var(--font-weight-semibold) var(--font-size-16)/var(--line-height-tight) var(--font-family-base);      /* Títulos de panel y sección */
+  --font-body: var(--font-weight-regular) var(--font-size-14)/var(--line-height-base) var(--font-family-base);       /* Texto general */
+  --font-label: var(--font-weight-semibold) var(--font-size-12)/var(--line-height-base) var(--font-family-base);    /* Etiquetas de campos y cabeceras de tabla */
+  --font-caption: var(--font-weight-regular) var(--font-size-12)/var(--line-height-base) var(--font-family-base);   /* Notas, descripciones y texto secundario */
+}
+
+@media (max-width: 850px) {
+  :root { --space-page: var(--space-5); }
+}
+
+/*
+  Design tokens · Marca
+
+  Lo único que cambia de un producto a otro. Todo color con tinte de marca (fondos, halos, sombras, bordes,
+  degradados) deriva de estos primitivos; las variantes con transparencia se calculan con
+  `rgb(from var(--x) r g b / a)`, así que un primitivo nuevo arrastra todas sus variantes.
+  Para otra marca: cambiar este bloque y la escala --color-primary-*, nada más.
+*/
+:root {
+  --brand-page: #ece9f4;          /* Fondo de la página (tono base del lienzo) */
+  --brand-halo-a: #f6e3f1;        /* Halo rosado del fondo, arriba a la izquierda */
+  --brand-halo-b: #e3e0fb;        /* Halo lavanda del fondo, arriba a la derecha */
+  --brand-bg: #f6f4fa;            /* Fondo opaco de capas que se superponen */
+  --brand-chrome: #f3f0f8;        /* Cabecera */
+  --brand-float: #fbfafd;         /* Capas flotantes y campos */
+  --brand-sticky: #ece7fc;        /* Filtros fijos */
+  --brand-line: #7864aa;          /* Tinte de bordes y pistas */
+  --brand-shadow: #4c348c;        /* Tinte de sombras */
+  --brand-ink: #110e1a;           /* Tinta casi negra: sombras profundas */
+  --brand-cta-from: #5b3bdc;      /* Botón principal: degradado */
+  --brand-cta-to: #7c5cf0;
+  --brand-data-from: #7c5cf0;     /* Barras de datos: degradado */
+  --brand-data-to: #b3a0f8;
+  --brand-bar-to: #a993f7;        /* Ranking: final de la barra */
+  --brand-ring: #7c5cf0;          /* Anillo: color por defecto de un tramo */
+  --brand-featured: #2c224e;      /* Tarjeta destacada en tema oscuro (antes el tono de los filtros fijos) */
+  /* Acento (etiquetas positivas: «Al día», variación al alza) */
+  --brand-accent: #d9f45a;
+  --brand-accent-glow: #a0c814;
+  /* Aviso (naranja): borde del banner, «Pendiente», ilustraciones de error */
+  --brand-warn: #e6540b;
+  --brand-warn-soft: #ffdcc8;
+}
+[data-theme=dark] {
+  --brand-page: #110e1a;
+  --brand-halo-a: #6e4ced;
+  --brand-halo-b: #503cbe;
+  --brand-bg: #1a1626;
+  --brand-chrome: #120f1c;
+  --brand-float: #1f1a2e;
+  --brand-sticky: #241953;        /* Filtros fijos en oscuro (antes el tono de la tarjeta destacada) */
+  --brand-card-strong: #1e192e;
+  --brand-data-from: #6e4ced;
+  --brand-data-to: #9f88f5;
+  --brand-bar-to: #9f88f5;
+  --brand-ring: #9f88f5;
+  --brand-accent: #c8ec3c;
+  --brand-accent-glow: #c8ec3c;
+  --brand-warn-soft: #ffa877;
+}
+
+/*
+  Design tokens · Color
+
+  Primitivos con escala numérica: 50 es el más suave, 900 el más intenso.
+  En tema oscuro se redefinen los mismos nombres; los componentes no cambian.
+*/
+:root {
+  /* Primario: morado principal #6E4CED (= primary-600). Escala en el mismo tono (253°) */
+  --color-primary-25: #f9f8fe;
+  --color-primary-50: #f2effd;
+  --color-primary-100: #e5dffb;
+  --color-primary-200: #cfc3f8;
+  --color-primary-600: #6e4ced;
+  --color-primary-700: #4422c3;
+  --color-primary-800: #371c9c;
+
+  /* Texto en color primario (secondary y transparent). Separado de los rellenos
+     para que en tema oscuro el texto sea claro y legible sobre fondos oscuros. */
+  --color-primary-text: var(--color-primary-700);
+  --color-primary-link: #5d3ae9; /* Un paso más oscuro que 600 para mantener ≥ 4,5:1 sobre los fondos de hover y press */
+
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f4f4f5;
+  --color-neutral-100: #e8e8ea;
+  --color-neutral-200: #d6d6da;
+  --color-neutral-300: #c2c2c7;
+  --color-neutral-400: #9a9aa1;
+  --color-neutral-800: #2f3036;
+  --color-neutral-900: #1f2024;
+
+  /* Texto sobre relleno primario o de acción */
+  --color-on-primary: #ffffff;
+
+  /* Deshabilitado: lavanda suave de la familia del morado (botones) */
+  --color-disabled-bg: #e3e0ff;
+  --color-disabled-text: #b6b2de;
+  --color-disabled-text-hc: #6f6c7d; /* Deshabilitado de alto contraste: gris neutro para superficies tintadas (filtros fijos); ≥ 3:1 sobre ellas y el gris lo separa del violeta activo */
+
+  --color-focus: var(--color-primary-600);
+
+  /* Acción principal: el morado principal #6E4CED para el botón primary */
+  --color-action: var(--color-primary-600);
+  --color-action-hover: #5d3ae9;
+  --color-action-press: #4e2be0;
+  /* Gráficas: meses pasados (histórico) en un lavanda grisáceo, tenue frente al mes en curso */
+  --color-chart-history: #9d97bf;
+  /* Series categóricas (gráfica de líneas con varias series), en orden fijo: rosa, azul, cian. Validadas para
+     daltonismo y contraste ≥ 3:1 contra la superficie; una 4.ª serie no inventa color */
+  --color-series-1: #d6337f;
+  --color-series-2: #3d63dd;
+  --color-series-3: #00929f;
+
+  /* Datos: barras y columnas de las gráficas (≥ 3:1 contra su fondo) */
+  --color-data: var(--color-primary-600);
+}
+
+[data-theme=dark] {
+  --color-primary-25: #211c36;
+  --color-primary-50: #261e43;
+  --color-primary-100: #2d2352;
+  --color-primary-200: #342862;
+  --color-primary-600: #6e4ced;
+  --color-primary-700: #7656ee;
+  --color-primary-800: #886cef;
+
+  --color-primary-text: #bbaaf8;
+  --color-primary-link: #a48ef6;
+
+  --color-neutral-0: #2a2b30;
+  --color-neutral-50: #303137;
+  --color-neutral-100: #393a41;
+  --color-neutral-200: #44454d;
+  --color-neutral-300: #50515a;
+  --color-neutral-400: #6f7079;
+  --color-neutral-800: #e4e4e7;
+  --color-neutral-900: #f4f4f5;
+
+  --color-focus: #a48ef6;
+  --color-disabled-bg: #2a2540;
+  --color-disabled-text: #625c8c;
+  --color-disabled-text-hc: #8f8aa8;
+  --color-action: var(--color-primary-600);
+  --color-action-hover: var(--color-primary-700);
+  --color-action-press: #5d3ae9;
+  --color-chart-history: #4a4660;
+  --color-series-1: #e0559b;
+  --color-series-2: #6b82f0;
+  --color-series-3: #16a5b2;
+  --color-data: var(--color-primary-800);
+}
+
+/*
+  Design tokens · Superficies, bordes, radios, sombras y movimiento
+
+  Capa «vidrio»: fondo con halos, tarjetas translúcidas con borde de luz, capas flotantes opacas al 98 %.
+  Los colores con tinte salen de los primitivos de marca (arriba). Ver docs/02-design-system.md › 2.2.
+*/
+:root {
+  /* Página: halos de marca sobre el tono base; el lienzo (html) lleva el tono base sólido */
+  --glass-page: radial-gradient(1200px 700px at 8% -10%, rgb(from var(--brand-halo-a) r g b / .95) 0%, transparent 60%),
+                radial-gradient(1000px 800px at 100% 10%, rgb(from var(--brand-halo-b) r g b / .95) 0%, transparent 55%), var(--brand-page);
+  --glass-base: var(--brand-page);
+
+  /* Superficies */
+  --color-bg: var(--brand-bg);                 /* Opaco: menús desplegables y capas que se superponen */
+  --glass-float: var(--brand-float);
+  --color-surface: var(--glass-float);         /* Opaca: campos, hojas y superficies que se superponen */
+  --color-chrome: var(--brand-chrome);
+  --glass-card: rgba(255, 255, 255, .62);      /* Tarjetas y paneles: vidrio translúcido */
+  --glass-card-strong: rgba(255, 255, 255, .82);
+  --glass-edge: rgba(255, 255, 255, .9);       /* Borde de luz */
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset, 0 12px 32px rgb(from var(--brand-shadow) r g b / .08);
+  --color-surface-sunken: rgba(255, 255, 255, .5);
+  --color-surface-hover: rgba(255, 255, 255, .7);
+  --color-border: rgb(from var(--brand-line) r g b / .14);
+  --color-border-strong: rgb(from var(--brand-line) r g b / .26);
+  --color-track: rgb(from var(--brand-line) r g b / .14);
+  --color-text: #2a2b31;
+  --color-text-muted: #63636c;                 /* ≥ 4,5:1 sobre todas las superficies */
+  --color-backdrop: rgba(20, 14, 32, .45);
+  --color-focus-ring: rgb(from var(--color-primary-600) r g b / .25);
+  --color-image-ring: rgba(0, 0, 0, .08);      /* Contorno interior de fotos (avatar) */
+
+  /* Cabecera, menú y capas flotantes (modal, menú, tooltip, toast): una sola receta, opaca para no perder legibilidad */
+  --glass-chrome: rgb(from var(--brand-chrome) r g b / .88);
+  --glass-float-tint: rgb(from var(--glass-float) r g b / .98);
+  --glass-blur: blur(16px) saturate(140%);
+  --glass-card-blur: blur(20px) saturate(140%);
+  --glass-float-edge: rgb(from var(--brand-line) r g b / .18);
+  --glass-float-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 20px 48px rgb(from var(--brand-shadow) r g b / .18);
+  --glass-sticky: rgb(from color-mix(in srgb, var(--color-chart-history) 30%, var(--brand-page)) r g b / .98);   /* Filtros fijos: el tono de las barras de datos aclarado con el fondo de la página (≈ #d4d0e4), se separa de la tarjeta destacada clara sin ganar peso */
+  --glass-sticky-edge: rgb(255 255 255 / .6);
+  --glass-nav: rgba(255, 255, 255, .45);
+  --glass-nav-active: #ffffff;
+  --glass-nav-active-shadow: 0 4px 14px rgb(from var(--brand-shadow) r g b / .12);
+  /* Tarjeta destacada (claro: el vidrio oscuro sobre el fondo oscuro, opaco y con más sombra) */
+  --glass-featured-on-light-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 20px 40px -12px rgb(from var(--brand-ink) r g b / .35);
+  /* Oscuro: sombra al pie de la ventana (tinta violeta casi negra) */
+  --glass-foot-shade: linear-gradient(to top, rgba(8, 6, 14, .85), rgba(8, 6, 14, 0));
+
+  /* Botón principal y datos: el morado con gradación más clara y resplandor suave (2 px abajo, 8 px de difuminado) */
+  --glass-cta: linear-gradient(100deg, var(--brand-cta-from) 0%, var(--brand-cta-to) 100%);
+  --glass-cta-shadow: 0 2px 8px rgb(from var(--color-primary-600) r g b / .18);
+  --glass-data: linear-gradient(90deg, var(--brand-data-from) 0%, var(--brand-data-to) 100%);
+  --glass-data-v: linear-gradient(0deg, var(--brand-data-from) 0%, var(--brand-data-to) 100%);
+  --color-chart-bar-from: var(--color-primary-600);   /* Ranking */
+  --color-chart-bar-to: var(--brand-bar-to);
+  --color-chart-bar-shine: rgba(255, 255, 255, .35);
+  --color-chart-ring: var(--brand-ring);              /* Anillo: tramo sin color propio */
+
+  /* Etiquetas (pills): acento, aviso y cerrado, tonales y sin resplandor */
+  --glass-tag: color-mix(in srgb, var(--brand-accent) 30%, #fff);   /* Pills de éxito (Pagada, Al día, sube), tonales como las de aviso: tinte de la lima */
+  --glass-tag-text: #4d5c00;                                        /* Oliva oscuro: ≈ 6,9:1 */
+  --glass-tag-edge: rgb(from var(--brand-accent-glow) r g b / .45);
+  --glass-tag-warn: color-mix(in srgb, var(--color-spark) 13%, #fff);   /* Pills de aviso (Pendiente), tonal como el botón secundario: tinte del rojo del aviso */
+  --glass-tag-warn-text: #a3262a;                                        /* Rojo oscuro: ≈ 6,5:1 */
+  --glass-tag-warn-edge: rgb(from var(--color-spark) r g b / .28);
+  --glass-tag-closed: var(--color-neutral-100);     /* Cerrado: gris neutro y sin resplandor, como un estado deshabilitado */
+  --glass-tag-closed-text: var(--color-text-muted);
+  --glass-tag-closed-glow: none;
+  --glass-banner-glow: 0 0 8px rgb(from var(--brand-warn) r g b / .12);
+  --glass-charge: var(--brand-warn);                /* Ilustraciones de error: la carga baja */
+
+  /* Tooltip: la misma tinta violeta en claro y en oscuro, opaca (texto pequeño sobre cifras) */
+  --color-tooltip-bg: #1f1a2e;
+  --color-tooltip-border: rgba(255, 255, 255, .1);
+  --color-tooltip-text: #e6e6e9;
+  --color-tooltip-shadow: 0 4px 12px rgb(from var(--brand-ink) r g b / .16);
+
+  /* Toast: misma receta que las capas flotantes; el icono indica el tipo */
+  --color-toast-bg: var(--glass-float-tint);
+  --color-toast-border: var(--glass-float-edge);
+  --color-toast-text: var(--color-text);
+  --color-toast-timer: #c9bdf7;
+  --color-toast-success: #13834a;
+  --color-toast-error: #c53030;
+  --color-toast-neutral: var(--color-primary-600);
+  --color-toast-hover: rgba(255, 255, 255, .08);
+
+  /* Chispas del Fallback: rojo de error (la conexión falla); en oscuro, un rojo más claro */
+  --color-spark: #ff6b6b;
+
+  /* Warning medio: aviso que pide atención sin ser un error */
+  --color-warning-medium-text: #7a5a00;
+  --color-warning-medium-bg: #fdf6d8;
+  --color-warning-medium-border: #ecd88a;
+  /* Banner de aviso: borde naranja sobre el fondo de las cards; el aviso lo marca solo el borde (y el icono) */
+  --color-banner-border: var(--brand-warn);
+  --color-banner-bg: var(--color-surface);
+  --color-banner-icon: var(--color-spark); /* Icono del aviso: «warningFill» relleno en rojo con el «!» en blanco; el borde sigue en --brand-warn */
+
+  /* Radios: escala por tamaño del elemento (pastilla completa solo en círculos: avatares, puntos, pistas).
+     Anidados: radio exterior = radio interior + relleno (menú 10 = opción 6 + 4; grupo lateral 14 = ítem 10 + 4) */
+  --radius-xs: 4px;                  /* Pills (16 px de alto) y marcas de datos finas */
+  --radius-sm: 6px;                  /* Elementos de 24 px: chips, botones pequeños, opciones de menú */
+  --radius-md: 10px;                 /* Controles de 32–48 px y capas flotantes: botones, campos, menús, tooltips, toasts */
+  --radius-lg: 14px;                 /* Grupos del menú lateral */
+  --radius-xl: 20px;                 /* Superficies: tarjetas, paneles, banner, modales y bottom sheet */
+  --radius-full: 999px;              /* Avatares, puntos y pistas */
+
+  /* Sombras: separan planos sin bordes duros */
+  --shadow-sm: 0 1px 2px rgba(20, 14, 32, .04), 0 1px 3px rgba(20, 14, 32, .06);
+  --shadow-md: 0 4px 12px rgba(20, 14, 32, .08);
+  --shadow-lg: 0 16px 40px rgba(20, 14, 32, .18);
+
+  /* Movimiento */
+  --duration-fast: 120ms;            /* Hover, press, color */
+  --duration-base: 200ms;            /* Aparición de modales y paneles */
+  --duration-slow: 320ms;            /* Barras de datos al filtrar */
+  --duration-exit: 180ms;            /* Salidas: cerrar modal, ocultar */
+  --duration-enter: 240ms;           /* Entrada de partes del modal y vistas */
+  --duration-emphasis: 440ms;        /* Aparición con rebote suave: tooltip */
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --ease-in: ease-in;                /* Salidas */
+  --ease-in-out: ease-in-out;        /* Bucles y trazos */
+  --ease-emphasized: cubic-bezier(.2, .9, .3, 1);
+  --ease-spring: cubic-bezier(.3, 1.6, .5, 1);   /* Rebote: check de estado */
+
+  /* Capas (z-index). Los valores locales 1–6 dentro de un componente no usan token */
+  --z-sticky: 12;                    /* Filtros fijos al hacer scroll */
+  --z-fade: 14;                      /* Velos: barrido de entrada, degradado inferior */
+  --z-header: 15;                    /* Barra superior */
+  --z-sidebar: 16;                   /* Barra lateral sobre el velo (vidrio oscuro) */
+  --z-backdrop: 19;                  /* Fondo del cajón móvil */
+  --z-drawer: 20;                    /* Cajón móvil y barra fija inferior */
+  --z-overlay: 30;                   /* Modales, bottom sheets y menús desplegables */
+  --z-popover: 40;                   /* Tooltips */
+  --z-toast: 60;                     /* Notificaciones */
+}
+
+[data-theme=dark] {
+  --glass-page: radial-gradient(1100px 700px at 0% -10%, rgb(from var(--brand-halo-a) r g b / .15) 0%, transparent 60%),
+                radial-gradient(900px 700px at 100% 0%, rgb(from var(--brand-halo-b) r g b / .07) 0%, transparent 55%), var(--brand-page);
+  --glass-base: var(--brand-page);
+
+  --color-bg: var(--brand-bg);
+  --glass-float: var(--brand-float);
+  --color-surface: var(--glass-float);
+  --color-chrome: #16121f;
+  --glass-card: rgba(255, 255, 255, .045);
+  --glass-card-strong: rgb(from var(--brand-card-strong) r g b / .92);
+  --glass-featured: var(--brand-featured);
+  --glass-edge: rgba(255, 255, 255, .09);
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 16px 40px rgba(0, 0, 0, .35);
+  --color-surface-sunken: rgba(255, 255, 255, .04);
+  --color-surface-hover: rgba(255, 255, 255, .07);
+  --color-border: rgba(255, 255, 255, .08);
+  --color-border-strong: rgba(255, 255, 255, .16);
+  --color-track: rgba(255, 255, 255, .08);
+  --color-text: #e6e6e9;
+  --color-text-muted: #aaa6bb;
+  --color-backdrop: rgba(0, 0, 0, .6);
+  --color-focus-ring: rgba(180, 138, 247, .35);
+
+  --glass-chrome: rgb(from var(--brand-chrome) r g b / .88);
+  --glass-float-tint: rgb(from var(--glass-float) r g b / .98);
+  --glass-float-edge: rgba(255, 255, 255, .1);
+  --glass-float-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 20px 48px rgba(0, 0, 0, .5);
+  --glass-sticky: rgb(from var(--brand-sticky) r g b / .98);
+  --glass-sticky-edge: rgb(from var(--brand-data-to) r g b / .24);
+  --glass-nav: rgba(255, 255, 255, .05);
+  --glass-nav-active: rgba(255, 255, 255, .12);
+
+  --glass-cta-shadow: 0 2px 8px rgb(from var(--color-primary-600) r g b / .22);
+  /* Se redeclaran aquí (y no solo en :root) porque dependen de primitivos que cambian en oscuro: así también los toma
+     un elemento con data-theme="dark" dentro de una página clara (la tarjeta destacada) */
+  --glass-data: linear-gradient(90deg, var(--brand-data-from) 0%, var(--brand-data-to) 100%);
+  --glass-data-v: linear-gradient(0deg, var(--brand-data-from) 0%, var(--brand-data-to) 100%);
+  --color-chart-bar-to: var(--brand-bar-to);
+  --color-chart-ring: var(--brand-ring);
+  --color-chart-bar-shine: rgba(255, 255, 255, .18);
+  --glass-tag: #3b402d;
+  --glass-tag-text: var(--brand-accent);
+  --glass-tag-edge: rgba(255, 255, 255, .09);
+  --glass-tag-warn: #46242f;
+  --glass-tag-warn-text: #ffb3b3;                   /* ≈ 7,9:1 */
+  --glass-tag-warn-edge: rgba(255, 255, 255, .09);
+  --glass-featured-edge: rgba(255, 255, 255, .16);
+  --glass-featured-shadow: 0 1px 0 rgba(255, 255, 255, .1) inset, 0 16px 40px rgba(0, 0, 0, .4);
+
+  --glass-tag-closed: var(--color-neutral-100);
+  --glass-tag-closed-text: var(--color-text-muted);
+  --glass-tag-closed-glow: none;
+  --glass-banner-glow: 0 0 10px rgb(from var(--brand-warn) r g b / .14);
+  --glass-charge: var(--brand-warn-soft);
+
+  --color-toast-text: #e6e6e9;
+  --color-toast-timer: #524a72;
+  --color-toast-success: #2fd07a;
+  --color-toast-error: #ff9a9a;
+  --color-toast-neutral: #c4b5fd;
+
+  --color-spark: #ff6b6b;
+  --color-warning-medium-text: #f2d26b;
+  --color-warning-medium-bg: #33290c;
+  --color-warning-medium-border: #5a4714;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, .5);
+}
+
+/*
+  Design tokens · Etapas y estados
+
+  Gama de amarillo a verde. Se usa como color de texto, punto y contorno (sin relleno),
+  directamente sobre la fila de la tabla: ≥ 4,5:1 en ambos temas, también con hover.
+*/
+:root {
+  --color-stage-contacto: #7a5a00;
+  --color-stage-calificacion: #5b6b00;
+  --color-stage-propuesta: #2f6b12;
+  --color-stage-negociacion: #106b3a;
+
+  /* Fondos de las pills de seguimiento */
+  --color-status-al-dia-bg: #dcf3e6;
+  /* Variación frente al periodo anterior (pill tipo bróker): sube en el verde de la meta, baja en rojo */
+  --color-delta-up-bg: #e4f4dc;                      /* Tinte del verde de la línea de meta (#6cc24a) */
+  --color-delta-up-text: var(--color-stage-propuesta); /* Mismo verde que la etiqueta «Meta» de la gráfica */
+  --color-delta-up-icon: var(--color-chart-goal);      /* Verde de la línea de meta */
+  --color-delta-down-bg: var(--glass-tag-warn);   /* Variación mala: la misma pill tonal de aviso */
+  --color-delta-down-text: var(--glass-tag-warn-text);
+
+  /* Puntos de las etapas: un solo azul que gana intensidad en pasos parejos; la más intensa es el tope del embudo */
+  --color-dot-contacto: #b4d3ff;
+  --color-dot-calificacion: #78adf6;
+  --color-dot-propuesta: #3785ea;
+  --color-dot-negociacion: #0560c1;
+
+  /* Alias semánticos: el componente nombra el significado, no la etapa de la que toma el color.
+     Se redeclaran en oscuro: un alias declarado solo aquí heredaría el valor claro dentro de un elemento oscuro anidado. */
+  --color-success: var(--color-stage-negociacion);        /* Texto positivo: «Al día», meta cumplida */
+  --color-success-bg: var(--color-status-al-dia-bg);      /* Fondo de la pill positiva */
+  --color-chart-goal: #6cc24a;                            /* Línea de meta en gráficas: verde propio, ya no toma el color de una etapa */
+
+}
+[data-theme=dark] {
+  --color-stage-contacto: #f2d26b;
+  --color-stage-calificacion: #d5e27a;
+  --color-stage-propuesta: #a8dc8a;
+  --color-stage-negociacion: #7fe0aa;
+  --color-status-al-dia-bg: #113322;
+  /* Oscuro: fondo y texto invertidos (pill clara con texto oscuro) para que destaque sobre la tarjeta */
+  --color-delta-up-bg: #a8dc8a;
+  --color-delta-up-text: #1c3314;
+  --color-delta-up-icon: #1c3314;
+  --color-delta-down-bg: var(--glass-tag-warn);
+  --color-delta-down-text: var(--glass-tag-warn-text);
+  --color-dot-contacto: #1e5293;    /* Oscuro: el mismo azul se va aclarando, así el tope sigue siendo el más visible */
+  --color-dot-calificacion: #387cd2;
+  --color-dot-propuesta: #6aaafe;
+  --color-dot-negociacion: #b4d9ff;
+  --color-success: var(--color-stage-negociacion);
+  --color-success-bg: var(--color-status-al-dia-bg);
+  --color-chart-goal: #86d965;
+
+}

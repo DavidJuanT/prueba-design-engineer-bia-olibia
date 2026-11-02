@@ -1,0 +1,51 @@
+/*
+  Anillo (<Ring>) · comparte marcador, nombre, meta y valor con el ranking (bar-list.css)
+
+  Anillo de 176 px, grosor 16, esquinas de 4 (como los botones) sobre una pista oscura; 3 entre tramos (5 con meta).
+  Empieza arriba y gira en sentido horario. Centro: total (o el tramo activo). Dona: color de cada categoría.
+  Meta: tramos morados y lo que falta queda en la pista. Horizontal: anillo a la izquierda, leyenda a la derecha.
+  Entrada (al entrar en pantalla, .is-in): el anillo se dibuja en sentido horario desde arriba (barrido de 900 ms con una
+  máscara cónica), el total del centro aparece con fundido y escala a los 300 ms y la leyenda entra fila a fila desde la
+  izquierda, 60 ms entre filas. Solo `backwards`: al terminar no fija estilos y el atenuado del hover sigue funcionando.
+  Movimiento reducido: sin entrada ni transición.
+*/
+.chart-form { display: flex; flex-direction: column; gap: var(--space-5); }
+.chart-ring-arc, .chart-legend li { transition: opacity var(--duration-base) var(--ease-out); }
+.chart-form.has-active :is(.chart-ring-arc, .chart-legend li):not(.is-active) { opacity: .35; }
+
+.chart-legend { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.chart-legend li { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.chart-legend small { font: var(--font-caption); color: var(--color-text-muted); }
+/* Dos líneas cuando el item lleva meta: nombre y cifra arriba; meta y porcentaje abajo, el porcentaje bajo la cifra */
+.chart-legend li:has(> .bar-list-meta) { flex-wrap: wrap; row-gap: 0; }
+.chart-legend li > .bar-list-meta { order: 3; flex-basis: 100%; display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding-left: var(--space-4); }
+.chart-legend .bar-list-value > .pill { display: inline-flex; vertical-align: middle; margin-left: var(--space-1); }   /* Porcentaje en pill neutra, como en BarList */
+
+@keyframes chart-form-in { from { opacity: 0; transform: scale(.92); } }
+
+.chart-ring { position: relative; width: 176px; height: 176px; margin: 0 auto; }
+.chart-ring svg { width: 100%; height: 100%; overflow: visible; }
+.chart-ring-track { fill: none; stroke-width: 16; stroke: var(--color-track); } /* fondo oscuro del anillo; con meta, además, es lo que falta */
+.chart-ring-arc { fill: var(--color-chart-ring); }
+/* Barrido: la máscara cónica abre de 0 a 360° desde arriba en sentido horario (la propiedad registrada permite animar el ángulo) */
+@property --ring-sweep { syntax: '<angle>'; inherits: false; initial-value: 360deg; }
+.chart-ring svg { -webkit-mask: conic-gradient(#000 var(--ring-sweep), transparent 0); mask: conic-gradient(#000 var(--ring-sweep), transparent 0); animation: chart-ring-sweep 900ms var(--ease-out) backwards; }
+@keyframes chart-ring-sweep { from { --ring-sweep: 0deg; } }
+.chart-ring-center { animation: chart-form-in 500ms var(--ease-out) 300ms backwards; }
+.chart-legend li { animation: chart-legend-in 400ms var(--ease-out) backwards; animation-delay: calc(200ms + var(--i, 0) * 60ms); }
+@keyframes chart-legend-in { from { opacity: 0; transform: translateX(-8px); } }
+/* En pausa hasta que el anillo entra en pantalla */
+.chart-form:not(.is-in) :is(.chart-ring svg, .chart-ring-center, .chart-legend li) { animation-play-state: paused; }
+.chart-ring-arc.is-colored { fill: var(--seg); }
+.chart-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); text-align: center; pointer-events: none; }
+.chart-ring-center b { font: var(--font-weight-medium) var(--font-size-24)/var(--line-height-none) var(--font-family-figure); font-variant-numeric: var(--font-numeric); color: var(--color-text); }
+.chart-ring-center span { font: var(--font-caption); color: var(--color-text-muted); max-width: 104px; }
+
+/* Horizontal: anillo a la izquierda, leyenda centrada a su derecha, pie a todo el ancho */
+.chart-form--h { display: grid; grid-template-columns: 176px minmax(0, 1fr); align-items: center; column-gap: var(--space-6); }
+.chart-form--h .chart-ring { margin: 0; }
+.chart-form--h .colchart-footer { grid-column: 1 / -1; }
+@media (max-width: 850px) { .chart-form--h { display: flex; align-items: stretch; } .chart-form--h .chart-ring { margin: 0 auto; } }
+
+@media (prefers-reduced-motion: reduce) { :is(.chart-ring svg, .chart-ring-center, .chart-ring-arc, .chart-legend li) { animation: none; transition: none; } }
+[data-motion=reduced] :is(.chart-ring svg, .chart-ring-center, .chart-ring-arc, .chart-legend li) { animation: none; transition: none; }

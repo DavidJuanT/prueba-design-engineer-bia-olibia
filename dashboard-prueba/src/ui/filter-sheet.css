@@ -1,0 +1,34 @@
+/*
+  Filtros en móvil (FilterSheetButton)
+
+  Botón secondary a todo el ancho, con icono de filtro y, si hay filtros activos, su número en un círculo --color-action de 20 px.
+  Bottom sheet (Modal mediano con `sheet`): campos apilados con 24 px entre sí; pie con «Limpiar» y «Aplicar».
+  Una opción: select nativo con la apariencia del Desplegable (44 px de alto, solo borde inferior, flecha a la derecha;
+  con foco, línea morada de 2 px). Varias opciones: casillas a la vista, con el resumen («2 etapas») junto al rótulo.
+*/
+.filter-sheet-toggle .filter-sheet-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 var(--space-1); border-radius: var(--radius-full); background: var(--color-action); color: var(--color-on-primary); font: var(--font-label); }
+
+.filter-sheet-fields { display: flex; flex-direction: column; gap: var(--space-6); }
+.native-select-field { display: flex; flex-direction: column; gap: var(--space-stack); font: var(--font-label); }
+.native-select { position: relative; display: block; }
+.native-select select {
+  appearance: none; width: 100%; height: 44px; padding: 0 var(--space-8) 0 0; margin: 0;
+  border: 0; border-bottom: 1px solid var(--color-border-strong); border-radius: 0; background: none;
+  color: var(--color-text); font: var(--font-body); font-weight: var(--font-weight-medium);
+}
+.native-select select:focus-visible { outline: none; border-bottom-color: var(--color-primary-600); box-shadow: 0 1px 0 0 var(--color-primary-600); }
+.native-select > .icon { position: absolute; right: var(--space-1); top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none; }
+/* Varias opciones: casillas a la vista, filas de 44 px (como las del desplegable múltiple) */
+.check-field { margin: 0; padding: 0; border: 0; min-width: 0; }
+.check-field legend { display: flex; justify-content: space-between; width: 100%; padding: 0; margin-bottom: var(--space-1); font: var(--font-label); }
+.check-field-summary { font: var(--font-caption); color: var(--color-text-muted); }
+.check-row { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 44px; border-bottom: 1px solid var(--color-border); font: var(--font-body); cursor: pointer; }
+.check-row input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.check-box { display: grid; place-items: center; flex: none; width: 18px; height: 18px; border: 1.5px solid var(--color-border-strong); border-radius: 4px; color: var(--color-on-primary); transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+.check-box .icon { opacity: 0; transform: scale(.6); transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.check-row input:checked + .check-box { background: var(--color-action); border-color: var(--color-action); }
+.check-row input:checked + .check-box .icon { opacity: 1; transform: none; }
+.check-row input:focus-visible + .check-box { box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+
+/* Chips de filtros activos (componente Chip, chip.css) bajo el botón, a 12 px */
+.filter-chips { margin-top: var(--space-3); }

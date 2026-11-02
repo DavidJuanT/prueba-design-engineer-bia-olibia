@@ -1,0 +1,67 @@
+/*
+  Modal (Modal)
+
+  Fondo: --color-backdrop con desenfoque de 2 px. Ventana: --color-surface, --radius-xl, --shadow-lg.
+  Animación «Elevación en capas»: el fondo se oscurece y desenfoca (240 ms); la ventana sube 16 px y crece de 97 a 100 %
+  (280 ms); cabecera, cuerpo y pie llegan uno tras otro (desde 80, 140 y 200 ms). Al cerrar baja 8 px con fundido (180 ms).
+  Cabecera: título --font-heading (como los h2) y cerrar a la derecha; relleno 16 × 24 y divisor --color-border.
+  Tamaños: large 860 × 560 (cuerpo sin relleno, a alto completo) · medium 560 de ancho (cuerpo con 24 px de relleno).
+  Pie (opcional): divisor arriba, relleno 20 × 24; estado a la izquierda y acciones a la derecha.
+  Móvil (≤ 850 px): medium con `sheet` sube desde abajo como bottom sheet con asa, con las acciones del pie a todo el ancho;
+  large ocupa casi toda la altura.
+*/
+.dialog { position: fixed; inset: 0; z-index: var(--z-overlay); background: var(--color-backdrop); backdrop-filter: blur(2px); display: grid; place-items: center; padding: var(--space-5); animation: dialog-backdrop-in var(--duration-enter) var(--ease-out); }
+.dialog .dialog-window { display: flex; flex-direction: column; width: min(560px, 100%); max-height: 90vh; overflow: hidden; background: var(--color-surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); animation: dialog-rise-in 280ms var(--ease-out); }
+.dialog-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-6); border-bottom: 1px solid var(--color-border); }
+.dialog-header h2 { margin: 0; }
+/* Volver (navegación dentro del modal): pegado al título, que ocupa el resto */
+.dialog-header:has(.dialog-back) { justify-content: flex-start; gap: var(--space-2); }
+.dialog-header:has(.dialog-back) h2 { flex: 1; min-width: 0; }
+.dialog-back { margin-left: calc(-1 * var(--space-2)); }
+/* Cambio de vista: el cuerpo entra 16 px desde la derecha (240 ms) */
+.dialog .dialog-body.dialog-view { animation: dialog-view-in var(--duration-enter) var(--ease-out) both; }
+@keyframes dialog-view-in { from { opacity: 0; transform: translateX(16px); } }
+.dialog-body { padding: var(--space-6); overflow: auto; }
+.dialog-footer { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-4); padding: var(--space-5) var(--space-6); border-top: 1px solid var(--color-border); }
+.dialog-status { flex: 1; margin: 0; font: var(--font-caption); color: var(--color-text-muted); }
+.dialog-status:empty { display: none; }
+
+/* Grande: el contenido trae su propia navegación y relleno */
+.dialog--large .dialog-window { width: min(860px, 100%); height: min(560px, 90vh); }
+.dialog--large .dialog-body { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0; overflow: hidden; }
+
+@media (max-width: 850px) {
+  .dialog--large .dialog-window { height: min(640px, 90vh); }
+  .dialog.sheet { place-items: end stretch; padding: 0; }
+  .dialog.sheet .dialog-window { width: 100%; max-height: 85vh; border-radius: var(--radius-xl) var(--radius-xl) 0 0; animation: slide-up 260ms var(--ease-out); }
+  .dialog.sheet .dialog-window::before { content: ''; display: block; flex-shrink: 0; width: 40px; height: 4px; margin: var(--space-3) auto 0; border-radius: var(--radius-full); background: var(--color-border-strong); }
+  .dialog.sheet .dialog-header { padding: var(--space-3) var(--space-5); }
+  .dialog.sheet .dialog-body { padding: var(--space-5); }
+  .dialog.sheet .dialog-footer { padding: var(--space-5) var(--space-5) var(--space-6); flex-wrap: wrap; }
+  /* Bottom sheet: el estado ocupa su propia línea y las acciones van a todo el ancho (varias, en partes iguales) */
+  .dialog.sheet .dialog-status { flex-basis: 100%; }
+  .dialog.sheet .dialog-footer .btn { flex: 1; }
+}
+
+/* Solo guías: el modal dibujado dentro de la página */
+.dialog.dialog--inline { position: static; z-index: auto; display: block; padding: 0; background: none; backdrop-filter: none; animation: none; }
+.dialog--inline .dialog-window { animation: none; box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); }
+
+
+/* Elevación en capas: entrada y salida */
+@keyframes dialog-backdrop-in { from { background: transparent; backdrop-filter: blur(0); } }
+@keyframes dialog-backdrop-out { to { background: transparent; backdrop-filter: blur(0); } }
+@keyframes dialog-rise-in { from { opacity: 0; transform: translateY(16px) scale(.97); } }
+@keyframes dialog-rise-out { to { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes dialog-part-in { from { opacity: 0; transform: translateY(4px); } }
+.dialog:not(.dialog--inline) :is(.dialog-header, .dialog-body, .dialog-footer) { animation: dialog-part-in var(--duration-enter) var(--ease-out) both; }
+.dialog:not(.dialog--inline) .dialog-header { animation-delay: 80ms; }
+.dialog:not(.dialog--inline) .dialog-body { animation-delay: 140ms; }
+.dialog:not(.dialog--inline) .dialog-footer { animation-delay: 200ms; }
+.dialog.is-closing { animation: dialog-backdrop-out var(--duration-exit) var(--ease-in) forwards; }
+.dialog.is-closing .dialog-window { animation: dialog-rise-out var(--duration-exit) var(--ease-in) forwards; }
+@media (max-width: 850px) { .dialog.sheet.is-closing .dialog-window { animation: sheet-down var(--duration-base) var(--ease-in) forwards; } }
+@keyframes sheet-down { to { transform: translateY(100%); } }
+
+@media (prefers-reduced-motion: reduce) { .dialog, .dialog *, .dialog .dialog-window { animation: none !important; } }
+[data-motion=reduced] .dialog, [data-motion=reduced] .dialog *, [data-motion=reduced] .dialog .dialog-window { animation: none !important; }

@@ -1,0 +1,136 @@
+/* Layout y patrones de Olibia: cabecera, menú lateral, periodo, filtros fijos, tarjeta del periodo, configuración y móvil. */
+
+/* Cabecera y estructura */
+/* Cabecera fija arriba y menú fijo justo debajo: el menú siempre ocupa el alto visible completo, sin hueco al hacer scroll */
+.top { position: sticky; top: 0; z-index: var(--z-header); background: var(--color-chrome); border-bottom: 1px solid var(--color-border); height: var(--header-height); padding: 0 var(--space-6); display: flex; align-items: center; justify-content: space-between; gap: var(--space-inline); }
+.brand { font-size: var(--font-size-24); font-weight: var(--font-weight-extrabold); color: var(--color-text); }
+.top small { margin-left: var(--space-4); color: var(--color-text-muted); }
+/* Nombre del equipo en versalitas, con tracking abierto */
+.top > .muted { font-variant-caps: small-caps; letter-spacing: var(--letter-spacing-wide); }
+.shell { display: flex; min-height: calc(100vh - var(--header-height)); }
+main { padding: var(--space-page); width: calc(100% - var(--sidebar-width)); max-width: 1600px; }
+
+/* Menú lateral: ui/side-nav.css. Aquí solo Configuración, al pie del menú */
+.settings { border-top: 1px solid var(--color-border); padding: var(--space-3) 0 0; }
+.settings-toggle { display: flex; align-items: center; gap: var(--space-2); width: 100%; background: none; border: 0; text-align: left; padding: var(--space-3); }
+
+/* Título, aviso y periodo */
+.toolbar { display: flex; justify-content: space-between; gap: var(--space-5); align-items: center; margin-bottom: var(--space-section); }
+.today { margin: 0; text-align: right; }
+/* Periodo: 32 px abajo (más aire que el resto de bloques) para separarlo de los filtros */
+.periodbar { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-inline); flex-wrap: wrap; margin: 0 0 var(--space-8); }
+.period-field { display: flex; flex-direction: column; gap: var(--space-stack); font: var(--font-label); }
+.filters { display: flex; align-items: center; gap: var(--space-2); }
+.period-select { width: 180px; }
+/* Estado del periodo: solo texto, sin fondo */
+.badge.period-status { background: none; padding-inline: 0; }
+/* Selector de periodo y su estado: 16 px de separación (8 px más que el resto de grupos .filters) */
+.period-field .filters { gap: var(--space-4); }
+
+/* Filtros */
+.filter-panel, .ai-widget { margin-bottom: var(--space-section); }
+.panel.filter-panel { background: none; border: 0; padding: 0; }
+/* Filtros fijos: se quedan 24 px bajo la cabecera, a la altura del menú lateral (su relleno superior), y el contenido pasa por debajo. Por encima de las
+   tarjetas (y de sus menús) y por debajo de la cabecera, el menú lateral y las capas modales.
+   En reposo no hay contenedor (sin fondo, borde ni relleno lateral: alineados con la página); aparece solo al quedar fijos.
+   El relleno vertical es el mismo en ambos estados para que el alto no cambie */
+.panel.filter-panel {
+  position: sticky; top: calc(var(--header-height) + var(--space-6)); z-index: var(--z-sticky);
+  padding: var(--space-5) 0; background: transparent; border: 1px solid transparent; border-radius: var(--radius-lg);
+}
+.panel.filter-panel.is-stuck { padding-inline: var(--space-6); box-shadow: var(--shadow-md); background: var(--color-surface-sunken); border-color: var(--color-border); }
+/* Fijo: el hueco de 24 px sobre el contenedor lleva el fondo de la página para que nada asome entre él y la cabecera */
+.panel.filter-panel::before { content: ''; position: absolute; left: -1px; right: -1px; bottom: 100%; height: calc(var(--space-6) + 1px); background: var(--color-bg); opacity: 0; pointer-events: none; transition: opacity var(--filter-dur) var(--filter-ease); }
+.panel.filter-panel.is-stuck::before { opacity: 1; }
+.filter-panel .heading-info { margin-bottom: var(--space-5); }
+/* Fijo: el título se recoge (alto, margen y opacidad) y el margen inferior crece lo mismo, así el contenido de debajo
+   no salta. --filter-title (alto + margen del título) y --filter-gap (margen inferior) los mide Filters al montarse */
+/* Transición suave: 400 ms con curva de entrada y salida, para que el contenedor aparezca y el título se recoja sin
+   golpe; la opacidad del título va algo más rápida (240 ms) para que no se vea a medio recoger. Movimiento reducido:
+   sin transición */
+.panel.filter-panel {
+  --filter-dur: 400ms; --filter-ease: cubic-bezier(.4, 0, .2, 1);
+  transition: box-shadow var(--filter-dur) var(--filter-ease), background-color var(--filter-dur) var(--filter-ease), border-color var(--filter-dur) var(--filter-ease),
+    padding var(--filter-dur) var(--filter-ease), margin-bottom var(--filter-dur) var(--filter-ease) }
+.filter-panel .heading-info { transition: height var(--filter-dur) var(--filter-ease), margin var(--filter-dur) var(--filter-ease), opacity 240ms var(--filter-ease), visibility var(--filter-dur); }
+@media (prefers-reduced-motion: reduce) { .panel.filter-panel, .panel.filter-panel::before, .filter-panel .heading-info { transition: none; } }
+[data-motion=reduced] .panel.filter-panel, [data-motion=reduced] .panel.filter-panel::before, [data-motion=reduced] .filter-panel .heading-info { transition: none; }
+.panel.filter-panel.is-stuck { margin-bottom: calc(var(--filter-gap) + var(--filter-title)); }
+.panel.filter-panel.is-stuck .heading-info { height: 0; margin-bottom: 0; opacity: 0; overflow: hidden; visibility: hidden; }
+.filter-grid { display: flex; gap: var(--space-grid); flex-wrap: wrap; align-items: flex-end; }
+.filter-grid label { display: flex; flex: 1; min-width: 150px; flex-direction: column; gap: var(--space-stack); font: var(--font-label); }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-grid); margin-bottom: var(--space-section); }
+/* Subtítulo dentro de una tarjeta de gráfica (cierres por ejecutivo bajo cierres por mes): 32 px sobre él, como el título del panel a su gráfica */
+.chart-subtitle { margin: var(--space-8) 0 0; padding-top: var(--space-8); border-top: 1px solid var(--color-border); font: var(--font-heading); } /* Divider sobre el subtítulo: separa las dos gráficas de la tarjeta, 32 px a cada lado */
+.chart-subtitle + .bar-list { margin-top: var(--space-8); } /* 32 px hasta los ejecutivos, como del título del panel a su gráfica */
+.chart-subtitle + .bar-list ul { gap: var(--space-5); } /* Ejecutivos con 20 px entre filas (12 en el ranking de media tarjeta): a todo el ancho respiran más */
+/* Fila del anillo: el anillo horizontal (anillo + leyenda en dos líneas) necesita más ancho que las columnas: 3 : 2, como en Bia */
+@media (min-width: 851px) { .split--ring { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } .sk-split--one { grid-template-columns: 1fr; } }
+/* Tarjetas de gráfica: las dos de una fila miden lo mismo (la rejilla las estira) y el resumen va siempre abajo, así
+   los pies de una fila quedan a la misma altura. Durante la recarga en el sitio, el envoltorio del skeleton también estira */
+.chart-panel { display: flex; flex-direction: column; }
+.chart-panel > :is(.colchart, .bar-list, .chart-form) { flex: 1; }
+.chart-panel > :is(.colchart, .bar-list, .chart-form:not(.chart-form--h)) { display: flex; flex-direction: column; }
+.chart-panel > .chart-form--h { grid-template-rows: 1fr auto; }
+.chart-panel .colchart-footer { margin-top: auto; }
+.split > .sk-root { display: flex; flex-direction: column; }
+.split > .sk-root > .panel { flex: 1; }
+
+/* Resumen AI */
+.panel.ai-widget { background: none; border: 0; padding: 0; }
+.ai-widget p { line-height: var(--line-height-relaxed); }
+
+.table-panel { margin-bottom: var(--space-section); }
+
+
+/* Marca «Cierra la brecha»: bandera de 14 px en un círculo --color-primary-50 junto al nombre; el texto va en el tooltip */
+.row-name { display: inline-flex; align-items: center; gap: var(--space-2); }
+.gap-flag { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--radius-full); background: var(--color-primary-50); color: var(--color-primary-text); }
+.row-name .tooltip-trigger { border-radius: var(--radius-full); }
+
+/* Configuración (modal grande): categorías a la izquierda y ajustes a la derecha */
+.settings-layout { display: grid; grid-template-columns: 200px 1fr; flex: 1; min-height: 0; }
+.settings-nav { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-3); border-right: 1px solid var(--color-border); background: var(--color-surface-sunken); }
+.settings-nav button { margin: 0; border: 0; background: none; text-align: left; padding: var(--space-2) var(--space-3); }
+.settings-nav button[aria-selected=true] { background: var(--color-primary-50); color: var(--color-primary-text); font-weight: var(--font-weight-bold); }
+.settings-content { padding: var(--space-5) var(--space-7); overflow: auto; }
+.settings-content h3 { font: var(--font-heading); margin: 0 0 var(--space-2); }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-4) 0; border-bottom: 1px solid var(--color-border); }
+.setting-label { font-weight: var(--font-weight-semibold); }
+.setting-label .badge { margin-left: var(--space-2); }
+.setting-description { margin: var(--space-1) 0 0; font: var(--font-caption); color: var(--color-text-muted); }
+.setting-row .dropdown { width: 200px; flex-shrink: 0; }
+.setting-row:has(.dropdown-trigger:disabled) .setting-label { color: var(--color-neutral-400); }
+
+.foot { font: var(--font-caption); color: var(--color-text-muted); margin-top: var(--space-5); }
+
+/* Móvil (el menú lateral pasa a cajón en ui/side-nav.css); la meta antes que los filtros, y los filtros justo encima de la tabla. */
+@media (max-width: 850px) {
+  .settings-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .settings-nav { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--color-border); padding: var(--space-2); }
+  .settings-nav button { white-space: nowrap; }
+  .settings-content { padding: var(--space-4); }
+  .setting-row { flex-wrap: wrap; gap: var(--space-3); }
+  main { width: 100%; display: flex; flex-direction: column; }
+  .split { grid-template-columns: 1fr; }
+  .toolbar { align-items: flex-start; flex-direction: column; }
+  .top small { display: none; }
+  .filters { flex-wrap: wrap; }
+  /* Periodo en móvil: «Periodo» y el estado («En curso») en la misma línea; debajo, el selector y «Exportar CSV» (small) */
+  .periodbar { display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'label status' 'select action'; align-items: center; row-gap: var(--space-stack); column-gap: var(--space-4); }
+  .period-field, .period-field .filters { display: contents; }
+  .period-field > label { grid-area: label; }
+  .period-field .period-status { grid-area: status; justify-self: end; }
+  .period-field .dropdown { grid-area: select; width: auto; max-width: 200px; }
+  .periodbar > .btn { grid-area: action; }
+  .today { text-align: left; }
+  /* Mismo orden que en escritorio (filtros antes de los KPIs). En columna flex los márgenes no se funden:
+     los filtros dejan 32 px hasta los KPIs y la tarjeta solo su margen inferior */
+  main > .period-card { margin: 0 0 var(--space-section); }
+  /* Filtros en móvil: el título y su único botón van juntos (16 px), no a los 32 px de título → contenido */
+  .filter-panel .heading-info { margin-bottom: var(--space-4); }
+  /* En móvil los filtros no van fijos ni en contenedor: título y botón «Filtros» sobre el fondo, como antes */
+  .panel.filter-panel { position: static; margin-bottom: var(--space-8); padding: 0; background: none; border: 0; box-shadow: none; }
+  .foot { margin-top: 0; }
+}

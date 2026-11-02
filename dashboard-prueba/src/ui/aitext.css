@@ -1,0 +1,21 @@
+/*
+  Texto de IA (AiText): «analiza y escribe».
+  1. Rótulo «Analizando…» en medium con un brillo morado que lo recorre en bucle (1,1 s) durante 900 ms.
+  2. Palabra a palabra: fundido + 2 px hacia arriba en 160 ms, 12 ms entre palabras.
+  El contenido de `after` (CTA) entra cuando termina la última palabra.
+  Con movimiento reducido se anula (regla global de animaciones a 0 s y retrasos a 0).
+*/
+.ai-thinking {
+  margin: var(--space-2) 0 0; font-weight: var(--font-weight-medium);
+  background: linear-gradient(90deg, var(--color-text-muted) 0 40%, var(--color-primary-600) 50%, var(--color-text-muted) 60% 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: ai-shimmer 1.1s linear infinite;
+}
+.ai-word { display: inline-block; animation: ai-word-in 160ms var(--ease-out) both; animation-delay: calc(var(--w) * var(--ai-step)); }
+.ai-after { margin-top: var(--space-4); animation: ai-word-in var(--duration-base) var(--ease-out) both; animation-delay: var(--ai-total); }
+
+@keyframes ai-shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+@keyframes ai-word-in { from { opacity: 0; transform: translateY(2px); } }
+
+@media (prefers-reduced-motion: reduce) { .ai-word, .ai-after { animation-delay: 0s !important; } }
+[data-motion=reduced] .ai-word, [data-motion=reduced] .ai-after { animation-delay: 0s !important; }

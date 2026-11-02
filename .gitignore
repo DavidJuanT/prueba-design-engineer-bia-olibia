@@ -1,0 +1,7 @@
+# Dependencias y build (se regeneran con npm ci && npm run build)
+node_modules/
+dashboard-prueba/dist/
+
+# Sistema y herramientas locales
+.DS_Store
+.claude/

@@ -1,0 +1,47 @@
+/*
+  Fallback: error de carga de cualquier card
+
+  Centrado en el cuerpo de la card, con el título de la card arriba. Ilustración 168 × 96 (dibujada en 112 × 64 y escalada 1,5×, el trazo se mantiene en 2 px) en línea (extremos
+  redondeados), en proporción con el texto: un cable desconectado, conector y enchufe en --color-border-strong; chispas en --color-spark (rojo).
+  Texto --font-body en --color-text-muted, máx. 320 px. Acción: transparent medium.
+  Movimiento (ciclo de 2,4 s): el enchufe se acerca 4 px, saltan chispas en el hueco y vuelve sin conectar.
+  Movimiento reducido: ilustración quieta.
+*/
+.fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-3); min-height: 200px; padding: var(--space-4) var(--space-4) var(--space-2); text-align: center; }
+.fallback-text { max-width: 320px; margin: 0; font: var(--font-body); color: var(--color-text-muted); text-wrap: balance; }
+.fallback .btn { margin-top: calc(var(--space-1) * -1); }
+
+.fallback-art { margin-bottom: var(--space-1); overflow: visible; }
+.fallback-art path, .fallback-art rect { vector-effect: non-scaling-stroke; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fallback-line { stroke: var(--color-border-strong); }
+.fallback-art .fallback-hole { stroke: var(--color-border-strong); stroke-width: 4; }
+.fallback-charge { fill: var(--color-warning-medium-text); stroke: none; animation: fallback-blink 2.4s var(--ease-in-out) infinite; }
+.fallback-bolt { stroke: var(--color-primary-link); stroke-dasharray: 34; animation: fallback-bolt 2.4s var(--ease-in-out) infinite; }
+.fallback-spark { stroke: var(--color-spark); opacity: 0; animation: fallback-spark 2.4s ease-out infinite; }
+.fallback-plug { animation: fallback-plug 2.4s var(--ease-in-out) infinite; }
+
+/* La carga parpadea dos veces; el rayo se dibuja, se sostiene y se corta antes de llegar; las chispas destellan al cortarse */
+@keyframes fallback-blink { 0%, 20%, 40%, 100% { opacity: 1; } 10%, 30% { opacity: .2; } }
+@keyframes fallback-bolt { 0% { stroke-dashoffset: 34; } 35%, 60% { stroke-dashoffset: 12; } 75%, 100% { stroke-dashoffset: 34; } }
+@keyframes fallback-spark { 0%, 40% { opacity: 0; } 48% { opacity: 1; } 64%, 100% { opacity: 0; } }
+@keyframes fallback-plug { 0%, 20% { transform: translateX(0); } 45% { transform: translateX(-4px); } 70%, 100% { transform: translateX(0); } }
+
+@media (prefers-reduced-motion: reduce) { .fallback-art * { animation: none !important; } .fallback-bolt { stroke-dashoffset: 12; } }
+[data-motion=reduced] .fallback-art * { animation: none !important; }
+[data-motion=reduced] .fallback-bolt { stroke-dashoffset: 12; }
+
+/*
+  Fallback de página (PageFallback): ningún dato de la interfaz llegó.
+  Centrado en el área de contenido, también en vertical (cabecera y menú se mantienen), máx. 400 px de ancho.
+  Ilustración 176 × 104 de la misma familia; título 20 px semibold (entre el h2 de 16 y el título de página de 24) y texto --font-body gris; botón primary medium.
+*/
+/* main es la referencia: alto de la ventana menos cabecera, relleno de página y nota al pie; centrado vertical */
+.page-fallback { display: flex; flex-direction: column; align-items: center; justify-content: center; max-width: 400px; min-height: calc(100vh - var(--header-height) - 160px); margin: 0 auto; text-align: center; }
+.showcase-section .page-fallback { min-height: 0; padding: var(--space-8) 0; }
+.page-fallback-art { margin-bottom: var(--space-6); }
+.page-fallback h1 { margin: 0 0 var(--space-2); font: var(--font-weight-semibold) var(--font-size-20)/var(--line-height-tight) var(--font-family-base); }
+.page-fallback p { margin: 0 0 var(--space-6); font: var(--font-body); color: var(--color-text-muted); text-wrap: balance; }
+.page-fallback .fallback-bolt { stroke-dasharray: none; animation: none; }
+.page-fallback .fallback-plug { animation-name: page-fallback-plug; }
+@keyframes page-fallback-plug { 0%, 20% { transform: translateX(0); } 45% { transform: translateX(-8px); } 70%, 100% { transform: translateX(0); } }
+@media (max-width: 850px) { .page-fallback-art { width: 140px; height: auto; } }

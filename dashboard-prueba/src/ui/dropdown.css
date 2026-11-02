@@ -1,0 +1,86 @@
+/*
+  Componente Desplegable
+
+  Disparador: solo borde inferior (sin caja), texto alineado con la etiqueta.
+  Menú flotante: fondo de la página, mismo ancho que el disparador, filas de 40 px (44 px en móvil),
+  alto máximo de 320 px con scroll; se abre hacia arriba si no cabe abajo. Va fijo a la ventana para que
+  ningún contenedor con scroll lo recorte.
+  hover con fondo suave y la opción seleccionada marcada con una línea vertical morada a la izquierda.
+  Las clases .is-hover / .is-focus / .is-disabled fuerzan el estado para mostrarlo en la guía.
+*/
+.dropdown { position: relative; display: inline-flex; min-width: 0; }
+
+.dropdown-trigger {
+  display: flex; align-items: center; gap: var(--space-2);
+  width: 100%; height: 32px; padding: 0 var(--space-1) 0 0;
+  border: 0; border-bottom: 1px solid var(--color-border-strong); border-radius: 0;
+  background: none; color: var(--color-text); font: var(--font-body); font-size: var(--font-size-13); font-weight: var(--font-weight-medium); text-align: left; cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.dropdown-trigger:not(.btn):hover, .dropdown.is-hover .dropdown-trigger { background: none; border-bottom-color: var(--color-text-muted); }
+/* Foco y abierto: la línea inferior pasa a morado y gana grosor (2 px) sin mover el contenido */
+.dropdown-trigger:focus-visible, .dropdown.is-focus .dropdown-trigger, .dropdown.is-open .dropdown-trigger {
+  outline: none; border-bottom-color: var(--color-primary-600); box-shadow: 0 1px 0 0 var(--color-primary-600);
+}
+.dropdown-trigger:disabled, .dropdown.is-disabled .dropdown-trigger { cursor: not-allowed; color: var(--color-neutral-400); border-bottom-color: var(--color-border); }
+.dropdown-trigger > .icon { color: var(--color-text-muted); }
+.dropdown-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-trigger > .icon:last-child { transition: transform var(--duration-base) var(--ease-out); }
+.dropdown.is-open .dropdown-trigger > .icon:last-child { transform: rotate(180deg); }
+
+.dropdown-menu {
+  position: absolute; top: calc(100% + var(--space-1)); left: 0; right: 0; z-index: var(--z-overlay);
+  margin: 0; padding: var(--space-1) 0; list-style: none; color: var(--color-text); font: var(--font-body); font-size: var(--font-size-13);
+  background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); transform-origin: top center; overflow-y: auto; overscroll-behavior: contain;
+  --dd-shift: -4px;
+  animation: dropdown-in var(--duration-base) var(--ease-out);
+}
+.dropdown-menu li {
+  position: relative; display: flex; align-items: center; height: 40px; padding: 0 var(--space-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+/* Opción con icono o avatar delante (lead): 8 px hasta el texto; el texto se recorta con «…». En el disparador el
+   avatar baja a 20 px para no alterar su alto y entra con el valor al elegir */
+.dropdown-lead { display: inline-flex; flex: none; align-items: center; color: var(--color-text-muted); }
+.dropdown-menu .dropdown-lead { margin-right: var(--space-2); }
+.dropdown-option-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dropdown-trigger .dropdown-lead .avatar { --avatar-size: 20px; }
+.dropdown-trigger .dropdown-lead { animation: dropdown-value-in var(--duration-slow) var(--ease-out); }
+.dropdown-menu li.is-active { background: var(--color-surface-hover); }
+.dropdown-menu li[aria-selected=true] { font-weight: var(--font-weight-medium); }
+.dropdown-menu li[aria-selected=true]::before { content: ''; position: absolute; left: 0; top: var(--space-2); bottom: var(--space-2); width: 3px; border-radius: 0 var(--radius-full) var(--radius-full) 0; background: var(--color-primary-600); }
+/* Microanimación: el menú se despliega desde el disparador (escala vertical + fundido)
+   y las opciones entran en cascada, 24 ms entre una y otra. Al cerrar (también al elegir) se desvanece en 200 ms. */
+.dropdown-menu li { animation: dropdown-option-in var(--duration-base) var(--ease-out) both; animation-delay: calc(min(var(--i, 0), 8) * 24ms); }
+.dropdown-menu.is-closing { animation: dropdown-out var(--duration-base) var(--ease-out) forwards; pointer-events: none; }
+/* Abierto hacia arriba (cuando no cabe abajo): crece desde el borde inferior */
+.dropdown-menu.is-up { transform-origin: bottom center; --dd-shift: 4px; }
+@keyframes dropdown-in { from { opacity: 0; transform: translateY(var(--dd-shift)) scaleY(.92); } }
+@keyframes dropdown-out { to { opacity: 0; transform: translateY(calc(var(--dd-shift) / 2)) scaleY(.98); } }
+/* Al elegir, el valor nuevo entra en el disparador desde abajo (la dirección del menú) */
+.dropdown-value.is-picked { animation: dropdown-value-in var(--duration-slow) var(--ease-out); }
+@keyframes dropdown-value-in { from { opacity: 0; transform: translateY(4px); } }
+@keyframes dropdown-option-in { from { opacity: 0; transform: translateY(var(--dd-shift)); } }
+
+/* Móvil: filas de 44 px, el área táctil recomendada (WCAG 2.5.5) */
+@media (max-width: 850px) { .dropdown-menu li { height: 44px; } }
+
+/* Deshabilitado: la etiqueta que lo contiene también se atenúa */
+label:has(.dropdown-trigger:disabled) { color: var(--color-neutral-400); cursor: not-allowed; }
+
+/* Selección múltiple: casilla en cada opción y pie con «Limpiar» y «Aplicar». El menú es un contenedor
+   (lista con scroll + pie fijo) en vez de una lista directa */
+.dropdown-menu--multi { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+.dropdown-menu--multi ul { margin: 0; padding: var(--space-1) 0; list-style: none; overflow-y: auto; min-height: 0; }
+.dropdown-menu--multi li { gap: var(--space-3); }
+.dropdown-menu--multi li[aria-selected=true]::before { display: none; }
+.dropdown-menu--multi li[aria-selected=true] { font-weight: var(--font-weight-regular); }
+.dd-check {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--color-border-strong);
+  color: var(--color-on-primary); transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+li[aria-selected=true] > .dd-check { background: var(--color-action); border-color: var(--color-action); }
+.dropdown-footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding: var(--space-3); border-top: 1px solid var(--color-border); }

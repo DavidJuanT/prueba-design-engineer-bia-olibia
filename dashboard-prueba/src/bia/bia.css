@@ -1,0 +1,152 @@
+/*
+  Layout de la página de Bia (tarea 2), con la maqueta «Diagnóstico del aumento»: menú lateral de alto completo con el
+  logo, cabecera con filtros, resumen destacado, 3 KPI, evolución y distribución, sedes y preguntas. Solo ordena piezas
+  de la librería; todo en tokens. La cabecera superior solo existe en móvil (botón «Menú»).
+*/
+.bia-top {
+  position: sticky; top: 0; z-index: var(--z-header); display: none; align-items: center; justify-content: space-between; gap: var(--space-4);
+  height: var(--header-height); padding: 0 var(--space-4); background: var(--color-chrome); border-bottom: 1px solid var(--color-border);
+}
+.skin-glass .bia-top { background: var(--glass-chrome); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-bottom: 0; }
+.bia-brand { display: flex; align-items: center; gap: var(--space-3); }
+.bia-logo { display: inline-flex; align-items: center; gap: var(--space-2); font: var(--font-weight-extrabold) var(--font-size-24)/var(--line-height-none) var(--font-family-figure); color: var(--color-text); }
+.bia-logo .icon { color: var(--color-primary-link); }
+
+/* Menú lateral de alto completo (sin cabecera arriba): logo, áreas y, al pie, tema y avatar */
+.bia-shell { display: flex; min-height: 100vh; }
+.bia-shell aside { top: 0; height: 100vh; gap: var(--space-6); }
+.bia-aside-logo { padding: 0 var(--space-3); font-size: var(--font-size-28); }
+.bia-aside-foot { margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); padding: 0 var(--space-2); }
+.bia-aside-foot .avatar { --avatar-size: 36px; }
+
+.bia { flex: 1; min-width: 0; max-width: 1240px; margin: 0 auto; padding: var(--space-page); display: flex; flex-direction: column; gap: var(--space-grid); }
+/* Un solo espaciado entre bloques: 24 px (--space-grid) en vertical y en horizontal, igual que entre las tarjetas de una fila.
+   El aviso no suma su margen de la librería */
+.bia > .banner { margin: 0; }
+/* Página compacta: gráficas más bajas y menos aire entre el título y la gráfica */
+/* Título → contenido: 32 px en todas las tarjetas (el margen del título de la librería); las gráficas no suman margen arriba */
+.bia .colchart-chart { grid-template-rows: 140px auto; margin-top: 0; }
+.bia .colchart-ytitle { margin-top: 0; } /* El título del panel ya deja los 32 px */
+.bia .linechart { --linechart-height: 160px; }
+.bia-toolbar { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-6); } /* Filtros debajo del título, alineados a la izquierda */
+.bia-toolbar h1 { margin: 0; }
+.bia-toolbar p { margin: 0; }
+.bia-filters { display: flex; align-items: flex-end; gap: var(--space-4); }
+.bia-field { display: flex; flex-direction: column; gap: var(--space-1); font: var(--font-caption); color: var(--color-text-muted); }
+.bia-filters .dropdown { width: 220px; }
+
+.bia-kpi-note { margin: 0; font: var(--font-caption); }
+
+/* Tarjeta de KPIs de la librería con tres KPI; sin el margen de Olibia (aquí manda el gap de la página) */
+.bia .bia-kpi-card { margin: 0; }
+.bia-kpi-card .period-kpis { grid-template-columns: repeat(4, 1fr); }
+.bia-kpi-card .value small { font-size: var(--font-size-16); }
+.bia-kpi-card .value { margin-bottom: var(--space-1); } /* Cifra y «Antes» juntos: 4 px (12 en la tarjeta de Olibia, que no lleva nota) */
+
+/* Dos gráficas de igual alto, con el resumen abajo */
+.bia-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-grid); }
+.bia .chart-panel { display: flex; flex-direction: column; }
+.bia .chart-panel > .colchart { flex: 1; display: flex; flex-direction: column; }
+.bia .chart-panel .colchart-footer { margin-top: auto; }
+/* «Variación de consumo»: la columna del nombre mide lo que el nombre más largo (subgrid: todas las filas
+   comparten la misma columna, así las barras arrancan alineadas) y hay 32 px del nombre a la barra */
+.bia-var-rows { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: var(--space-8); }
+.bia-var-rows li { grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: var(--space-8); }
+/* Título del panel con un filtro a la derecha (Distribución · Variación) */
+.bia-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
+.bia-panel-head .heading-info { margin: 0; }
+.bia-panel-head .dropdown { width: 160px; }
+
+/* Tabla de sedes */
+.bia th .heading-info { height: auto; margin: 0; } /* Título de columna con InfoTip: alineado con los demás */
+/* Fila de total: banda como la cabecera y cifras en semibold */
+.bia-total-row td { background: var(--color-neutral-100); font-weight: var(--font-weight-semibold); } /* Misma banda gris sólida que la cabecera */
+.bia-total-row td:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.bia-total-row td:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+/* Sin divisor sobre la fila de total y 8 px más de aire antes de ella: la banda ya la separa */
+.bia tr:has(+ .bia-total-row) td { border-bottom: 0; padding-bottom: calc(var(--space-3) + var(--space-2)); }
+
+/* Skeleton de la página */
+.bia-sk-panel { padding: var(--space-panel); }
+.bia > .sk-root { display: flex; flex-direction: column; gap: var(--space-grid); }
+
+@media (max-width: 850px) {
+  .bia-top { display: flex; }
+  .bia-shell { min-height: calc(100vh - var(--header-height)); }
+  .bia-split, .bia-kpi-card .period-kpis { grid-template-columns: 1fr; }
+  .bia-filters { flex-direction: column; align-items: stretch; width: 100%; }
+  .bia-filters .dropdown { width: 100%; }
+  .bia .bia-offhours-kpis { grid-template-columns: 1fr; }
+}
+
+/* Resumen AI al pie de la tarjeta de KPIs: mismo interlineado que en Olibia */
+.bia .ai-widget p { line-height: var(--line-height-relaxed); }
+
+/* Consumo fuera de horario: la gráfica de líneas y los KPI de cada sede debajo, con divisor */
+.bia-offhours .heading-info { height: auto; margin-bottom: var(--space-1); } /* El título puede ocupar dos líneas */
+/* Siempre tres columnas: con el filtro de una sede, su KPI ocupa una y la pill queda junto a la cifra, como con las tres */
+.bia-offhours-kpis { grid-template-columns: repeat(3, 1fr); margin: var(--space-4) calc(var(--space-panel) * -1) calc(var(--space-panel) * -1); border-top: 1px solid var(--color-border); }
+/* KPI de cada sede compactos: menos relleno y cifra de 24 px */
+.bia-offhours-kpis > div { padding-block: var(--space-4); }
+.bia-offhours .period-kpis.bia-offhours-kpis .value { margin: var(--space-1) 0 0; font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); } /* Como la cifra del pie de las otras tarjetas: número de 20 px (.colchart-figure) y unidad de 14 px. Por encima de .skin-glass .period-kpis .value */
+.bia-offhours-kpis .bia-kpi-note { margin: 0; }
+.bia-offhours-site { display: inline-flex; align-items: center; gap: var(--space-2); }
+
+/* Variación de consumo (compacta), a todo el ancho bajo las dos gráficas. Leyenda en la fila del
+   título; filas de 24 px a 12 px; barra de 12 px con el mes anterior en gris y el aumento en morado, 2 px entre ellos;
+   cifra y pill pegadas al final de la barra */
+.bia-split--3 > :last-child { grid-column: 1 / -1; }
+/* Evolución más angosta (6 columnas caben de sobra) y el anillo horizontal más ancho: 2 : 3 */
+@media (min-width: 851px) { .bia-split--3 { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } }
+.bia-var-head { margin-bottom: var(--space-8); }
+.bia-var-head .linechart-legend { margin: 0; }
+.bia-var-rows { row-gap: var(--space-3); margin: 0 0 var(--space-4); padding: 0; list-style: none; }
+.bia-var-rows li { display: grid; align-items: center; min-height: 24px; }
+.bia-var-name { font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); }
+.bia-var-lane { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.bia-var-lane b { font: var(--font-weight-regular) var(--font-size-16)/1 var(--font-family-base); font-variant-numeric: var(--font-numeric); color: var(--color-text); white-space: nowrap; } /* Cifra de Variación: la misma de las listas de la librería (Geist regular 16) */
+.bia-gain-wrap { flex: none; display: flex; }
+.bia-gain-wrap > .infotip, .bia-gain-wrap .tooltip-trigger { display: flex; width: 100%; align-items: center; min-height: 24px; } /* Toda la barra abre el tooltip con los kWh de cada mes */
+.bia-gain { flex: 1; display: flex; gap: 2px; height: 12px; transform-origin: left; animation: bar-list-grow 600ms var(--ease-out) calc(var(--i) * 60ms) both; }
+.bia-gain i { flex-basis: 0; background: var(--color-chart-history); }
+.bia-gain i:first-child { border-radius: 4px 0 0 4px; }
+.bia-gain i:last-child { border-radius: 0 4px 4px 0; }
+.bia-gain i.is-now { background: var(--color-action); }
+/* El aumento pasa del morado al rojo del aviso cuando la barra termina de crecer: refuerza «tu consumo aumentó» */
+.bia-gain i.is-now { animation: bia-gain-heat 600ms var(--ease-in-out) calc(600ms + var(--i) * 60ms) forwards; }
+@keyframes bia-gain-heat { to { background-color: var(--color-spark); } }
+@media (prefers-reduced-motion: reduce) { .bia-gain i.is-now { animation: none; background-color: var(--color-spark); } }
+.bia-gain i.is-drop { background: none; box-shadow: inset 0 0 0 1px var(--color-border-strong); }
+@media (prefers-reduced-motion: reduce) { .bia-gain { animation: none; } }
+@media (max-width: 850px) { .bia-var-rows { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); } .bia-var-rows li { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); } .bia-gain { max-width: 35%; } } /* Móvil: el nombre encima de su barra */
+/* Franja «Fuera de horario»: la banda de la librería (superficie hundida, 4 % de blanco en oscuro) casi no se veía.
+   Lavanda de la marca (--color-primary-100) al 80 %, bajo las líneas: se distingue del panel en claro y en oscuro */
+.bia .linechart-band { background: color-mix(in srgb, var(--color-primary-100) 80%, transparent); }
+/* Columna Documento: «Ver factura» y «Pagar» del mismo ancho (el de «Ver factura»), así quedan alineados */
+.bia-doc-btn { min-width: 92px; justify-content: center; }
+/* Colores de sede: una sola gama de morado, validada como escala ordinal en claro y oscuro (lo más marcado,
+   Sede Centro). Cada sede lleva además su nombre al lado */
+:root { --bia-site-1: #4a34b8; --bia-site-2: #7c63ee; --bia-site-3: #b3a3f8; }
+[data-theme=dark] { --bia-site-1: #cbbffc; --bia-site-2: #9a83f6; --bia-site-3: #6a4de8; }
+/* Con el filtro de una sede, la pill va junto al nombre (8 px), no al borde de la columna */
+.bia-offhours-kpis.is-single .kpi-label { justify-content: flex-start; }
+/* «Limpiar» filtros: botón transparente de la librería, alineado abajo con los desplegables; en móvil, a la izquierda sin estirarse */
+@media (max-width: 850px) { .bia-filters .bia-clear { align-self: flex-start; } }
+/* Anillo del aumento: la cifra del centro a 20 px para que «+1.200 kWh» (al señalar una sede) quepa en el hueco */
+.bia .chart-ring-center b { font-size: var(--font-size-20); }
+
+/* Filtros fijos, como en Olibia: 24 px bajo el borde de la ventana (a la altura del logo del menú);
+   en reposo sin contenedor y alineados con la página; fijos, la tinta --glass-sticky, borde y sombra flotante. El
+   relleno vertical de 12 px se compensa con margen negativo para no mover la página; el hueco de arriba lleva el
+   fondo de la página para que nada asome. Solo escritorio: en móvil los filtros ocupan todo el ancho */
+@media (min-width: 851px) {
+  .bia > .bia-filters {
+    position: sticky; top: var(--space-6); z-index: var(--z-sticky); align-self: stretch;
+    margin: calc(-1 * var(--space-3)) 0; padding: var(--space-3) 0;
+    border: 1px solid transparent; border-radius: var(--radius-xl);
+    transition: padding 400ms cubic-bezier(.4, 0, .2, 1), background-color 400ms cubic-bezier(.4, 0, .2, 1), box-shadow 400ms cubic-bezier(.4, 0, .2, 1), border-color 400ms cubic-bezier(.4, 0, .2, 1);
+  }
+  .bia > .bia-filters.is-stuck { padding-inline: var(--space-6); background: var(--glass-sticky); border-color: var(--glass-sticky-edge); box-shadow: var(--glass-float-shadow); }
+  .bia > .bia-filters::before { content: ''; position: absolute; left: -1px; right: -1px; bottom: 100%; height: calc(var(--space-6) + 1px); background: var(--glass-page); background-attachment: fixed; opacity: 0; pointer-events: none; transition: opacity 400ms cubic-bezier(.4, 0, .2, 1); }
+  .bia > .bia-filters.is-stuck::before { opacity: 1; }
+}
