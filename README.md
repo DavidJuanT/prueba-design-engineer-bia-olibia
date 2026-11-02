@@ -2,11 +2,13 @@
 
 Dos experiencias en React que comparten un mismo design system.
 
+**Demo navegable:** https://101542697.github.io/prueba-design-engineer-bia-olibia/ (las tres experiencias en una página, con pestañas arriba).
+
 | | Demo | Código |
 |---|---|---|
-| 01 · Uplift radical de Olibia (dashboard comercial) | [PENDIENTE: enlace de la demo]/olibia | [`dashboard-prueba/src/olibia`](dashboard-prueba/src/olibia) |
-| 02 · Experiencia para Bia (factura de energía) | [PENDIENTE: enlace de la demo]/bia | [`dashboard-prueba/src/bia`](dashboard-prueba/src/bia) |
-| Design system | [PENDIENTE: enlace de la demo]/sistema | [`dashboard-prueba/src/ui`](dashboard-prueba/src/ui) |
+| 01 · Uplift radical de Olibia (dashboard comercial) | [Abrir Olibia](https://101542697.github.io/prueba-design-engineer-bia-olibia/#olibia) | [`dashboard-prueba/src/olibia`](dashboard-prueba/src/olibia) |
+| 02 · Experiencia para Bia (factura de energía) | [Abrir Bia](https://101542697.github.io/prueba-design-engineer-bia-olibia/#bia) | [`dashboard-prueba/src/bia`](dashboard-prueba/src/bia) |
+| Design system | [Abrir el design system](https://101542697.github.io/prueba-design-engineer-bia-olibia/#sistema) | [`dashboard-prueba/src/ui`](dashboard-prueba/src/ui) |
 
 Para ejecutarlo en local, ver [`dashboard-prueba/README.md`](dashboard-prueba/README.md).
 
