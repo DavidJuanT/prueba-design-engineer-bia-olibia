@@ -42,6 +42,7 @@ export function LineChart({labels, series, max, bands = [], format = n => n, tic
   const onKey = e => {
     const step = {ArrowRight: 1, ArrowLeft: -1}[e.key];
     if (step) { e.preventDefault(); setActive(i => Math.max(0, Math.min(last, (i ?? (step > 0 ? -1 : last + 1)) + step))); }
+    if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); setActive(e.key === 'Home' ? 0 : last); }
     if (e.key === 'Escape') setActive(null);
   };
   return <div className="linechart">
@@ -68,12 +69,14 @@ export function LineChart({labels, series, max, bands = [], format = n => n, tic
         {active !== null && <>
           <i className="linechart-cursor" style={{left: `${x(active)}%`}} aria-hidden="true"/>
           {series.map(s => <i key={s.key} className="linechart-point is-active" style={{left: `${x(active)}%`, bottom: `${100 - y(s.values[active])}%`, '--dot': `var(${s.color})`}} aria-hidden="true"/>)}
-          <div className="linechart-tip" role="status" data-edge={active < last / 4 ? 'start' : active > last * 3 / 4 ? 'end' : undefined} style={{left: `${x(active)}%`}}>
+          <div className="linechart-tip" aria-hidden="true" data-edge={active < last / 4 ? 'start' : active > last * 3 / 4 ? 'end' : undefined} style={{left: `${x(active)}%`}}>
             <strong>{point(labels[active])}</strong>
             {series.map(s => <span key={s.key}><SeriesDot color={s.color}/>{s.label}<b>{format(s.values[active])}</b></span>)}
           </div>
         </>}
       </div>
+      {/* Región viva siempre montada: anuncia el punto que recorren las flechas (Inicio y Fin: primero y último) */}
+      <p className="sr-only" aria-live="polite">{active !== null && `${point(labels[active])}: ${series.map(s => `${s.label} ${format(s.values[active])}`).join(', ')}`}</p>
       <div className="linechart-xaxis" aria-hidden="true">{labels.map((l, i) => <span key={l} style={{left: `${x(i)}%`}}>{l}</span>)}</div>
       {xTitle && <p className="linechart-xtitle" aria-hidden="true">{xTitle}</p>}
     </div>

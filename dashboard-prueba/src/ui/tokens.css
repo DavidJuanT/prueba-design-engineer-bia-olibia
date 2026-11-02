@@ -16,7 +16,6 @@
   --space-4: 16px;
   --space-5: 20px;
   --space-6: 24px;
-  --space-7: 28px;
   --space-8: 32px;
 
   /* Tokens semánticos: dicen para qué se usa el espacio */
@@ -56,8 +55,7 @@
   --font-weight-extrabold: 800;
 
   /* Tamaños */
-  --font-size-10: 10px;             /* Insignias en mayúsculas (delta) */
-  --font-size-11: 11px;             /* Etiquetas en mayúsculas: KPI y cabeceras de tabla */
+  --font-size-11: 11px;             /* Etiquetas en mayúsculas: KPI, cabeceras de tabla y pills (el mínimo de la escala) */
   --font-size-12: 12px;
   --font-size-13: 13px;
   --font-size-14: 14px;
@@ -105,21 +103,21 @@
 :root {
   --brand-page: #ece9f4;          /* Fondo de la página (tono base del lienzo) */
   --brand-halo-a: #f6e3f1;        /* Halo rosado del fondo, arriba a la izquierda */
-  --brand-halo-b: #e3e0fb;        /* Halo lavanda del fondo, arriba a la derecha */
+  --brand-halo-b: oklch(from var(--color-primary-600) calc(l + 0.3673) calc(c * 0.1604) calc(h + 4.9));        /* Halo lavanda del fondo, arriba a la derecha */
   --brand-bg: #f6f4fa;            /* Fondo opaco de capas que se superponen */
   --brand-chrome: #f3f0f8;        /* Cabecera */
   --brand-float: #fbfafd;         /* Capas flotantes y campos */
-  --brand-sticky: #ece7fc;        /* Filtros fijos */
-  --brand-line: #7864aa;          /* Tinte de bordes y pistas */
-  --brand-shadow: #4c348c;        /* Tinte de sombras */
-  --brand-ink: #110e1a;           /* Tinta casi negra: sombras profundas */
-  --brand-cta-from: #5b3bdc;      /* Botón principal: degradado */
-  --brand-cta-to: #7c5cf0;
-  --brand-data-from: #7c5cf0;     /* Barras de datos: degradado */
-  --brand-data-to: #b3a0f8;
-  --brand-bar-to: #a993f7;        /* Ranking: final de la barra */
-  --brand-ring: #7c5cf0;          /* Anillo: color por defecto de un tramo */
-  --brand-featured: #2c224e;      /* Tarjeta destacada en tema oscuro (antes el tono de los filtros fijos) */
+  --brand-sticky: oklch(from var(--color-primary-600) calc(l + 0.3881) calc(c * 0.1253) calc(h + 10.9));        /* Filtros fijos */
+  --brand-line: oklch(from var(--color-primary-600) calc(l + 0.0025) calc(c * 0.4727) calc(h + 10.0));          /* Tinte de bordes y pistas */
+  --brand-shadow: oklch(from var(--color-primary-600) calc(l - 0.1470) calc(c * 0.6106) calc(h + 5.6));        /* Tinte de sombras */
+  --brand-ink: oklch(from var(--color-primary-600) calc(l - 0.3761) calc(c * 0.1088) calc(h + 9.3));           /* Tinta casi negra: sombras profundas */
+  --brand-cta-from: oklch(from var(--color-primary-600) calc(l - 0.0536) calc(c * 1.0012) calc(h - 2.5));      /* Botón principal: degradado */
+  --brand-cta-to: oklch(from var(--color-primary-600) calc(l + 0.0377) calc(c * 0.9281) calc(h + 2.2));
+  --brand-data-from: var(--brand-cta-to);     /* Barras de datos: degradado */
+  --brand-data-to: oklch(from var(--color-primary-600) calc(l + 0.2059) calc(c * 0.5494) calc(h + 7.2));
+  --brand-bar-to: oklch(from var(--color-primary-600) calc(l + 0.1733) calc(c * 0.6276) calc(h + 6.7));        /* Ranking: final de la barra */
+  --brand-ring: var(--brand-cta-to);          /* Anillo: color por defecto de un tramo */
+  --brand-featured: oklch(from var(--color-primary-600) calc(l - 0.2616) calc(c * 0.3411) calc(h + 5.3));      /* Tarjeta destacada en tema oscuro (antes el tono de los filtros fijos) */
   /* Acento (etiquetas positivas: «Al día», variación al alza) */
   --brand-accent: #d9f45a;
   --brand-accent-glow: #a0c814;
@@ -128,18 +126,18 @@
   --brand-warn-soft: #ffdcc8;
 }
 [data-theme=dark] {
-  --brand-page: #110e1a;
-  --brand-halo-a: #6e4ced;
-  --brand-halo-b: #503cbe;
-  --brand-bg: #1a1626;
-  --brand-chrome: #120f1c;
-  --brand-float: #1f1a2e;
-  --brand-sticky: #241953;        /* Filtros fijos en oscuro (antes el tono de la tarjeta destacada) */
-  --brand-card-strong: #1e192e;
-  --brand-data-from: #6e4ced;
-  --brand-data-to: #9f88f5;
-  --brand-bar-to: #9f88f5;
-  --brand-ring: #9f88f5;
+  --brand-page: var(--brand-ink);
+  --brand-halo-a: var(--color-primary-600);
+  --brand-halo-b: oklch(from var(--color-primary-600) calc(l - 0.0886) calc(c * 0.8463) calc(h - 3.1));
+  --brand-bg: oklch(from var(--color-primary-600) calc(l - 0.3369) calc(c * 0.1378) calc(h + 9.2));
+  --brand-chrome: oklch(from var(--color-primary-600) calc(l - 0.3709) calc(c * 0.1168) calc(h + 8.3));
+  --brand-float: oklch(from var(--color-primary-600) calc(l - 0.3162) calc(c * 0.1679) calc(h + 8.9));
+  --brand-sticky: oklch(from var(--color-primary-600) calc(l - 0.2834) calc(c * 0.4403) calc(h + 0.2));        /* Filtros fijos en oscuro (antes el tono de la tarjeta destacada) */
+  --brand-card-strong: oklch(from var(--color-primary-600) calc(l - 0.3197) calc(c * 0.1765) calc(h + 8.1));
+  --brand-data-from: var(--color-primary-600);
+  --brand-data-to: oklch(from var(--color-primary-600) calc(l + 0.1441) calc(c * 0.6865) calc(h + 5.6));
+  --brand-bar-to: var(--brand-data-to);
+  --brand-ring: var(--brand-data-to);
   --brand-accent: #c8ec3c;
   --brand-accent-glow: #c8ec3c;
   --brand-warn-soft: #ffa877;
@@ -152,20 +150,24 @@
   En tema oscuro se redefinen los mismos nombres; los componentes no cambian.
 */
 :root {
-  /* Primario: morado principal #6E4CED (= primary-600). Escala en el mismo tono (253°) */
-  --color-primary-25: #f9f8fe;
-  --color-primary-50: #f2effd;
-  --color-primary-100: #e5dffb;
-  --color-primary-200: #cfc3f8;
+  /* Primario: morado principal (primary-600), el ÚNICO valor de marca escrito a mano. El resto de la escala y todos los
+     morados del sistema (acción, enlace, marca, datos, superficies tintadas) se calculan desde él con color relativo
+     (oklch(from var(--color-primary-600) …)): cambiar este valor cambia toda la familia en Olibia, Bia y el sistema,
+     en claro y en oscuro, con las mismas distancias de luz, croma y tono */
+  --color-primary-25: oklch(from var(--color-primary-600) calc(l + 0.4316) calc(c * 0.0350) calc(h + 8.1));
+  --color-primary-50: oklch(from var(--color-primary-600) calc(l + 0.4085) calc(c * 0.0827) calc(h + 10.0));
+  --color-primary-100: oklch(from var(--color-primary-600) calc(l + 0.3669) calc(c * 0.1677) calc(h + 9.6));
+  --color-primary-200: oklch(from var(--color-primary-600) calc(l + 0.2946) calc(c * 0.3246) calc(h + 9.3));
   --color-primary-600: #6e4ced;
-  --color-primary-700: #4422c3;
-  --color-primary-800: #371c9c;
+  --color-primary-700: oklch(from var(--color-primary-600) calc(l - 0.1258) calc(c * 0.9883) calc(h - 5.4));
+  --color-primary-800: oklch(from var(--color-primary-600) calc(l - 0.1853) calc(c * 0.8258) calc(h - 4.6));
 
   /* Texto en color primario (secondary y transparent). Separado de los rellenos
      para que en tema oscuro el texto sea claro y legible sobre fondos oscuros. */
   --color-primary-text: var(--color-primary-700);
-  --color-primary-link: #5d3ae9; /* Un paso más oscuro que 600 para mantener ≥ 4,5:1 sobre los fondos de hover y press */
+  --color-primary-link: oklch(from var(--color-primary-600) calc(l - 0.0409) calc(c * 1.0686) calc(h - 3.3)); /* Un paso más oscuro que 600 para mantener ≥ 4,5:1 sobre los fondos de hover y press */
 
+  --color-white: #ffffff; /* Blanco fijo en los dos temas (discos y mezclas que deben ser blancos también en oscuro) */
   --color-neutral-0: #ffffff;
   --color-neutral-50: #f4f4f5;
   --color-neutral-100: #e8e8ea;
@@ -176,21 +178,21 @@
   --color-neutral-900: #1f2024;
 
   /* Texto sobre relleno primario o de acción */
-  --color-on-primary: #ffffff;
+  --color-on-primary: var(--color-white);
 
   /* Deshabilitado: lavanda suave de la familia del morado (botones) */
-  --color-disabled-bg: #e3e0ff;
-  --color-disabled-text: #b6b2de;
+  --color-disabled-bg: oklch(from var(--color-primary-600) calc(l + 0.3686) calc(c * 0.1841) calc(h + 4.1));
+  --color-disabled-text: oklch(from var(--color-primary-600) calc(l + 0.2317) calc(c * 0.2726) calc(h + 3.2));
   --color-disabled-text-hc: #6f6c7d; /* Deshabilitado de alto contraste: gris neutro para superficies tintadas (filtros fijos); ≥ 3:1 sobre ellas y el gris lo separa del violeta activo */
 
   --color-focus: var(--color-primary-600);
 
   /* Acción principal: el morado principal #6E4CED para el botón primary */
   --color-action: var(--color-primary-600);
-  --color-action-hover: #5d3ae9;
-  --color-action-press: #4e2be0;
+  --color-action-hover: var(--color-primary-link);
+  --color-action-press: oklch(from var(--color-primary-600) calc(l - 0.0782) calc(c * 1.0902) calc(h - 6.0));
   /* Gráficas: meses pasados (histórico) en un lavanda grisáceo, tenue frente al mes en curso */
-  --color-chart-history: #9d97bf;
+  --color-chart-history: oklch(from var(--color-primary-600) calc(l + 0.1455) calc(c * 0.2557) calc(h + 5.8));
   /* Series categóricas (gráfica de líneas con varias series), en orden fijo: rosa, azul, cian. Validadas para
      daltonismo y contraste ≥ 3:1 contra la superficie; una 4.ª serie no inventa color */
   --color-series-1: #d6337f;
@@ -199,19 +201,23 @@
 
   /* Datos: barras y columnas de las gráficas (≥ 3:1 contra su fondo) */
   --color-data: var(--color-primary-600);
+  /* Escala ordinal (series con orden: 1 la más marcada). Una sola gama del morado, validada en claro y oscuro;
+     acompaña siempre al nombre o a una textura, no va sola. Uso en Bia: colores de las sedes */
+  --color-ordinal-1: oklch(from var(--color-primary-600) calc(l - 0.1107) calc(c * 0.8570) calc(h - 3.5));
+  --color-ordinal-2: oklch(from var(--color-primary-600) calc(l + 0.0471) calc(c * 0.8779) calc(h + 1.1));
+  --color-ordinal-3: oklch(from var(--color-primary-600) calc(l + 0.2115) calc(c * 0.5294) calc(h + 6.1));
 }
 
 [data-theme=dark] {
-  --color-primary-25: #211c36;
-  --color-primary-50: #261e43;
-  --color-primary-100: #2d2352;
-  --color-primary-200: #342862;
-  --color-primary-600: #6e4ced;
-  --color-primary-700: #7656ee;
-  --color-primary-800: #886cef;
+  --color-primary-25: oklch(from var(--color-primary-600) calc(l - 0.3039) calc(c * 0.2134) calc(h + 5.4));
+  --color-primary-50: oklch(from var(--color-primary-600) calc(l - 0.2847) calc(c * 0.2943) calc(h + 5.2));
+  --color-primary-100: oklch(from var(--color-primary-600) calc(l - 0.2554) calc(c * 0.3612) calc(h + 4.3));
+  --color-primary-200: oklch(from var(--color-primary-600) calc(l - 0.2259) calc(c * 0.4316) calc(h + 3.4));
+  --color-primary-700: oklch(from var(--color-primary-600) calc(l + 0.0220) calc(c * 0.9515) calc(h + 1.2));
+  --color-primary-800: oklch(from var(--color-primary-600) calc(l + 0.0727) calc(c * 0.8282) calc(h + 3.7));
 
-  --color-primary-text: #bbaaf8;
-  --color-primary-link: #a48ef6;
+  --color-primary-text: oklch(from var(--color-primary-600) calc(l + 0.2311) calc(c * 0.4847) calc(h + 7.8));
+  --color-primary-link: oklch(from var(--color-primary-600) calc(l + 0.1596) calc(c * 0.6538) calc(h + 6.0));
 
   --color-neutral-0: #2a2b30;
   --color-neutral-50: #303137;
@@ -222,25 +228,28 @@
   --color-neutral-800: #e4e4e7;
   --color-neutral-900: #f4f4f5;
 
-  --color-focus: #a48ef6;
-  --color-disabled-bg: #2a2540;
-  --color-disabled-text: #625c8c;
+  --color-focus: var(--color-primary-link);
+  --color-disabled-bg: oklch(from var(--color-primary-600) calc(l - 0.2666) calc(c * 0.2148) calc(h + 5.6));
+  --color-disabled-text: oklch(from var(--color-primary-600) calc(l - 0.0494) calc(c * 0.3316) calc(h + 3.2));
   --color-disabled-text-hc: #8f8aa8;
   --color-action: var(--color-primary-600);
   --color-action-hover: var(--color-primary-700);
-  --color-action-press: #5d3ae9;
-  --color-chart-history: #4a4660;
+  --color-action-press: oklch(from var(--color-primary-600) calc(l - 0.0409) calc(c * 1.0686) calc(h - 3.3));
+  --color-chart-history: oklch(from var(--color-primary-600) calc(l - 0.1412) calc(c * 0.1898) calc(h + 5.6));
   --color-series-1: #e0559b;
   --color-series-2: #6b82f0;
   --color-series-3: #16a5b2;
   --color-data: var(--color-primary-800);
+  --color-ordinal-1: oklch(from var(--color-primary-600) calc(l + 0.2853) calc(c * 0.3735) calc(h + 7.6));
+  --color-ordinal-2: oklch(from var(--color-primary-600) calc(l + 0.1316) calc(c * 0.7242) calc(h + 4.7));
+  --color-ordinal-3: oklch(from var(--color-primary-600) calc(l - 0.0062) calc(c * 0.9708) calc(h - 1.0));
 }
 
 /*
   Design tokens · Superficies, bordes, radios, sombras y movimiento
 
   Capa «vidrio»: fondo con halos, tarjetas translúcidas con borde de luz, capas flotantes opacas al 98 %.
-  Los colores con tinte salen de los primitivos de marca (arriba). Ver docs/02-design-system.md › 2.2.
+  Los colores con tinte salen de los primitivos de marca (arriba).
 */
 :root {
   /* Página: halos de marca sobre el tono base; el lienzo (html) lleva el tono base sólido */
@@ -296,10 +305,10 @@
   --color-chart-ring: var(--brand-ring);              /* Anillo: tramo sin color propio */
 
   /* Etiquetas (pills): acento, aviso y cerrado, tonales y sin resplandor */
-  --glass-tag: color-mix(in srgb, var(--brand-accent) 30%, #fff);   /* Pills de éxito (Pagada, Al día, sube), tonales como las de aviso: tinte de la lima */
+  --glass-tag: color-mix(in srgb, var(--brand-accent) 30%, var(--color-white));   /* Pills de éxito (Pagada, Al día, sube), tonales como las de aviso: tinte de la lima */
   --glass-tag-text: #4d5c00;                                        /* Oliva oscuro: ≈ 6,9:1 */
   --glass-tag-edge: rgb(from var(--brand-accent-glow) r g b / .45);
-  --glass-tag-warn: color-mix(in srgb, var(--color-spark) 13%, #fff);   /* Pills de aviso (Pendiente), tonal como el botón secundario: tinte del rojo del aviso */
+  --glass-tag-warn: color-mix(in srgb, var(--color-spark) 13%, var(--color-white));   /* Pills de aviso (Pendiente), tonal como el botón secundario: tinte del rojo del aviso */
   --glass-tag-warn-text: #a3262a;                                        /* Rojo oscuro: ≈ 6,5:1 */
   --glass-tag-warn-edge: rgb(from var(--color-spark) r g b / .28);
   --glass-tag-closed: var(--color-neutral-100);     /* Cerrado: gris neutro y sin resplandor, como un estado deshabilitado */
@@ -309,7 +318,7 @@
   --glass-charge: var(--brand-warn);                /* Ilustraciones de error: la carga baja */
 
   /* Tooltip: la misma tinta violeta en claro y en oscuro, opaca (texto pequeño sobre cifras) */
-  --color-tooltip-bg: #1f1a2e;
+  --color-tooltip-bg: oklch(from var(--color-primary-600) calc(l - 0.3162) calc(c * 0.1679) calc(h + 8.9));
   --color-tooltip-border: rgba(255, 255, 255, .1);
   --color-tooltip-text: #e6e6e9;
   --color-tooltip-shadow: 0 4px 12px rgb(from var(--brand-ink) r g b / .16);
@@ -318,7 +327,7 @@
   --color-toast-bg: var(--glass-float-tint);
   --color-toast-border: var(--glass-float-edge);
   --color-toast-text: var(--color-text);
-  --color-toast-timer: #c9bdf7;
+  --color-toast-timer: oklch(from var(--color-primary-600) calc(l + 0.2779) calc(c * 0.3562) calc(h + 8.2));
   --color-toast-success: #13834a;
   --color-toast-error: #c53030;
   --color-toast-neutral: var(--color-primary-600);
@@ -383,7 +392,7 @@
   --color-bg: var(--brand-bg);
   --glass-float: var(--brand-float);
   --color-surface: var(--glass-float);
-  --color-chrome: #16121f;
+  --color-chrome: oklch(from var(--color-primary-600) calc(l - 0.3563) calc(c * 0.1156) calc(h + 12.2));
   --glass-card: rgba(255, 255, 255, .045);
   --glass-card-strong: rgb(from var(--brand-card-strong) r g b / .92);
   --glass-featured: var(--brand-featured);
@@ -432,10 +441,10 @@
   --glass-charge: var(--brand-warn-soft);
 
   --color-toast-text: #e6e6e9;
-  --color-toast-timer: #524a72;
+  --color-toast-timer: oklch(from var(--color-primary-600) calc(l - 0.1157) calc(c * 0.2872) calc(h + 6.8));
   --color-toast-success: #2fd07a;
   --color-toast-error: #ff9a9a;
-  --color-toast-neutral: #c4b5fd;
+  --color-toast-neutral: oklch(from var(--color-primary-600) calc(l + 0.2612) calc(c * 0.4437) calc(h + 7.7));
 
   --color-spark: #ff6b6b;
   --color-warning-medium-text: #f2d26b;

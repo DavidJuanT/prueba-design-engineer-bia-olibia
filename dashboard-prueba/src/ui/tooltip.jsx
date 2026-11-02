@@ -107,10 +107,13 @@ export function InfoTip({label, children, forceOpen = false, className}) {
 // label: nombre accesible completo del disparador, para que no dependa del tooltip.
 // follow (opcional): con ratón, la burbuja y su flecha siguen al cursor; útil en disparadores anchos (una barra).
 // Con teclado o toque se coloca como siempre, bajo el centro del disparador.
-export function Tooltip({content, label, children, forceOpen = false, follow = false}) {
+// rove (opcional): props de useRoving cuando varios tooltips forman un grupo con una sola parada de Tab (barras de una gráfica).
+export function Tooltip({content, label, children, forceOpen = false, follow = false, rove}) {
   const {open, rootProps, triggerProps, bubbleProps} = useTooltip(forceOpen, follow);
+  const roving = rove && {tabIndex: rove.tabIndex, onKeyDown: rove.onKeyDown,
+    ref: el => { triggerProps.ref.current = el; rove.ref(el); }, onFocus: e => { triggerProps.onFocus(e); rove.onFocus(e); }};
   return <span {...rootProps} className={['infotip', 'tooltip', open && 'is-open'].filter(Boolean).join(' ')}>
-    <span tabIndex={0} role="button" aria-label={label} className="tooltip-trigger" {...triggerProps}>{children}</span>
+    <span tabIndex={0} role="button" aria-label={label} className="tooltip-trigger" {...triggerProps} {...roving}>{children}</span>
     <span {...bubbleProps}>{content}</span>
   </span>;
 }

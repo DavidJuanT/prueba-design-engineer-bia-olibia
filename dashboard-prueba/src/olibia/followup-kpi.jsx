@@ -52,7 +52,7 @@ export function FollowUpDock({paused, ...props}) {
     return () => { ro.disconnect(); document.documentElement.style.removeProperty('--dock-h'); };
   }, [phase === 'gone']);
   if (phase === 'gone') return null;
-  return createPortal(<div ref={dock} className={['followup-dock', 'card', 'card--featured', phase === 'leaving' && 'is-leaving'].filter(Boolean).join(' ')} data-theme="dark" role="region" aria-label="Seguimiento de negociaciones">
+  return createPortal(<div ref={dock} className={['followup-dock', 'card', 'card--featured', phase === 'leaving' && 'is-leaving'].filter(Boolean).join(' ')} data-theme="dark" role="region" aria-label="Seguimiento de negociaciones" data-obscures>
     <FollowUpKpi {...props}/>
   </div>, document.body);
 }

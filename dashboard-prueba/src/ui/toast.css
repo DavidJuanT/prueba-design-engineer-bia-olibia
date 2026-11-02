@@ -13,13 +13,13 @@
 .toast {
   position: relative; overflow: hidden; pointer-events: auto;
   display: flex; align-items: center; gap: var(--space-3);
-  width: 450px; min-height: 58px; /* Ancho fijo para todos los casos, sin importar el texto */ padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  width: 450px; min-height: 56px; /* Ancho fijo para todos los casos, sin importar el texto */ padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
   border-radius: var(--radius-md); border: 1px solid var(--color-toast-border);
   background: var(--color-toast-bg); color: var(--color-toast-text); box-shadow: var(--shadow-lg);
   font: var(--font-body); animation: toast-in var(--duration-base) var(--ease-out);
 }
 /* Con mensaje (dos líneas) gana relleno vertical */
-.toast:has(.toast-text span) { padding-block: calc(var(--space-3) + 5px); }
+.toast:has(.toast-text span) { padding-block: var(--space-4); }
 .toast.is-leaving { animation: toast-out var(--duration-fast) ease-in forwards; }
 .toast > .icon:first-child { color: var(--toast-accent); }
 .toast--success { --toast-accent: var(--color-toast-success); }
@@ -28,7 +28,7 @@
 .toast > * { position: relative; z-index: 1; }
 /* Con mensaje, el icono se alinea con la línea del título y no con el centro del bloque */
 .toast:has(.toast-text span) > .icon:first-child { align-self: flex-start; margin-top: 1px; }
-.toast-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.toast-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .toast-text strong { font-weight: var(--font-weight-medium); }
 .toast-text span { font: var(--font-caption); color: var(--color-toast-text); opacity: .8; }
 

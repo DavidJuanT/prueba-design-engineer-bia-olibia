@@ -50,6 +50,14 @@ aside.showcase-menu { top: 0; height: 100vh; gap: var(--space-4); overflow-y: au
 .showcase-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-5); }
 .showcase-icons > div { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
 .showcase-subtitle { font: var(--font-heading); margin: 0 0 var(--space-4); }
+/* Tipografía: muestra a la izquierda, ficha (token, valores calculados y uso) a la derecha; divisor entre filas */
+.type-row { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--space-5); align-items: center; padding: var(--space-4) 0; border-top: 1px solid var(--color-border); }
+.showcase-subtitle + .type-row { border-top: 0; padding-top: 0; }
+.showcase-tip-note + .type-row { border-top: 0; }
+.type-sample { min-width: 0; overflow-wrap: anywhere; color: var(--color-text); }
+.type-meta code { display: block; font: var(--font-caption); }
+.type-meta p { font: var(--font-caption); margin: var(--space-1) 0 0; }
+@media (max-width: 850px) { .type-row { grid-template-columns: 1fr; gap: var(--space-2); } }
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-5); }
 .swatch { display: flex; gap: var(--space-3); align-items: flex-start; }
 .swatch-chip { width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--radius-md); border: 1px solid var(--color-border); }

@@ -1,4 +1,8 @@
 // Reglas de negocio y de tiempo del dashboard. Sin React: funciones puras sobre los datos.
+import anaLopez from './assets/people/ana-lopez.jpg';
+import carlosRuiz from './assets/people/carlos-ruiz.jpg';
+import lauraDiaz from './assets/people/laura-diaz.jpg';
+import mateoGil from './assets/people/mateo-gil.jpg';
 
 export const GOAL = 10;
 export const OWNERS = ['Ana López', 'Carlos Ruiz', 'Laura Díaz', 'Mateo Gil'];
@@ -10,10 +14,10 @@ export const STAGE_CLASS = {Contacto: 'stage-contacto', 'Calificación': 'stage-
 // Token de color de cada etapa (punto de la pill, tramo del anillo): --color-dot-contacto…
 export const stageDot = stage => `--color-dot-${STAGE_CLASS[stage].slice('stage-'.length)}`;
 export {initials} from '../ui/avatar';
-// Fotos de ejemplo de los responsables (retratos aleatorios de randomuser.me; sin conexión se ven las iniciales)
+// Fotos de ejemplo de los responsables (retratos de randomuser.me guardados en assets/people; van dentro del HTML)
 export const PHOTOS = {
-  'Ana López': 'https://randomuser.me/api/portraits/women/44.jpg', 'Carlos Ruiz': 'https://randomuser.me/api/portraits/men/32.jpg',
-  'Laura Díaz': 'https://randomuser.me/api/portraits/women/68.jpg', 'Mateo Gil': 'https://randomuser.me/api/portraits/men/75.jpg',
+  'Ana López': anaLopez, 'Carlos Ruiz': carlosRuiz,
+  'Laura Díaz': lauraDiaz, 'Mateo Gil': mateoGil,
 };
 
 // "Hoy" simulado: lunes 26 oct 2026, primer día de la recta final.

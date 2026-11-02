@@ -6,37 +6,33 @@ import {InfoTip, Tooltip} from '../ui/tooltip';
 import {SearchField} from '../ui/search';
 import {Expandable} from '../ui/expandable';
 import {AiText} from '../ui/aitext';
-import {DashboardSkeleton} from './skeletons';
 import {SkeletonState, SkBlock, SkStep, SkLine, ChartSkeleton} from '../ui/skeleton';
 import {Toast, ToastProvider, useToast} from '../ui/toast';
 import {ColumnChart} from '../ui/columns';
 import {Ring} from '../ui/chart-forms';
 import {BarList} from '../ui/bar-list';
 import {LineChart} from '../ui/line-chart';
-import {stageDot, initials} from './model';
 import {ThemeSwitch} from '../ui/theme-switch';
 import {DataTable} from '../ui/table';
 import {Fallback, PageFallback} from '../ui/fallback';
 import {EmptyState} from '../ui/empty-state';
-import {tableEmptyCopy} from './components';
 import {StatusPill} from '../ui/status-pill';
 import {FilterSheetButton} from '../ui/filter-sheet';
 import {Chip} from '../ui/chip';
 import {Modal} from '../ui/modal';
-import {OpportunityDetail, OpportunityDetailFooter} from './detail';
 import {Icon} from '../ui/icons';
 import {SideNav} from '../ui/side-nav';
-import {Avatar} from '../ui/avatar';
-import {PeriodCard} from './period';
-import {FollowUpKpi, NegotiationsSummary} from './followup-kpi';
+import {Avatar, initials} from '../ui/avatar';
 import {reducedMotion} from '../ui/media';
+import personaUno from './assets/persona-uno.jpg';
+import personaDos from './assets/persona-dos.jpg';
+import personaTres from './assets/persona-tres.jpg';
 
-// Guías visuales del design system, en dos páginas:
+// Guía visual del design system:
 // - #componentes: el sistema en sí (fundamentos y componentes) con contenido de ejemplo neutro, porque se reutiliza
 //   en otros productos. Cada componente tiene su bloque (…Sections) y su ruta propia (#boton, #modal…).
-// - #patrones: cómo se usa en Olibia (datos y textos del dashboard), separado del sistema.
 
-// Página de guía: título y vuelta al dashboard; barra fija con el índice (si lo hay) y el cambio de tema,
+// Página de guía: título y enlaces a los dos productos; barra fija con el índice (si lo hay) y el cambio de tema,
 // y un botón abajo a la derecha para volver al inicio tras hacer scroll.
 const GuideTheme = createContext(['system', () => {}]);
 function GuidePage({title, description, index, nav, children}) {
@@ -57,7 +53,8 @@ function GuidePage({title, description, index, nav, children}) {
     <div className="showcase-head">
       <div><h1>{title}</h1><p className="muted">{description}</p></div>
       <div className="showcase-head-actions">
-        <Button variant="transparent" size="small" onClick={() => { location.hash = ''; }}>Volver al dashboard</Button>
+        <a className="btn btn--small btn--transparent" href="olibia.html">Abrir Olibia</a>
+        <a className="btn btn--small btn--transparent" href="bia.html">Abrir Bia</a>
         {nav && <ThemeSwitch value={theme} onChange={switchTheme}/>}
       </div>
     </div>
@@ -79,7 +76,7 @@ function GuidePage({title, description, index, nav, children}) {
 // Colores por función. Los tokens de un componente se describen por su papel en él, no por la pantalla donde aparece.
 const COLOR_GROUPS = [
   ['Acción', [
-    ['--color-primary-600', 'Color principal: botón primary, datos destacados, foco'],
+    ['--color-primary-600', 'Color principal y único valor de marca escrito a mano: el resto de morados se calcula desde él'],
     ['--color-action-hover', 'Botón primary en hover'],
     ['--color-action-press', 'Botón primary en press'],
     ['--color-primary-text', 'Texto sobre tintes del color principal (botón secondary, badge)'],
@@ -104,6 +101,7 @@ const COLOR_GROUPS = [
     ['--color-border-strong', 'Bordes de controles (línea de campos) y trazo de ilustraciones'],
     ['--color-text', 'Texto principal'],
     ['--color-text-muted', 'Texto secundario, etiquetas, iconos y placeholder'],
+    ['--color-white', 'Blanco fijo en los dos temas: texto sobre el primario, mezclas de las pills, disco del icono del banner'],
   ]],
   ['Estados', [
     ['--color-banner-border', 'Banner: borde (naranja #E6540B)'],
@@ -121,16 +119,19 @@ const COLOR_GROUPS = [
     ['--color-delta-down-text', 'Variación negativa: texto y flecha'],
   ]],
   ['Escala de progreso', [
-    ['--color-dot-contacto', 'Paso 1 de 4 (inicio, amarillo)'],
-    ['--color-dot-calificacion', 'Paso 2 de 4 (lima)'],
-    ['--color-dot-propuesta', 'Paso 3 de 4 (verde claro); base de --color-chart-goal'],
-    ['--color-dot-negociacion', 'Paso 4 de 4 (verde, cerca del final)'],
+    ['--color-dot-contacto', 'Paso 1 de 4 (inicio, el azul más suave)'],
+    ['--color-dot-calificacion', 'Paso 2 de 4'],
+    ['--color-dot-propuesta', 'Paso 3 de 4'],
+    ['--color-dot-negociacion', 'Paso 4 de 4 (el azul más intenso, cerca del final)'],
   ]],
   ['Datos', [
     ['--color-data', 'Relleno de barras horizontales'],
     ['--color-track', 'Pista de barras horizontales'],
     ['--color-chart-history', 'Columnas no destacadas (lavanda grisáceo, tenue)'],
     ['--color-action', 'Columna destacada'],
+    ['--color-ordinal-1', 'Serie ordinal 1, la más marcada (p. ej. la primera de tres categorías con orden)'],
+    ['--color-ordinal-2', 'Serie ordinal 2'],
+    ['--color-ordinal-3', 'Serie ordinal 3, la más suave'],
   ]],
   ['Superficies flotantes', [
     ['--color-tooltip-bg', 'Fondo del tooltip (igual en ambos temas)'],
@@ -147,8 +148,24 @@ const COLOR_GROUPS = [
 ];
 
 // Valor real del token en el tema activo; se actualiza al cambiar de tema.
+// Valor que se muestra junto al token: si es un color calculado (var(), color relativo, color-mix), su hex final
+// en el tema actual; degradados y sombras se muestran tal cual.
+function resolveColor(raw, token) {
+  if (!/^(#|rgb|oklch|var\(|color-mix)/.test(raw) || /gradient|px/.test(raw)) return raw;
+  const probe = document.createElement('i');
+  probe.style.color = `var(${token})`;
+  document.body.append(probe);
+  const color = getComputedStyle(probe).color;
+  probe.remove();
+  const ctx = Object.assign(document.createElement('canvas'), {width: 1, height: 1}).getContext('2d');
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, 1, 1);
+  const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+  const hex = '#' + [r, g, b].map(n => n.toString(16).padStart(2, '0')).join('');
+  return a === 255 ? hex : `${hex} · ${Math.round(a / 2.55)} %`;
+}
 function useThemeValue(token) {
-  const read = () => getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  const read = () => resolveColor(getComputedStyle(document.documentElement).getPropertyValue(token).trim(), token);
   const [value, setValue] = useState(read);
   useEffect(() => {
     const observer = new MutationObserver(() => setValue(read()));
@@ -182,6 +199,64 @@ function ColorSections() {
 
 // Iconos (Material Symbols rounded): nombre de su función, no de la pantalla.
 const ICON_LIST = [['close', 'Cerrar'], ['menu', 'Menú'], ['settings', 'Ajustes'], ['calendar', 'Calendario'], ['warning', 'Aviso'], ['chevron', 'Desplegar'], ['info', 'Información'], ['search', 'Buscar'], ['trendUp', 'Sube'], ['trendDown', 'Baja'], ['filter', 'Filtrado'], ['top', 'Volver arriba'], ['ai', 'IA'], ['success', 'Éxito'], ['error', 'Error'], ['check', 'Hecho'], ['sun', 'Claro'], ['moon', 'Oscuro'], ['computer', 'Sistema']];
+
+// Tipografía: familias, estilos de texto (--font-*), escala de tamaños, pesos, interlineado y espaciado entre letras.
+// Cada muestra lee su estilo calculado, así la ficha dice lo que de verdad se ve (también con la capa vidrio).
+function TypeSpec({children, style, className, token, usage}) {
+  const ref = React.useRef(null);
+  const [spec, setSpec] = useState('');
+  useEffect(() => {
+    const c = getComputedStyle(ref.current);
+    const family = c.fontFamily.split(',')[0].replace(/['"]/g, '');
+    const lh = c.lineHeight === 'normal' ? 'normal' : `${Math.round(parseFloat(c.lineHeight))} px`;
+    setSpec(`${family} · ${c.fontWeight} · ${parseFloat(c.fontSize)} px / ${lh}${c.letterSpacing !== 'normal' && parseFloat(c.letterSpacing) ? ` · ${c.letterSpacing}` : ''}`);
+  }, []);
+  return <div className="type-row">
+    <div ref={ref} className={['type-sample', className].filter(Boolean).join(' ')} style={style}>{children}</div>
+    <div className="type-meta"><code>{token}</code><span className="swatch-value">{spec}</span>{usage && <p className="muted">{usage}</p>}</div>
+  </div>;
+}
+const TYPE_STYLES = [
+  ['--font-display', 'Cifras clave (Saira): KPIs y cifras protagonistas', '1.234 kWh'],
+  ['--font-title', 'Título de página', 'Título de página'],
+  ['--font-heading', 'Títulos de tarjeta, panel y sección', 'Título de sección'],
+  ['--font-body', 'Texto general, filas de tabla y valores de listas', 'Texto de ejemplo para leer de corrido.'],
+  ['--font-label', 'Etiquetas de campos y cabeceras de tabla', 'Etiqueta'],
+  ['--font-caption', 'Notas, descripciones y texto secundario', 'Nota o descripción breve'],
+];
+const TYPE_SIZES = [11, 12, 13, 14, 16, 20, 24, 28, 32, 34];
+const TYPE_WEIGHTS = [['regular', 'Texto general y cifras de listas'], ['medium', 'Cifras clave, valores destacados, botones'], ['semibold', 'Títulos de tarjeta y sección, etiquetas'], ['bold', 'Pills y etiquetas en mayúsculas'], ['extrabold', 'Título de página y logo']];
+function TypographySections() {
+  return <>
+    <section className="panel showcase-section">
+      <h3 className="showcase-subtitle">Familias</h3>
+      <TypeSpec token="--font-family-base" usage="Todo el texto de la interfaz. Variable, pesos 100–900." style={{font: 'var(--font-weight-regular) var(--font-size-24)/var(--line-height-tight) var(--font-family-base)'}}>Geist · Aa Bb Cc 0123456789</TypeSpec>
+      <TypeSpec token="--font-family-figure" usage="Solo cifras clave, en medium: técnica y condensada, con aire de tablero de medición. No se usa en texto corrido ni en tamaños pequeños." style={{font: 'var(--font-weight-medium) var(--font-size-24)/var(--line-height-tight) var(--font-family-figure)'}}>Saira · $1,2 M · 7.500 kWh</TypeSpec>
+      <TypeSpec token="--font-numeric" usage="Cifras de ancho fijo (tabular-nums) en tablas, KPIs y barras: los números se alinean en columna sin cambiar de familia." style={{font: 'var(--font-body)', fontVariantNumeric: 'var(--font-numeric)'}}>1.111 · 8.888 · 4.040</TypeSpec>
+    </section>
+    <section className="panel showcase-section">
+      <h3 className="showcase-subtitle">Estilos de texto</h3>
+      <p className="muted showcase-tip-note">Cada estilo junta peso, tamaño, interlineado y familia en un token para la propiedad <code>font</code>.</p>
+      {TYPE_STYLES.map(([token, usage, sample]) => <TypeSpec key={token} token={token} usage={usage} style={{font: `var(${token})`}}>{sample}</TypeSpec>)}
+      <TypeSpec token="--font-size-11 · --letter-spacing-caps" usage="Etiquetas en mayúsculas: etiquetas de KPI, cabeceras de tabla y pills." style={{font: 'var(--font-weight-semibold) var(--font-size-11)/var(--line-height-base) var(--font-family-base)', textTransform: 'uppercase', letterSpacing: 'var(--letter-spacing-caps)'}}>Etiqueta en mayúsculas</TypeSpec>
+    </section>
+    <section className="panel showcase-section">
+      <h3 className="showcase-subtitle">Escala de tamaños</h3>
+      <p className="muted showcase-tip-note">El número del token es su valor en px. 11 px es el mínimo.</p>
+      {TYPE_SIZES.map(n => <TypeSpec key={n} token={`--font-size-${n}`} style={{font: `var(--font-weight-regular) var(--font-size-${n})/var(--line-height-tight) var(--font-family-base)`}}>Texto de ejemplo</TypeSpec>)}
+    </section>
+    <section className="panel showcase-section">
+      <h3 className="showcase-subtitle">Pesos</h3>
+      {TYPE_WEIGHTS.map(([w, usage]) => <TypeSpec key={w} token={`--font-weight-${w}`} usage={usage} style={{font: `var(--font-weight-${w}) var(--font-size-20)/var(--line-height-tight) var(--font-family-base)`}}>Texto de ejemplo</TypeSpec>)}
+    </section>
+    <section className="panel showcase-section">
+      <h3 className="showcase-subtitle">Interlineado y espaciado entre letras</h3>
+      <TypeSpec token="--line-height-base (1,5)" usage="Texto general: párrafos, filas, notas." style={{font: 'var(--font-body)', maxWidth: 360}}>Texto de ejemplo en dos o más líneas para ver el interlineado del texto general.</TypeSpec>
+      <TypeSpec token="--line-height-tight (1,2)" usage="Títulos y cifras." style={{font: 'var(--font-heading)', maxWidth: 240}}>Título de ejemplo en dos líneas</TypeSpec>
+      <TypeSpec token="--letter-spacing-tight · -tighter" usage="Títulos grandes (−0,01 em) y cifras display (−0,02 em): se cierran para leerse compactos." style={{font: 'var(--font-display)', letterSpacing: 'var(--letter-spacing-tighter)'}}>1.234 kWh</TypeSpec>
+    </section>
+  </>;
+}
 
 function IconSections() {
   return <section className="panel showcase-section">
@@ -242,8 +317,8 @@ const PERIODS = [['m1', 'Enero 2026'], ['m2', 'Febrero 2026'], ['m3', 'Marzo 202
 const MONTHS_PREVIEW = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'].map(m => [m, `${m} 2026`]);
 const LONG_PREVIEW = [['a', 'Opción con un nombre muy largo que no cabe en el campo'], ['b', 'Otra opción de texto extenso para probar el recorte']];
 
-// Personas de ejemplo con foto (retratos aleatorios de randomuser.me; sin conexión, iniciales)
-const SAMPLE_PEOPLE = [['Persona Uno', 'https://randomuser.me/api/portraits/women/12.jpg'], ['Persona Dos', 'https://randomuser.me/api/portraits/men/41.jpg'], ['Persona Tres', 'https://randomuser.me/api/portraits/women/90.jpg']];
+// Personas de ejemplo con foto (retratos de randomuser.me guardados en assets)
+const SAMPLE_PEOPLE = [['Persona Uno', personaUno], ['Persona Dos', personaDos], ['Persona Tres', personaTres]];
 const PEOPLE_OPTIONS = [['', 'Todas las personas', <Icon name="group" size={20}/>], ...SAMPLE_PEOPLE.map(([name, photo]) => [name, name, <Avatar name={name} photo={photo}/>])];
 
 function DropdownSections() {
@@ -707,6 +782,21 @@ function FallbackSections() {
 }
 
 // Selector de tema: comparte el valor con el de la barra superior (GuideTheme), así todos muestran el mismo tema.
+function KeyboardSections() {
+  return <>
+    <section className="panel showcase-section">
+      <h2>Saltar al contenido</h2>
+      <p className="muted showcase-tip-note">Primera parada de Tab en cada producto: aparece arriba a la izquierda al recibir foco y lleva el foco al contenido principal, sin pasar por la cabecera, el menú ni los filtros.</p>
+      <div className="showcase-row"><a href="#" className="skip-link" style={{position: 'static', transform: 'none'}} onClick={e => e.preventDefault()}>Saltar al contenido</a></div>
+    </section>
+    <section className="panel showcase-section">
+      <h2>Una parada por gráfica</h2>
+      <p className="muted showcase-tip-note">Con Tab entras a la gráfica; las flechas recorren sus elementos e Inicio y Fin van al primero y al último. El siguiente Tab sale de la gráfica.</p>
+      <ColumnChart label="Valores de ejemplo" max={10} items={[['A', 4, 'A: 4'], ['B', 7, 'B: 7'], ['C', 5, 'C: 5'], ['D', 9, 'D: 9']]} highlight={[3]} track={false}/>
+    </section>
+  </>;
+}
+
 function ThemeSwitchSections() {
   const [value, setValue] = useContext(GuideTheme);
   return <>
@@ -792,6 +882,7 @@ function FilterSheetSections() {
 const SYSTEM = [
   ['Fundamentos', [
     ['colores', 'Colores', 'Tokens por función, con su valor en el tema actual. Cambia a oscuro para ver sus equivalentes.', ColorSections],
+    ['tipografia', 'Tipografía', 'Geist para el texto y Saira para las cifras clave; estilos de texto, tamaños, pesos, interlineado y espaciado entre letras.', TypographySections],
     ['iconos', 'Iconos', 'Material Symbols rounded; heredan el color del texto.', IconSections],
   ]],
   ['Componentes', [
@@ -803,7 +894,7 @@ const SYSTEM = [
     ['menu-lateral', 'Menú lateral', 'Áreas del producto en una columna fija bajo la cabecera; icono opcional y la activa resaltada. En móvil se abre como cajón con el botón «Menú».', SideNavSections],
     ['pills', 'Pills', 'Etiquetas cortas de estado, variación, progreso o filtro. El color nunca va solo: texto, flecha o icono lo acompañan.', PillSections],
     ['chip', 'Chip', 'Etiqueta corta de un valor elegido (un filtro, una etiqueta); con su × se quita. Se agrupan en una lista que se ajusta en varias líneas.', ChipSections],
-    ['destacada', 'Tarjeta destacada', 'El resumen principal de una pantalla: superficie oscura en claro y violeta en oscuro, con el mismo contenido y componentes que una tarjeta normal.', FeaturedCardSections],
+    ['destacada', 'Tarjeta destacada', 'El resumen principal de una pantalla: lavanda en claro y violeta en oscuro, con el mismo contenido y componentes que una tarjeta normal.', FeaturedCardSections],
     ['banner', 'Banner', 'Aviso persistente en la página, con acción y cierre.', BannerSections],
     ['toast', 'Toast', 'Resultado de un proceso: éxito, error o neutro. Abajo al centro; puede llevar una acción.', ToastSections],
     ['expandable', 'Expandable', 'Contenido que se muestra bajo demanda; se abre con clic, Enter o Espacio y anima su altura.', ExpandableSections],
@@ -819,6 +910,7 @@ const SYSTEM = [
     ['skeleton', 'Skeleton', 'Estado de carga: contornos y líneas con la corriente de energía; se arma con piezas para cualquier contenido.', SkeletonSections],
     ['vacio', 'Estado vacío', 'No hay resultados: qué no se encontró, una sugerencia y la acción que lo deshace. No es un error.', EmptyStateSections],
     ['fallback', 'Fallback', 'Error de carga de un bloque (reintenta solo ese bloque) o de la página completa. No culpa al usuario.', FallbackSections],
+    ['teclado', 'Teclado', 'Saltar al contenido, una parada de Tab por gráfica con flechas, foco que no se pierde ni queda tapado y menú móvil modal.', KeyboardSections],
   ]],
 ];
 
@@ -863,178 +955,8 @@ function IndexedPage({title, description, groups}) {
   </GuidePage>;
 }
 
-export const AllComponentsShowcase = () => <IndexedPage title="Design system" description="Fundamentos y componentes, con contenido de ejemplo neutro para usarlos en cualquier producto. Cómo se usan en Olibia está en «Patrones de Olibia» (#patrones)." groups={SYSTEM}/>;
+export const AllComponentsShowcase = () => <IndexedPage title="Design system" description="Fundamentos y componentes, con contenido de ejemplo neutro para usarlos en cualquier producto." groups={SYSTEM}/>;
 
-// ─── Patrones de Olibia: el sistema aplicado al dashboard comercial ──────────────────────────────────────────
-
-const OLIBIA_AI = <>
-  <p>Faltan <strong>2 cierres</strong> para la meta y quedan <strong>5 días hábiles</strong>. Las 2 oportunidades más cerca de cerrar pueden cubrir la brecha: Alimentos del Norte (Negociación, $65 M, contacto mié 28 oct · en 2 días) y Industrias Atlas (Negociación, $78 M, contacto jue 29 oct · en 3 días).</p>
-  <p><strong>Siguiente paso sugerido:</strong> registrar el seguimiento de Alimentos del Norte y Industrias Atlas con sus responsables antes de la fecha de contacto.</p>
-</>;
-const OLIBIA_SUMMARY = <div className="period-ai ai-widget"><Expandable title="Resumen AI" icon="ai" headingLevel={3}>
-  <AiText thinking="Analizando cierres y pipeline…" after={<Button variant="primary">Ver negociaciones pendientes</Button>}>{OLIBIA_AI}</AiText>
-</Expandable></div>;
-
-// Tarjeta del periodo: 4 KPIs (cifras que cuentan desde 0) y Resumen AI.
-function PeriodSections() {
-  const [run, setRun] = useState(0);
-  const [filtered, setFiltered] = useState(false);
-  return <>
-    <div className="showcase-replay">
-      <p className="muted">Repetir simula un cambio de periodo (las 4 cifras desde 0). Filtrar simula un filtro: solo cambian Oportunidades y Valor del pipeline, desde su valor anterior.</p>
-      <div className="filters">
-        <Button variant="secondary" size="small" onClick={() => setRun(n => n + 1)}>Repetir animación</Button>
-        <Button variant="secondary" size="small" onClick={() => setFiltered(f => !f)}>{filtered ? 'Quitar filtro' : 'Filtrar: Negociación'}</Button>
-      </div>
-    </div>
-    <PeriodCard resetKey={run} closed={8} goal={10} delta={2} openCount={filtered ? 2 : 8} pipeline={filtered ? 143 : 338}>{OLIBIA_SUMMARY}</PeriodCard>
-    <p className="showcase-tip-name">Variación negativa y resumen corto</p>
-    <PeriodCard resetKey={`neg-${run}`} closed={6} goal={10} delta={-1} openCount={5} pipeline={210}>
-      <div className="period-ai ai-widget"><Expandable title="Resumen AI" icon="ai" headingLevel={3}><AiText thinking="Analizando cierres y pipeline…"><p>Septiembre cerró con <strong>6 de 10 cierres</strong>; faltaron 4 para la meta.</p></AiText></Expandable></div>
-    </PeriodCard>
-  </>;
-}
-
-// KPI «Negociaciones al día» (segunda posición de la tarjeta del periodo) y su modal con las negociaciones y responsables.
-const DEALS = [['Alimentos del Norte', 'Negociación', 65, 'Laura Díaz', '28 oct'], ['Industrias Atlas', 'Negociación', 78, 'Mateo Gil', '29 oct']];
-function FollowUpSections() {
-  const [done, setDone] = useState({});
-  const [open, setOpen] = useState(false);
-  const isDone = row => !!done[row[0]];
-  const mark = row => setDone(s => ({...s, [row[0]]: true}));
-  return <>
-    <div className="showcase-replay"><p className="muted">Solo aparece si hay negociaciones que cierran la brecha. «Dar seguimiento» abre el modal; registrar actualiza el KPI.</p>
-      <Button variant="secondary" size="small" onClick={() => setDone({})}>Reiniciar</Button></div>
-    <PeriodCard resetKey="fu" closed={8} goal={10} delta={2} openCount={8} pipeline={338}
-      extra={<FollowUpKpi deals={DEALS} isDone={isDone} onOpen={() => setOpen(true)}/>}>{OLIBIA_SUMMARY}</PeriodCard>
-    <section className="panel showcase-section"><h2>Modal · Negociaciones que cierran la brecha</h2>
-      <Modal inline title="Negociaciones que cierran la brecha" onClose={() => {}}><NegotiationsSummary deals={DEALS} isDone={isDone} onMark={mark} onSelect={() => {}}/></Modal></section>
-    {open && <Modal sheet title="Negociaciones que cierran la brecha" onClose={() => setOpen(false)}>
-      <NegotiationsSummary deals={DEALS} isDone={isDone} onMark={mark} onSelect={() => {}}/>
-    </Modal>}
-  </>;
-}
-
-// Etapas (escala de progreso) y seguimiento (pill que se transforma de Pendiente a Al día).
-const STAGE_PILLS = [['stage-contacto', 'Contacto'], ['stage-calificacion', 'Calificación'], ['stage-propuesta', 'Propuesta'], ['stage-negociacion', 'Negociación']];
-function StageFollowUpSections() {
-  const [done, setDone] = useState(false);
-  return <section className="panel showcase-section">
-    <div className="showcase-tips">
-      <div><p className="showcase-tip-name">Etapa · del inicio al cierre</p>
-        <div className="showcase-row">{STAGE_PILLS.map(([cls, label]) => <span key={cls} className={`pill stage ${cls}`}>{label}</span>)}</div></div>
-      <div><p className="showcase-tip-name">Seguimiento · cambio de estado animado</p>
-        <div className="showcase-row"><StatusPill done={done}/><Button variant="transparent" size="small" onClick={() => setDone(!done)}>{done ? 'Volver a pendiente' : 'Marcar al día'}</Button></div></div>
-    </div>
-  </section>;
-}
-
-// Detalle de oportunidad (contenido del modal mediano) en sus tres estados.
-const DETAIL_ROW = ['Alimentos del Norte', 'Negociación', 65, 'Laura Díaz', '28 oct'];
-function OpportunityDetailSections() {
-  const [open, setOpen] = useState(false);
-  const [done, setDone] = useState(false);
-  const detail = (key, isOpen, isDone, status) => <Modal inline key={key} title={DETAIL_ROW[0]} onClose={() => {}}
-    footer={<OpportunityDetailFooter open={isOpen} done={isDone} status={status} onMark={() => {}}/>}>
-    <OpportunityDetail row={DETAIL_ROW} open={isOpen} done={isDone}/>
-  </Modal>;
-  return <>
-    <div className="showcase-replay"><p className="muted">Cifras como los KPIs, atributos en filas y la acción en el pie.</p>
-      <Button variant="secondary" size="small" onClick={() => { setDone(false); setOpen(true); }}>Abrir detalle</Button></div>
-    <section className="panel showcase-section"><h2>Pendiente</h2>{detail('p', true, false, '')}</section>
-    <section className="panel showcase-section"><h2>Seguimiento registrado</h2>{detail('d', true, true, 'Seguimiento registrado en esta sesión.')}</section>
-    <section className="panel showcase-section"><h2>Periodo cerrado</h2>{detail('c', false, false, 'Periodo cerrado: no se registran seguimientos.')}</section>
-    {open && <Modal sheet title={DETAIL_ROW[0]} onClose={() => setOpen(false)}
-      footer={<OpportunityDetailFooter open done={done} status={done ? 'Seguimiento registrado en esta sesión.' : ''} onMark={() => setDone(true)}/>}>
-      <OpportunityDetail row={DETAIL_ROW} open done={done}/>
-    </Modal>}
-  </>;
-}
-
-// Las cuatro gráficas del dashboard.
-const OLIBIA_STAGES = [['Contacto', 2, 40], ['Calificación', 2, 76], ['Propuesta', 2, 79], ['Negociación', 2, 143]];
-const OLIBIA_OWNERS = [['Ana López', 3], ['Carlos Ruiz', 2], ['Laura Díaz', 2], ['Mateo Gil', 1]];
-function OlibiaChartSections() {
-  const months = [['May', 4], ['Jun', 6], ['Jul', 5], ['Ago', 7], ['Sep', 6], ['Oct', 8]];
-  const channels = [['Outbound', 4], ['Referidos', 3], ['Inbound', 1]];
-  const stages = OLIBIA_STAGES.map(([s, n, v]) => ({label: s, value: v, display: `$${v} M`, meta: `${n} oport.`, marker: {dot: stageDot(s)}, color: stageDot(s)}));
-  const owners = OLIBIA_OWNERS.map(([name, n]) => ({label: name, value: n, display: n, meta: `${Math.round(n / 8 * 100)} % del equipo`, marker: {initials: initials(name)}}));
-  return <div className="split">
-    <section className="panel showcase-section"><h2>Cierres por mes · Equipo completo</h2>
-      <ColumnChart label="Cierres por mes frente a la meta de 10" max={10} goal={10} trend highlight={[5]} footer={['Promedio de cierres en el año', '6 por mes']}
-        items={months.map(([m, n]) => [m, n, `${m}: ${n} de 10 cierres (${n * 10} %)`])}/></section>
-    <section className="panel showcase-section"><h2>Origen de oportunidades abiertas</h2>
-      <ColumnChart label="Oportunidades abiertas por canal" max={4} highlight="all" track={false} footer={['Total de oportunidades abiertas', 8]}
-        items={channels.map(([c, n]) => [c, n, `${c}: ${n} de 8 abiertas (${Math.round(n / 8 * 100)} %)`])}/></section>
-    <section className="panel showcase-section"><h2>Oportunidades por etapa</h2>
-      <Ring layout="horizontal" items={stages} label="Valor abierto por etapa" center={['$338 M', '8 oportunidades']} footer={['Valor abierto en 8 oportunidades', '$338 M']}/></section>
-    <section className="panel showcase-section"><h2>Cierres por ejecutivo · Total del periodo</h2>
-      <BarList items={owners} label="Cierres por ejecutivo" footer={['Cierres del equipo frente a la meta', '8 de 10']}/></section>
-  </div>;
-}
-
-// Tabla de oportunidades vacía: textos según qué la vació.
-function OlibiaEmptySections() {
-  return <div className="split">
-    <section className="panel"><h2>Solo búsqueda</h2><EmptyState {...tableEmptyCopy('Acme', false)} onAction={() => {}}/></section>
-    <section className="panel"><h2>Solo filtros</h2><EmptyState {...tableEmptyCopy('', true)} onAction={() => {}}/></section>
-    <section className="panel"><h2>Búsqueda y filtros</h2><EmptyState {...tableEmptyCopy('Acme', true)} onAction={() => {}}/></section>
-  </div>;
-}
-
-// Fallback por card del dashboard y de la página.
-const CARD_ERRORS = [
-  ['Resumen del periodo', 'No pudimos mostrar los indicadores del periodo.'],
-  ['Oportunidades abiertas', 'No pudimos mostrar las oportunidades abiertas.'],
-  ['Oportunidades por etapa', 'No pudimos mostrar las oportunidades por etapa.'],
-  ['Cierres por ejecutivo · Total del periodo', 'No pudimos mostrar los cierres por ejecutivo.'],
-  ['Cierres por mes · Equipo completo', 'No pudimos mostrar los cierres de meses anteriores.'],
-  ['Origen de oportunidades abiertas', 'No pudimos mostrar el origen de las oportunidades.'],
-];
-function OlibiaFallbackSections() {
-  return <>
-    <p className="muted showcase-tip-note">En la demo, 1 de cada 3 cargas falla una card al azar o la página entera; `?fallo=period|table|stage|owner|month|channel|all` fuerza un caso.</p>
-    <div className="split">{CARD_ERRORS.map(([title, message]) => <section key={title} className="panel"><h2>{title}</h2><Fallback message={message} onRetry={() => {}}/></section>)}</div>
-    <section className="panel showcase-section"><h2>Página</h2><PageFallback title="No pudimos cargar el dashboard" onRetry={() => {}}/></section>
-  </>;
-}
-
-// Aviso de recta final.
-function OlibiaBannerSections() {
-  return <section className="banner" aria-label="Aviso comercial (ejemplo)">
-    <div className="banner-body"><div className="banner-head"><Icon name="warningFill"/><strong>Recta final del mes</strong></div><p>Revisa las oportunidades abiertas y coordina los próximos contactos con tu equipo.</p>
-      <Button variant="transparent" className="banner-action">Ver negociaciones</Button></div>
-    <IconButton icon="close" label="Cerrar aviso"/>
-  </section>;
-}
-
-// Skeleton del dashboard completo.
-function OlibiaSkeletonSections() {
-  const [run, setRun] = useState(0);
-  return <>
-    <div className="showcase-replay"><p className="muted">Carga inicial: todo el dashboard en skeleton; la línea de corriente encadena los contenedores de arriba abajo.</p>
-      <Button variant="secondary" size="small" onClick={() => setRun(n => n + 1)}>Repetir</Button></div>
-    <DashboardSkeleton key={run}/>
-  </>;
-}
-
-const PATTERNS = [
-  ['Pantalla', [
-    ['p-periodo', 'Tarjeta del periodo', 'Tarjeta destacada de la pantalla. KPIs (meta, cierres, oportunidades y pipeline) con variación y marca de filtro, y el Resumen AI desplegable.', PeriodSections],
-    ['p-seguimiento', 'Negociaciones al día', 'KPI en segunda posición, solo con negociaciones que cierran la brecha; «Dar seguimiento» abre el resumen con valor, avance y responsables.', FollowUpSections],
-    ['p-banner', 'Aviso de recta final', 'Banner con el día de la recta final y el acceso a las negociaciones.', OlibiaBannerSections],
-    ['p-graficas', 'Gráficas del dashboard', 'Cierres por mes (meta y tendencia), origen por canal (sin carril, todas destacadas), valor por etapa (anillo horizontal en el orden del embudo) y cierres por ejecutivo (ranking sin pista).', OlibiaChartSections],
-    ['p-skeleton', 'Carga del dashboard', 'El skeleton armado con la estructura completa de la pantalla.', OlibiaSkeletonSections],
-  ]],
-  ['Oportunidades', [
-    ['p-etapas', 'Etapas y seguimiento', 'Escala de progreso con los nombres del embudo y la pill de seguimiento que se transforma de Pendiente a Al día.', StageFollowUpSections],
-    ['p-detalle', 'Detalle de oportunidad', 'Contenido del modal mediano: cifras, atributos y la acción «Marcar seguimiento realizado».', OpportunityDetailSections],
-    ['p-vacio', 'Tabla sin resultados', 'Textos del estado vacío según lo que vació la tabla, y la acción que lo deshace.', OlibiaEmptySections],
-    ['p-fallback', 'Errores de carga', 'Mensaje de cada card del dashboard y de la página.', OlibiaFallbackSections],
-  ]],
-];
-
-export const PatternsShowcase = () => <IndexedPage title="Patrones de Olibia" description="Cómo se aplica el design system en el dashboard comercial: datos, textos y combinaciones propias de este producto." groups={PATTERNS}/>;
 
 // Preferencias guardadas (misma clave que App.jsx)
 const PREFS_KEY = 'olibia-settings';
@@ -1056,4 +978,3 @@ export const ModalShowcase = guide('Modal', 'Dos tamaños: grande y mediano, con
 export const FallbackShowcase = guide('Fallback', 'Error de carga de un bloque o de la página: ilustración en línea, mensaje y reintento.', FallbackSections);
 export const EmptyStateShowcase = guide('Estado vacío', 'Cuando no hay resultados: qué no se encontró, una sugerencia y la acción que lo deshace.', EmptyStateSections);
 export const ThemeSwitchShowcase = guide('Selector de tema', 'Interruptor de tres posiciones: Sistema, Claro y Oscuro, con tooltip en cada opción.', ThemeSwitchSections);
-export const PeriodCardShowcase = () => <GuidePage title="Patrones de Olibia · Tarjeta del periodo" description="KPIs y Resumen AI en una sola tarjeta. Las cifras se animan al cargar, al cambiar de periodo y al filtrar."><PeriodSections/></GuidePage>;

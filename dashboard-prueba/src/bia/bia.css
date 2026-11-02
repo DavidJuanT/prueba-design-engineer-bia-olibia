@@ -35,13 +35,12 @@
 .bia-field { display: flex; flex-direction: column; gap: var(--space-1); font: var(--font-caption); color: var(--color-text-muted); }
 .bia-filters .dropdown { width: 220px; }
 
-.bia-kpi-note { margin: 0; font: var(--font-caption); }
 
 /* Tarjeta de KPIs de la librería con tres KPI; sin el margen de Olibia (aquí manda el gap de la página) */
 .bia .bia-kpi-card { margin: 0; }
 .bia-kpi-card .period-kpis { grid-template-columns: repeat(4, 1fr); }
 .bia-kpi-card .value small { font-size: var(--font-size-16); }
-.bia-kpi-card .value { margin-bottom: var(--space-1); } /* Cifra y «Antes» juntos: 4 px (12 en la tarjeta de Olibia, que no lleva nota) */
+@media (min-width: 851px) { .bia-kpi-card .value { margin-bottom: var(--space-1); } } /* Cifra y «Antes» juntos: 4 px (12 en la tarjeta de Olibia, que no lleva nota). En móvil los 4 px ya los pone la nota */
 
 /* Dos gráficas de igual alto, con el resumen abajo */
 .bia-split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-grid); }
@@ -64,7 +63,7 @@
 .bia-total-row td:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
 .bia-total-row td:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
 /* Sin divisor sobre la fila de total y 8 px más de aire antes de ella: la banda ya la separa */
-.bia tr:has(+ .bia-total-row) td { border-bottom: 0; padding-bottom: calc(var(--space-3) + var(--space-2)); }
+.bia tr:has(+ .bia-total-row) td { border-bottom: 0; padding-bottom: var(--space-5); }
 
 /* Skeleton de la página */
 .bia-sk-panel { padding: var(--space-panel); }
@@ -83,13 +82,12 @@
 .bia .ai-widget p { line-height: var(--line-height-relaxed); }
 
 /* Consumo fuera de horario: la gráfica de líneas y los KPI de cada sede debajo, con divisor */
-.bia-offhours .heading-info { height: auto; margin-bottom: var(--space-1); } /* El título puede ocupar dos líneas */
+.bia-offhours .heading-info { height: auto; } /* El título puede ocupar dos líneas; a 32 px del contenido, como las demás gráficas */
 /* Siempre tres columnas: con el filtro de una sede, su KPI ocupa una y la pill queda junto a la cifra, como con las tres */
 .bia-offhours-kpis { grid-template-columns: repeat(3, 1fr); margin: var(--space-4) calc(var(--space-panel) * -1) calc(var(--space-panel) * -1); border-top: 1px solid var(--color-border); }
 /* KPI de cada sede compactos: menos relleno y cifra de 24 px */
 .bia-offhours-kpis > div { padding-block: var(--space-4); }
 .bia-offhours .period-kpis.bia-offhours-kpis .value { margin: var(--space-1) 0 0; font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); } /* Como la cifra del pie de las otras tarjetas: número de 20 px (.colchart-figure) y unidad de 14 px. Por encima de .skin-glass .period-kpis .value */
-.bia-offhours-kpis .bia-kpi-note { margin: 0; }
 .bia-offhours-site { display: inline-flex; align-items: center; gap: var(--space-2); }
 
 /* Variación de consumo (compacta), a todo el ancho bajo las dos gráficas. Leyenda en la fila del
@@ -105,7 +103,7 @@
 .bia-var-name { font: var(--font-body); font-weight: var(--font-weight-medium); color: var(--color-text); }
 .bia-var-lane { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .bia-var-lane b { font: var(--font-weight-regular) var(--font-size-16)/1 var(--font-family-base); font-variant-numeric: var(--font-numeric); color: var(--color-text); white-space: nowrap; } /* Cifra de Variación: la misma de las listas de la librería (Geist regular 16) */
-.bia-gain-wrap { flex: none; display: flex; }
+.bia-gain-wrap { flex: none; display: flex; width: calc(60% * var(--f)); } /* La mayor ocupa el 60 % del carril; las demás, en proporción (--f: valor / mayor) */
 .bia-gain-wrap > .infotip, .bia-gain-wrap .tooltip-trigger { display: flex; width: 100%; align-items: center; min-height: 24px; } /* Toda la barra abre el tooltip con los kWh de cada mes */
 .bia-gain { flex: 1; display: flex; gap: 2px; height: 12px; transform-origin: left; animation: bar-list-grow 600ms var(--ease-out) calc(var(--i) * 60ms) both; }
 .bia-gain i { flex-basis: 0; background: var(--color-chart-history); }
@@ -118,16 +116,24 @@
 @media (prefers-reduced-motion: reduce) { .bia-gain i.is-now { animation: none; background-color: var(--color-spark); } }
 .bia-gain i.is-drop { background: none; box-shadow: inset 0 0 0 1px var(--color-border-strong); }
 @media (prefers-reduced-motion: reduce) { .bia-gain { animation: none; } }
-@media (max-width: 850px) { .bia-var-rows { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); } .bia-var-rows li { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); } .bia-gain { max-width: 35%; } } /* Móvil: el nombre encima de su barra */
+/* Móvil: dos filas por sede, en dos columnas. Arriba el nombre frente a su pill; abajo la barra frente a su cifra; divisor entre sedes.
+   La columna de la derecha tiene ancho fijo, así las barras de las tres sedes se comparan sobre el mismo carril */
+@media (max-width: 850px) {
+  .bia-var-rows { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-4); }
+  .bia-var-rows li { grid-template-columns: minmax(0, 1fr) 96px; column-gap: var(--space-4); row-gap: var(--space-1); }
+  .bia-var-rows li + li { padding-top: var(--space-4); border-top: 1px solid var(--color-border); } /* Divisor entre sedes, 16 px de aire a cada lado */
+  .bia-var-lane { display: contents; }
+  .bia-var-name { grid-area: 1 / 1; }
+  .bia-var-lane .pill { grid-area: 1 / 2; justify-self: end; }
+  .bia-gain-wrap { grid-area: 2 / 1; width: calc(100% * var(--f)); }
+  .bia-var-lane b { grid-area: 2 / 2; justify-self: end; }
+  .bia-var-head .linechart-legend { justify-content: flex-start; }
+}
 /* Franja «Fuera de horario»: la banda de la librería (superficie hundida, 4 % de blanco en oscuro) casi no se veía.
    Lavanda de la marca (--color-primary-100) al 80 %, bajo las líneas: se distingue del panel en claro y en oscuro */
 .bia .linechart-band { background: color-mix(in srgb, var(--color-primary-100) 80%, transparent); }
 /* Columna Documento: «Ver factura» y «Pagar» del mismo ancho (el de «Ver factura»), así quedan alineados */
 .bia-doc-btn { min-width: 92px; justify-content: center; }
-/* Colores de sede: una sola gama de morado, validada como escala ordinal en claro y oscuro (lo más marcado,
-   Sede Centro). Cada sede lleva además su nombre al lado */
-:root { --bia-site-1: #4a34b8; --bia-site-2: #7c63ee; --bia-site-3: #b3a3f8; }
-[data-theme=dark] { --bia-site-1: #cbbffc; --bia-site-2: #9a83f6; --bia-site-3: #6a4de8; }
 /* Con el filtro de una sede, la pill va junto al nombre (8 px), no al borde de la columna */
 .bia-offhours-kpis.is-single .kpi-label { justify-content: flex-start; }
 /* «Limpiar» filtros: botón transparente de la librería, alineado abajo con los desplegables; en móvil, a la izquierda sin estirarse */

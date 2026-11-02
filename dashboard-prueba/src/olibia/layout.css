@@ -94,7 +94,7 @@ main { padding: var(--space-page); width: calc(100% - var(--sidebar-width)); max
 .settings-nav { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-3); border-right: 1px solid var(--color-border); background: var(--color-surface-sunken); }
 .settings-nav button { margin: 0; border: 0; background: none; text-align: left; padding: var(--space-2) var(--space-3); }
 .settings-nav button[aria-selected=true] { background: var(--color-primary-50); color: var(--color-primary-text); font-weight: var(--font-weight-bold); }
-.settings-content { padding: var(--space-5) var(--space-7); overflow: auto; }
+.settings-content { padding: var(--space-6); overflow: auto; }
 .settings-content h3 { font: var(--font-heading); margin: 0 0 var(--space-2); }
 .setting-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-4) 0; border-bottom: 1px solid var(--color-border); }
 .setting-label { font-weight: var(--font-weight-semibold); }
@@ -103,7 +103,6 @@ main { padding: var(--space-page); width: calc(100% - var(--sidebar-width)); max
 .setting-row .dropdown { width: 200px; flex-shrink: 0; }
 .setting-row:has(.dropdown-trigger:disabled) .setting-label { color: var(--color-neutral-400); }
 
-.foot { font: var(--font-caption); color: var(--color-text-muted); margin-top: var(--space-5); }
 
 /* Móvil (el menú lateral pasa a cajón en ui/side-nav.css); la meta antes que los filtros, y los filtros justo encima de la tabla. */
 @media (max-width: 850px) {
@@ -132,5 +131,4 @@ main { padding: var(--space-page); width: calc(100% - var(--sidebar-width)); max
   .filter-panel .heading-info { margin-bottom: var(--space-4); }
   /* En móvil los filtros no van fijos ni en contenedor: título y botón «Filtros» sobre el fondo, como antes */
   .panel.filter-panel { position: static; margin-bottom: var(--space-8); padding: 0; background: none; border: 0; box-shadow: none; }
-  .foot { margin-top: 0; }
 }

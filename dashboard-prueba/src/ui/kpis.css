@@ -1,6 +1,7 @@
 /*
   Tarjeta de KPIs (patrón .period-card / .period-kpis): cifras con divisores en una tarjeta destacada, con su etiqueta
-  (.kpi-label + pill o icono), la cifra (.value) y, opcional, una barra (.track.goal-bar) y un resumen debajo (.period-ai).
+  (.kpi-label + pill o icono), la cifra (.value) y, opcionales, una nota bajo la cifra (.kpi-note, p. ej. «Antes: …»),
+  una barra (.track.goal-bar) y un resumen debajo (.period-ai).
   La usan Olibia (tarjeta del periodo) y Bia (resumen de la factura).
 */
 /* Tarjeta del periodo (period.jsx): 4 KPIs con divisores y el Resumen AI debajo, CTA a la derecha */
@@ -19,18 +20,30 @@
 .period-ai .expandable-heading { font-size: var(--font-size-12); }
 .period-ai .expandable-trigger { min-height: 24px; }
 .period-ai .expandable-trigger > .icon { width: 16px; height: 16px; }
+.kpi-note { margin: 0; font: var(--font-caption); color: var(--color-text-muted); }
 .track.goal-bar { flex: none; height: 6px; margin-top: var(--space-2); }
 .goal-bar .fill { transition: none; }
 /* Marca de KPI filtrado: icono de filtro en la misma posición que la pill de variación */
 /* Sin fondo para no parecer un botón; solo el icono en gris */
 .pill.filtered-badge { padding: 0; min-height: 20px; background: none; --pill-color: var(--color-text-muted); }
-/* Móvil: los KPIs pasan a una lista de filas. Etiqueta (con su pill al lado) a la izquierda y cifra a la derecha;
-   la barra de la meta ocupa todo el ancho bajo su fila. Divisor entre filas, alineado al relleno de la tarjeta */
+/* Escritorio: los KPIs comparten tres filas (subgrid): etiqueta, cifra y pie (nota o barra). Si una etiqueta pasa a dos
+   líneas, las cifras y las notas de todas las columnas siguen alineadas en horizontal */
+@media (min-width: 851px) {
+  .period-kpis { grid-template-rows: auto auto auto; }
+  .period-kpis > div { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: start; }
+  .period-kpis .kpi-label { align-self: start; }
+}
+/* Móvil: los KPIs pasan a una lista de filas. A la izquierda la etiqueta con su pill (o icono) debajo, a 4 px; a la derecha
+   la cifra con su nota debajo; la barra de la meta ocupa todo el ancho bajo su fila. Divisor entre filas, alineado al relleno de la tarjeta */
 @media (max-width: 850px) {
   .period-kpis { grid-template-columns: 1fr; }
-  .period-kpis > div { display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: var(--space-4); padding: var(--space-4) var(--space-panel); }
+  .period-kpis > div { display: grid; grid-template-columns: 1fr auto; align-items: start; column-gap: var(--space-4); padding: var(--space-4) var(--space-panel); }
+  .period-card > .period-kpis > div:first-child { padding-top: var(--space-panel); } /* Primera fila a 20 px del borde, como el título de las demás tarjetas */
   .period-kpis > div + div::before { top: 0; bottom: auto; left: var(--space-panel); right: var(--space-panel); width: auto; height: 1px; }
-  .period-kpis .kpi-label { justify-content: flex-start; }
-  .period-kpis .value { margin: 0; font-size: var(--font-size-24); text-align: right; }
+  .period-kpis .kpi-label { flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+  .period-kpis .kpi-note { grid-column: 2; align-self: start; margin-top: var(--space-1); text-align: right; }
+  /* Todo alineado arriba; con nota, la etiqueta ocupa las dos filas para que la nota quede pegada a la cifra */
+  .period-kpis > div:has(> .kpi-note) > .kpi-label { grid-row: span 2; }
+  .period-kpis .value { margin: 0; font-size: var(--font-size-24); line-height: 1; text-align: right; } /* Interlineado 1: la nota queda a 4 px de la cifra, sin el aire del interlineado */
   .period-kpis .goal-bar { grid-column: 1 / -1; margin-top: var(--space-3); }
 }

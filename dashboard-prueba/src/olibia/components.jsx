@@ -65,7 +65,7 @@ export function Filters({filters, onChange, onClear}) {
     check();
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); cancelAnimationFrame(frame); };
   }, []);
-  return <section ref={ref} className={['panel filter-panel', stuck && 'is-stuck'].filter(Boolean).join(' ')}><div className="heading-info"><h2>Filtrar oportunidades abiertas</h2>
+  return <section ref={ref} className={['panel filter-panel', stuck && 'is-stuck'].filter(Boolean).join(' ')} data-obscures><div className="heading-info"><h2>Filtrar oportunidades abiertas</h2>
       <InfoTip label="Información sobre filtrar oportunidades abiertas">Aplican al pipeline, a las gráficas de oportunidades y a la tabla. La meta, los cierres y el resumen AI muestran el total del periodo. El buscador de la tabla solo busca en la tabla.</InfoTip></div>
     {mobile ? <FilterSheetButton title="Filtrar oportunidades" filters={filters} fields={FILTER_FIELDS} onApply={onChange} onClear={onClear}/> : <div className="filter-grid">
       {/* Etapa admite varias a la vez: se marcan con casillas y se aplican con «Aplicar» */}

@@ -136,7 +136,7 @@ export function Dropdown({id, value, options, onChange, icon, disabled, classNam
   return <div ref={root} className={['dropdown', open && !closing && 'is-open', forceState && `is-${forceState}`, (icon || lead) && 'has-icon', className].filter(Boolean).join(' ')}>
     <button type="button" id={triggerId} className="dropdown-trigger" disabled={disabled}
       aria-label={labelId ? undefined : ariaLabel} aria-labelledby={labelId ? `${labelId} ${valueId}` : undefined}
-      aria-haspopup="listbox" aria-expanded={open && !closing} aria-controls={listId}
+      aria-haspopup="listbox" aria-expanded={open && !closing} aria-controls={open ? listId : undefined}
       aria-activedescendant={open && active >= 0 ? `${listId}-${active}` : undefined}
       onClick={() => (open && !closing ? close() : show())} onKeyDown={onKeyDown}>
       {lead ? <span className="dropdown-lead" key={`lead-${picked}`}>{lead}</span> : icon && <Icon name={icon} size={16}/>}
@@ -221,7 +221,7 @@ export function MultiDropdown({id, value, options, onApply, allLabel, unit, labe
     onBlur={e => { if (!forceState && open && !root.current.contains(e.relatedTarget)) close(); }}>
     <button type="button" id={triggerId} className="dropdown-trigger"
       aria-labelledby={labelId ? `${labelId} ${valueId}` : undefined}
-      aria-haspopup="listbox" aria-expanded={open && !closing} aria-controls={listId}
+      aria-haspopup="listbox" aria-expanded={open && !closing} aria-controls={open ? listId : undefined}
       aria-activedescendant={open ? `${listId}-${active}` : undefined}
       onClick={() => (open && !closing ? close() : show())} onKeyDown={onKeyDown}>
       <span id={valueId} className={['dropdown-value', picked > 0 && 'is-picked'].filter(Boolean).join(' ')} key={picked}>{summary}</span>

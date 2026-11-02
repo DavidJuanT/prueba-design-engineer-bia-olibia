@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {useRoving} from './keyboard';
 import './columns.css';
 
 // Gráfica de columnas (método dataviz): cada columna es la escala completa (carril tenue) y el relleno, el valor.
@@ -6,7 +7,8 @@ import './columns.css';
 // - Color: las columnas en un lavanda grisáceo (--color-chart-history) y la destacada (`highlight`) en el morado principal.
 // - Opcional: meta (línea verde punteada), tendencia (punteada discreta con un punto pequeño en cada tope)
 //   y una fila de resumen abajo (`footer`: [texto, valor]).
-// - Tooltip por columna: sigue al puntero; con Tab (teclado) o toque (pantallas táctiles) queda sobre la columna.
+// - Tooltip por columna: sigue al puntero; con teclado o toque (pantallas táctiles) queda sobre la columna.
+// - Teclado: la gráfica es una sola parada de Tab; las flechas recorren las columnas (Inicio y Fin: primera y última).
 // - Entrada: las columnas crecen desde la base una tras otra; luego la tendencia se dibuja y aparecen los puntos.
 //   Arranca al entrar en pantalla; con movimiento reducido no hay animación.
 // - Sin carril (`track={false}`): para conteos sin meta, donde el tope del eje no es un objetivo que alcanzar.
@@ -20,10 +22,11 @@ export function ChartFooter({footer}) {
   return <p className="colchart-footer">{footer[0]} <b>{parts.map((part, i) => i % 2 ? <span key={i} className="colchart-figure">{part}</span> : part)}</b></p>;
 }
 
-export function ColumnChart({items, max, goal, trend = false, track = true, highlight = [], footer, label, onPick, pickLabel = '', yTitle}) {
+export function ColumnChart({items, max, goal, trend = false, track = true, highlight = [], footer, label, goalLabel = 'Meta', onPick, pickLabel = '', yTitle}) {
   const [ref, inView] = useInView();
   const pos = (i, n) => [(i + .5) / items.length * 100, n / max * 100];
   const ticks = [max, max / 2, 0];
+  const rove = useRoving(items.length);
   return <div className={['colchart', !track && 'colchart--no-track'].filter(Boolean).join(' ')}>
     {yTitle && <p className="colchart-ytitle" aria-hidden="true">{yTitle}</p>}
     <div className={['colchart-chart', inView && 'is-in'].filter(Boolean).join(' ')} ref={ref} role="group" aria-label={label}
@@ -36,12 +39,13 @@ export function ColumnChart({items, max, goal, trend = false, track = true, high
         </svg>}
         <div className="colchart-cols">{items.map(([name, n, tip], i) => <div className="colchart-col" key={name}>
           <span className={['colchart-bar', (highlight === 'all' || highlight.includes(i)) && 'is-highlight'].filter(Boolean).join(' ')}
-            tabIndex={0} role={onPick ? 'button' : 'img'} aria-label={onPick ? `${tip}${pickLabel}` : tip} data-tip={tip}
-            onClick={onPick && (() => onPick(i))} onKeyDown={onPick && (e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(i); } })} data-edge={i === 0 ? 'start' : i === items.length - 1 ? 'end' : undefined}
+            {...rove(i)} role={onPick ? 'button' : 'img'} aria-label={onPick ? `${tip}${pickLabel}` : tip} data-tip={tip}
+            onClick={onPick && (() => onPick(i))} onKeyDown={e => { if (onPick && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onPick(i); } else rove(i).onKeyDown(e); }} data-edge={i === 0 ? 'start' : i === items.length - 1 ? 'end' : undefined}
             onMouseMove={followPointer} onMouseLeave={resetPointer}>
             <span className="colchart-fill" style={{height: `${Math.min(n / max, 1) * 100}%`, '--i': i}}/>
           </span>
         </div>)}</div>
+        {goal != null && goalLabel && <span className="colchart-goal-label" style={{bottom: `${goal / max * 100}%`}} aria-hidden="true">{goalLabel}</span>}
         {trend && <div className="colchart-dots" aria-hidden="true">{items.map(([name, n], i) => { const [x, y] = pos(i, n);
           return <i key={name} className="colchart-dot" style={{left: `${x}%`, bottom: `${y}%`, '--i': i}}/>; })}</div>}
       </div>

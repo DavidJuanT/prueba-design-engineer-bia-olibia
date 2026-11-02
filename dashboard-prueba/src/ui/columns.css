@@ -3,7 +3,7 @@
 
   Anatomía: eje vertical (0 · mitad · máximo) y línea base en --color-border-strong; columnas de 32 px con carril
   --color-primary-50 (la escala completa) y relleno en --color-chart-history; la destacada en --color-action.
-  Meta: línea verde punteada (2 px, 6/5). Tendencia: punteada gris discreta (1,5 px, 3/4, 70 %) con un punto de 6 px
+  Meta: línea verde punteada (2 px, 6/5) con el rótulo «Meta» (caption gris) encima, a la derecha (prop goalLabel). Tendencia: punteada gris discreta (1,5 px, 3/4, 70 %) con un punto de 6 px
   y anillo de superficie en cada tope. Resumen abajo, separado por un divisor.
   Margen: 32 px desde el título (el del h2), 16 px hasta el resumen.
   Movimiento: columnas 600 ms con 60 ms de desfase · tendencia 700 ms desde 500 ms · puntos 240 ms cada 120 ms.
@@ -17,6 +17,7 @@
 .colchart-plot { position: relative; border-bottom: 1px solid var(--color-border-strong); }
 .colchart-overlay { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
 .colchart-goal { stroke: var(--color-chart-goal); stroke-width: 2; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+.colchart-goal-label { position: absolute; right: 0; margin-bottom: var(--space-1); font: var(--font-caption); color: var(--color-text-muted); pointer-events: none; z-index: 2; } /* «Meta» sobre el extremo derecho de la línea */
 .colchart-trend { fill: none; stroke: var(--color-text-muted); stroke-width: 1.5; stroke-dasharray: 3 4; stroke-linejoin: round; opacity: .7; vector-effect: non-scaling-stroke; }
 .colchart-cols, .colchart-xaxis { display: grid; grid-template-columns: repeat(var(--cols), 1fr); }
 .colchart-cols { height: 100%; }

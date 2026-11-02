@@ -1,0 +1,31 @@
+@import '../ui/fonts.css';
+@import '../ui/tokens.css';
+
+/* Demo navegable: una barra con las tres experiencias y, debajo, cada una en su propio iframe (sus estilos no se mezclan). */
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { display: flex; flex-direction: column; background: var(--color-chrome); color: var(--color-text); font: var(--font-body); }
+
+.demo-bar { flex: none; display: flex; align-items: center; gap: var(--space-6); height: 48px; padding: 0 var(--space-6); border-bottom: 1px solid var(--color-border); }
+.demo-title { font: var(--font-caption); color: var(--color-text-muted); white-space: nowrap; }
+.demo-tabs { display: flex; gap: var(--space-1); padding: var(--space-1); border-radius: var(--radius-md); background: var(--color-surface-sunken); }
+.demo-tab {
+  height: 32px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-sm); background: none; cursor: pointer;
+  font: var(--font-weight-medium) var(--font-size-14)/1 var(--font-family-base); letter-spacing: var(--letter-spacing-wide); color: var(--color-text-muted);
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+.demo-tab:hover { color: var(--color-text); }
+.demo-tab[aria-selected=true] { background: var(--color-surface); color: var(--color-primary-text); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
+.demo-tab:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+
+.demo-frames { flex: 1; min-height: 0; position: relative; }
+.demo-frames iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--color-bg); }
+.demo-frames iframe[hidden] { display: none; }
+
+@media (max-width: 850px) {
+  .demo-bar { padding: 0 var(--space-4); }
+  .demo-title { display: none; }
+  .demo-tabs { flex: 1; }
+  .demo-tab { flex: 1; padding: 0 var(--space-2); font-size: var(--font-size-13); white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) { .demo-tab { transition: none; } }

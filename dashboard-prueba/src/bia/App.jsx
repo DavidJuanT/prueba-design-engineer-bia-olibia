@@ -20,6 +20,8 @@ import {DataTable} from '../ui/table';
 import {StatusPill} from '../ui/status-pill';
 import {SkeletonState, SkBlock, SkLine, ChartSkeleton} from '../ui/skeleton';
 import {Fallback, PageFallback} from '../ui/fallback';
+import {useKeyboardSupport, useDrawer, useRoving} from '../ui/keyboard';
+import {SkipLink} from '../ui/skip-link';
 import '../ui/fonts.css';
 import '../ui/tokens.css';
 import '../ui/base.css';
@@ -44,7 +46,7 @@ const savedTheme = () => { try { return JSON.parse(localStorage.getItem(PREFS_KE
 document.documentElement.dataset.theme = savedTheme() === 'system' ? (darkQuery.matches ? 'dark' : 'light') : savedTheme();
 
 // Errores simulados para revisar los estados: ?fallo=kpis | distribucion | periodos | tabla | horario | all
-const FAILING = new URLSearchParams(location.search).get('fallo');
+const FAILING = new URLSearchParams(location.search || (frameElement ? parent.location.search : '')).get('fallo'); // en demo.html, la query de la demo
 const ERRORS = {
   kpis: 'No pudimos mostrar el resumen de tu factura.',
   distribucion: 'No pudimos mostrar cómo se reparte el consumo.',
@@ -73,14 +75,17 @@ function Kpis({failed, onRetry, site, month, onSite}) {
     <div className="period-kpis">{tiles.map(t => <div key={t.label}>
       <div className="kpi-label">{t.label}{t.pill}</div>
       <div className="value">{t.value}</div>
-      {t.note && <p className="muted bia-kpi-note">{t.note}</p>}
+      {t.note && <p className="kpi-note">{t.note}</p>}
     </div>)}</div>
     <Summary site={site} month={month} onSite={onSite}/>
   </section>;
 }
 
 // Resumen AI (como en Olibia: desplegable al pie de la tarjeta de KPIs, texto con <AiText>). Cuenta lo que pasó en el
-// mes con las mismas cifras de la página: cuánto cambió, por qué (consumo o tarifa), qué sede pesa más y qué revisar.
+// mes con las mismas cifras de la página: cuánto cambió, por qué (consumo o tarifa), qué sede pesa más y, con una sede
+// fuera de horario, sus causas posibles.
+// Causas posibles del consumo fuera de horario: suposiciones por confirmar, no hechos (el dato solo dice cuándo se consume).
+const OFF_HOURS_CAUSES = ['Climatización programada fuera del horario de apertura', 'Refrigeración trabajando de más (puerta mal cerrada o compresor)', 'Equipos o iluminación que quedan encendidos', 'Turnos de limpieza o reposición de noche'];
 function Summary({site, month, onSite}) {
   const name = MONTHS[month][1], previous = MONTHS[month - 1][1];
   const now = usageOf(site, month), before = usageOf(site, month - 1), diff = now - before;
@@ -89,13 +94,13 @@ function Summary({site, month, onSite}) {
   const top = sites[0];
   const offHours = sites.filter(r => r.offHours && (!site || r.id === site)).map(r => r.site);
   const verb = diff >= 0 ? 'subió' : 'bajó';
-  // Todas las sedes: la respuesta y la sede que más pesa, con un botón para verla. Con una sede: su detalle y el siguiente paso
+  // Todas las sedes: la respuesta y la sede que más pesa, con un botón para verla. Con una sede: su detalle y causas posibles
   const content = site ? <>
     <p>En {name}, la <strong>{SITE_NAMES[site]}</strong> consumió <strong>{kwh(now)}</strong> ({signed(diff, kwh)}, {signed(change(now, before), n => `${n} %`)} frente a {previous}); su factura pasó de {money(before * TARIFF)} a <strong>{money(now * TARIFF)}</strong>.{total > 0 && diff > 0 && <> Aporta el <strong>{pct(diff, total)}</strong> del aumento de las tres sedes.</>}</p>
-    {offHours.length > 0 && <p>Registra consumo fuera de su horario habitual; todavía no está confirmado qué lo causa.</p>}
-    {diff > 0 && <p><strong>Siguiente paso sugerido:</strong> {offHours.length
-      ? `revisa qué equipos quedan encendidos de noche en la ${SITE_NAMES[site]}.`
-      : `revisa qué cambió en la ${SITE_NAMES[site]} frente a ${previous}.`}</p>}
+    {offHours.length > 0 && <>
+      <p>Registra consumo fuera de su horario habitual (22:00 – 06:00); todavía no está confirmado qué lo causa. <strong>Causas posibles:</strong></p>
+      <ul>{OFF_HOURS_CAUSES.map(c => <li key={c}>{c}</li>)}</ul>
+    </>}
   </> : <>
     {diff > 0 ? <p>Tu factura subió {money(diff * TARIFF)} porque consumiste más, no por la tarifa.</p>
       : <p>En {name}, tu factura {verb} a <strong>{money(now * TARIFF)}</strong> ({signed(diff, kwh)} frente a {previous}); la tarifa no cambió.</p>}
@@ -103,8 +108,9 @@ function Summary({site, month, onSite}) {
   </>;
   const action = !site && total > 0 && <Button variant="primary" onClick={() => onSite(top.id)}>Ver {top.site}</Button>;
   return <div className="period-ai ai-widget">
-    {/* Abierto si el consumo subió: es la respuesta a «¿por qué subió y qué hago?». key: se vuelve a abrir o cerrar al cambiar de mes */}
-    <Expandable key={diff > 0} title="Resumen AI" icon="ai" defaultOpen={diff > 0}>
+    {/* Todas las sedes: abierto, es la respuesta a «¿por qué subió?» y lleva a la sede que más pesa. Con una sede filtrada:
+        cerrado, primero sus cifras. key: se vuelve a abrir o cerrar al cambiar de sede */}
+    <Expandable key={site || 'todas'} title="Resumen AI" icon="ai" defaultOpen={!site}>
       {/* key: si cambia el mes o la sede, el resumen nuevo se vuelve a escribir */}
       <AiText key={`${site}-${month}`} thinking="Analizando consumo y factura…" after={action}>{content}</AiText>
     </Expandable>
@@ -127,9 +133,9 @@ function Distribution({failed, onRetry, month}) {
     {failed ? <Fallback message={ERRORS.distribucion} onRetry={onRetry}/>
       : byIncrease
         ? <Ring items={items} label={`De dónde salen los ${kwh(extra)} extra de ${name}`} center={[`+${number(extra)}`, 'kWh extra']} layout="horizontal"
-            footer={['Consumo total', `${kwh(total)} · ${money(total * TARIFF)}`]}/>
+            footer={['Consumo total', kwh(total)]}/>
         : <Ring items={items} label={`Consumo por sede en ${name}`} center={[number(total), `kWh en ${name}`]} layout="horizontal"
-            footer={['Consumo total', `${kwh(total)} · ${money(total * TARIFF)}`]}/>}
+            footer={['Consumo total', kwh(total)]}/>}
   </section>;
 }
 
@@ -143,6 +149,7 @@ function Variation({failed, onRetry, site, month}) {
   const rows = ids.map(id => ({id, before: usageOf(id, month - 1), now: usageOf(id, month)})).map(r => ({...r, diff: r.now - r.before}));
   const top = Math.max(...rows.flatMap(r => [r.before, r.now]));
   const total = rows.reduce((sum, r) => sum + r.diff, 0);
+  const rove = useRoving(rows.length); // Las barras son una sola parada de Tab; las flechas pasan de sede en sede
   const legend = !failed && <ul className="linechart-legend" aria-hidden="true"><li><SeriesDot color="--color-chart-history"/>Consumo de {prev}</li><li><SeriesDot color={total >= 0 ? '--color-spark' : '--color-action'}/>{total >= 0 ? 'Aumento' : 'Baja'} en {name}</li></ul>;
   return <section className="panel chart-panel" aria-labelledby="variation-title">
     <div className="bia-panel-head bia-var-head">
@@ -154,8 +161,8 @@ function Variation({failed, onRetry, site, month}) {
         aria-label={`${SITE_NAMES[r.id]}: ${signed(r.diff, kwh)} (${signed(change(r.now, r.before), n => `${n} %`)}) frente a ${prev}`}>
         <span className="bia-var-name">{SITE_NAMES[r.id]}</span>
         <span className="bia-var-lane">
-          <span className="bia-gain-wrap" style={{width: `${Math.max(r.before, r.now) / top * 60}%`}}>
-            <Tooltip content={`${cap(name)}: ${kwh(r.now)} · ${cap(prev)}: ${kwh(r.before)}`}
+          <span className="bia-gain-wrap" style={{'--f': Math.max(r.before, r.now) / top}}>
+            <Tooltip rove={rove(i)} content={`${cap(name)}: ${kwh(r.now)} · ${cap(prev)}: ${kwh(r.before)}`}
               label={`${SITE_NAMES[r.id]}: ${kwh(r.now)} en ${name}, ${kwh(r.before)} en ${prev}`}>
               <span className="bia-gain"><i style={{flexGrow: Math.min(r.before, r.now)}}/><i className={r.diff >= 0 ? 'is-now' : 'is-drop'} style={{flexGrow: Math.abs(r.diff)}}/></span>
             </Tooltip>
@@ -221,9 +228,9 @@ function Sites({failed, onRetry, site, month}) {
 
 // Consumo fuera de horario por sede: curva promedio de un día del mes (gráfica de líneas de la librería) con la franja
 // 22:00 – 06:00 sombreada y, debajo, los kWh fuera de horario de cada sede frente al mes anterior. El color sigue a la
-// sede (Centro rosa, Norte azul, Sur cian) aunque el filtro deje una sola.
+// sede aunque el filtro deje una sola.
 // Sedes en la gama del morado (la principal, la más marcada) y con textura distinta, para no depender solo del tono
-const SITE_COLORS = {principal: '--bia-site-1', sede2: '--bia-site-2', sede3: '--bia-site-3'};
+const SITE_COLORS = {principal: '--color-ordinal-1', sede2: '--color-ordinal-2', sede3: '--color-ordinal-3'}; // Escala ordinal del sistema
 const SITE_DASH = {principal: undefined, sede2: '6 4', sede3: '1 4'}; // Trazo de la línea
 function OffHours({failed, onRetry, site, month}) {
   const ids = Object.keys(SITE_USAGE).filter(id => !site || id === site);
@@ -242,7 +249,7 @@ function OffHours({failed, onRetry, site, month}) {
           <div className="kpi-label"><span className="bia-offhours-site"><SeriesDot color={SITE_COLORS[id]}/>{SITE_NAMES[id]}</span>
             <DeltaPill value={change(now, before)} unit=" %" upIsBad tip={`${signed(now - before, kwh)} frente a ${previous}`}/></div>
           <div className="value"><span className="colchart-figure">{number(now)}</span> kWh</div>
-          <p className="muted bia-kpi-note">fuera de horario</p>
+          <p className="kpi-note">fuera de horario</p>
         </div>; })}</div>
     </>}
   </section>;
@@ -294,20 +301,17 @@ function App() {
   const periodLabel = PERIODS.find(([id]) => id === period)[1];
   const [failed, setFailed] = useState(() => FAILING === 'all' ? {page: true} : {[FAILING]: FAILING in ERRORS});
   useEffect(() => { const t = setTimeout(() => setLoading(false), 1200); return () => clearTimeout(t); }, []);
-  // El menú móvil se cierra con Escape
-  useEffect(() => {
-    if (!menu) return;
-    const onKey = e => { if (e.key === 'Escape') setMenu(false); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [menu]);
+  // Teclado, como en Olibia: rescate de foco, foco sin tapar por la cabecera o los filtros fijos, menú móvil modal
+  useKeyboardSupport();
+  useDrawer(menu, () => setMenu(false));
   const onTheme = next => { setTheme(next); try { localStorage.setItem(PREFS_KEY, JSON.stringify({theme: next})); } catch {} };
   const retry = key => { setLoading(true); setTimeout(() => { setFailed(f => ({...f, [key]: false})); setLoading(false); }, 800); };
   const month = PERIOD_MONTH[period];
 
   return <>
     {/* Cabecera solo en móvil: botón «Menú» y logo. En escritorio el logo va arriba del menú lateral */}
-    <header className="bia-top">
+    <SkipLink/>
+    <header className="bia-top" data-obscures>
       <div className="bia-brand"><Button variant="transparent" className="menu-toggle" aria-expanded={menu} aria-controls="sidebar" onClick={() => setMenu(!menu)}><Icon name="menu"/>Menú</Button><span className="bia-logo"><Icon name="bolt" size={24}/>Bia</span></div>
     </header>
     <div className="bia-shell">
@@ -321,11 +325,11 @@ function App() {
       {failed.page ? <PageFallback onRetry={() => retry('page')}/> : <>
         <div className="bia-toolbar"><h1>Resumen</h1></div>
         {/* Filtros fijos, como en Olibia: sin contenedor en reposo; al hacer scroll se quedan arriba con fondo y sombra */}
-        <div ref={filtersRef} className={['bia-filters', stuck && 'is-stuck'].filter(Boolean).join(' ')}>
-            <label className="bia-field"><span>Periodo</span><Dropdown icon="calendar" value={period} options={PERIODS} onChange={value => refilter(() => setPeriod(value))}/></label>
-            <label className="bia-field"><span>Sede</span><Dropdown icon="building" value={site} options={SITE_OPTIONS} onChange={value => refilter(() => setSite(value))}/></label>
-            {/* Fijo, como en Olibia: siempre visible; vuelve a octubre y todas las sedes, desactivado si ya está así */}
-            <Button variant="transparent" className="bia-clear" disabled={!site && period === DATA_PERIOD} onClick={() => refilter(() => { setSite(''); setPeriod(DATA_PERIOD); })}>Limpiar</Button>
+        <div ref={filtersRef} className={['bia-filters', stuck && 'is-stuck'].filter(Boolean).join(' ')} data-obscures>
+            <label className="bia-field"><span>Periodo</span><Dropdown id="bia-period" icon="calendar" value={period} options={PERIODS} onChange={value => refilter(() => setPeriod(value))}/></label>
+            <label className="bia-field"><span>Sede</span><Dropdown id="bia-site" icon="building" value={site} options={SITE_OPTIONS} onChange={value => refilter(() => setSite(value))}/></label>
+            {/* Fijo, como en Olibia: siempre visible; vuelve a octubre y todas las sedes, desactivado si ya está así. Al usarlo queda desactivado: el foco pasa al periodo */}
+            <Button variant="transparent" className="bia-clear" disabled={!site && period === DATA_PERIOD} onClick={() => { document.getElementById('bia-period').focus(); refilter(() => { setSite(''); setPeriod(DATA_PERIOD); }); }}>Limpiar</Button>
         </div>
         {banner && period === DATA_PERIOD && <section className="banner" aria-label="Aviso de consumo">
           <div className="banner-body"><div className="banner-head"><Icon name="warningFill"/><strong>Tu consumo aumentó un {change(usageOf('', month), usageOf('', month - 1))} % respecto al periodo anterior.</strong></div></div>
@@ -335,7 +339,8 @@ function App() {
           <EmptyState title={`Sin datos de los ${periodLabel.toLowerCase()}`} message="Por ahora hay datos de un mes frente al anterior: octubre, septiembre o agosto." action="Ver octubre" onAction={() => refilter(() => setPeriod(DATA_PERIOD))}/>
         </section> : <>
           {/* Orden: KPI → evolución y distribución → variación → consumo por hora → sedes */}
-          <Kpis failed={failed.kpis} onRetry={() => retry('kpis')} site={site} month={month} onSite={id => refilter(() => setSite(id))}/>
+          {/* «Ver Sede …» cambia la vista: el foco pasa al filtro de sede, que anuncia la sede elegida */}
+          <Kpis failed={failed.kpis} onRetry={() => retry('kpis')} site={site} month={month} onSite={id => { document.getElementById('bia-site').focus(); refilter(() => setSite(id)); }}/>
           <div className="bia-split bia-split--3">
             <Evolution failed={failed.periodos} onRetry={() => retry('periodos')} site={site} month={month}/>
             <Distribution failed={failed.distribucion} onRetry={() => retry('distribucion')} month={month}/>

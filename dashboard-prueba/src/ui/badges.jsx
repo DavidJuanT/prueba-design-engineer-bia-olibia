@@ -15,7 +15,8 @@ export function DeltaPill({value, tip, unit = '', upIsBad = false}) {
   const pill = <span className={`pill delta delta--${tone}`}>
     {dir !== 'flat' && <Icon name={dir === 'up' ? 'trendUp' : 'trendDown'} size={14}/>}{number}{unit && <span className="pill-unit">{unit}</span>}
   </span>;
-  return tip ? <Tooltip content={tip} label={`${text} ${tip.toLowerCase()}`}>{pill}</Tooltip> : pill;
+  // Nombre para el lector: la cifra y el tooltip; solo la primera letra en minúscula, así las unidades se leen bien (kWh, $1,2 M)
+  return tip ? <Tooltip content={tip} label={`${text} ${tip[0].toLowerCase()}${tip.slice(1)}`}>{pill}</Tooltip> : pill;
 }
 
 // Marca de KPI filtrado: pill con icono de filtro y tooltip, en la misma posición que la variación.

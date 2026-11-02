@@ -12,6 +12,9 @@
   animation: ai-shimmer 1.1s linear infinite;
 }
 .ai-word { display: inline-block; animation: ai-word-in 160ms var(--ease-out) both; animation-delay: calc(var(--w) * var(--ai-step)); }
+.ai-text p { margin: var(--space-3) 0 0; } /* Párrafos a 12 px (antes el margen del navegador, 1em = 14 px) */
+.ai-text ul { margin: var(--space-2) 0 0; padding-left: var(--space-5); } /* Lista corta (causas, pasos): 8 px bajo su párrafo */
+.ai-text li + li { margin-top: var(--space-1); }
 .ai-after { margin-top: var(--space-4); animation: ai-word-in var(--duration-base) var(--ease-out) both; animation-delay: var(--ai-total); }
 
 @keyframes ai-shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }

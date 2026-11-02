@@ -8,7 +8,7 @@ import './chart-forms.css';
 // la derecha (en móvil se apila). Mismo contrato que BarList: items [{key, label, value, display, meta, marker, color}],
 // `footer` [texto, valor] abajo con el pie de ColumnChart. Con `meta`, la leyenda va en dos líneas: nombre y cifra arriba;
 // meta y porcentaje (alineado bajo la cifra) abajo, para que el nombre no se corte; puntero o foco atenúa lo demás y el centro muestra ese valor.
-// Waffle y bloques (treemap), comparados y descartados, están en archive/previews.
+// Teclado: el anillo es una sola parada de Tab; las flechas recorren los tramos (Inicio y Fin: primero y último) y cada uno se anuncia.
 
 // Tramo con esquinas redondeadas (from/to en fracción de vuelta, desde arriba en sentido horario). El trazo SVG solo
 // ofrece extremos rectos o semicirculares; este trazado da el radio de los botones. Medidas en unidades del viewBox
@@ -34,9 +34,16 @@ export function Ring({items, goal, center, footer, label, layout}) {
   let start = 0;
   const arcs = items.map((item, i) => { const turn = item.value / whole; const arc = {item, i, from: start, to: start + turn}; start += turn; return arc; });
   const shown = active === null ? center : [items[active].display, items[active].label];
-  const on = i => ({onMouseEnter: () => setActive(i), onFocus: () => setActive(i), onBlur: () => setActive(null)});
+  const on = i => ({onMouseEnter: () => setActive(i)});
+  const onKey = e => {
+    const last = items.length - 1;
+    const next = {ArrowRight: (active ?? -1) + 1, ArrowDown: (active ?? -1) + 1, ArrowLeft: (active ?? last + 1) - 1, ArrowUp: (active ?? last + 1) - 1, Home: 0, End: last}[e.key];
+    if (next !== undefined) { e.preventDefault(); setActive(Math.max(0, Math.min(last, next))); }
+    if (e.key === 'Escape') setActive(null);
+  };
   return <div ref={ref} className={['chart-form', layout === 'horizontal' && 'chart-form--h', active !== null && 'has-active', inView && 'is-in'].filter(Boolean).join(' ')} onMouseLeave={() => setActive(null)}>
-    <div className="chart-ring" role="img" aria-label={`${label}: ${items.map(i => `${i.label} ${i.display}`).join(', ')}${goal ? `; meta ${goal}` : ''}`}>
+    <div className="chart-ring" role="group" tabIndex={0} onKeyDown={onKey} onBlur={() => setActive(null)}
+      aria-label={`${label}: ${items.map(i => `${i.label} ${i.display}`).join(', ')}${goal ? `; meta ${goal}` : ''}. Usa las flechas para recorrer los valores`}>
       <svg viewBox="0 0 160 160" aria-hidden="true">
         <circle className="chart-ring-track" cx="80" cy="80" r="64"/>
         {arcs.filter(({item}) => item.value > 0).map(({item, i, from, to}) => <path key={item.key ?? item.label} d={sector(from, to, gap)}
@@ -45,6 +52,7 @@ export function Ring({items, goal, center, footer, label, layout}) {
       </svg>
       <div className="chart-ring-center" aria-hidden="true"><b>{shown[0]}</b><span>{shown[1]}</span></div>
     </div>
+    <p className="sr-only" aria-live="polite">{active !== null && `${items[active].label}: ${items[active].display}, ${pct(items[active].value, goal || total || 1)}`}</p>
     <ul className="chart-legend" aria-hidden="true">
       {items.map((item, i) => <li key={item.key ?? item.label} className={active === i ? 'is-active' : undefined} style={{'--i': i}} {...on(i)}>
         <Marker marker={item.marker}/><span className="bar-list-label">{item.label}</span>

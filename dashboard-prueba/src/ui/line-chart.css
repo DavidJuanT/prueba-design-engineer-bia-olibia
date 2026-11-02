@@ -12,10 +12,10 @@
 .linechart-legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
 .linechart-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); flex-shrink: 0; }
 
-.linechart-chart { display: grid; grid-template-columns: 32px 1fr; grid-template-rows: var(--linechart-height, 220px) auto; column-gap: var(--space-2); margin: 0 0 var(--space-4); }
+.linechart-chart { display: grid; grid-template-columns: 24px 1fr; grid-template-rows: var(--linechart-height, 220px) auto; margin: 0 0 var(--space-4); } /* Eje de 24 px como el de columnas; el área arranca en la línea del eje (sin hueco), así las bandas y las curvas tocan el eje y la gráfica ocupa todo el ancho */
 .linechart-yaxis { position: relative; border-right: 1px solid var(--color-border-strong); }
 .linechart-yaxis span { position: absolute; right: var(--space-2); transform: translateY(50%); font: var(--font-caption); color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
-.linechart-plot { position: relative; border-bottom: 1px solid var(--color-border-strong); outline-offset: 4px; touch-action: pan-y; }
+.linechart-plot { position: relative; border-bottom: 1px solid var(--color-border-strong); touch-action: pan-y; }
 .linechart-grid { position: absolute; left: 0; right: 0; height: 1px; background: var(--color-border); }
 
 .linechart-band { position: absolute; top: 0; bottom: 0; background: var(--color-surface-sunken); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
@@ -62,9 +62,11 @@
   .linechart-area, .linechart-point { opacity: 1; animation: none !important; }
 }
 
-/* Móvil: menos alto y una etiqueta del eje de cada tres */
+/* Móvil: menos alto y una etiqueta del eje de cada tres. Las cifras del eje vertical siguen a la izquierda y se reserva
+   el mismo ancho a la derecha, para que el área quede centrada en la tarjeta */
 @media (max-width: 600px) {
-  .linechart-chart { grid-template-rows: min(var(--linechart-height, 220px), 180px) auto; }
+  .linechart-chart { grid-template-columns: 24px minmax(0, 1fr) 24px; grid-template-rows: min(var(--linechart-height, 220px), 180px) auto; }
   .linechart-xaxis span:not(:nth-child(3n + 1)) { display: none; }
   .linechart-band-label { display: none; } /* La banda es angosta: el rótulo no cabe; el horario lo dicen el título o la ayuda */
+  .linechart-point:not(.is-active) { display: none; } /* Sin puntos de inicio y fin: en el ancho de móvil se montan entre series y con el borde */
 }

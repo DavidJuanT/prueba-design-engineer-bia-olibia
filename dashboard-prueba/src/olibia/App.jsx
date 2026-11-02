@@ -3,7 +3,6 @@ import {createRoot} from 'react-dom/client';
 import {data} from './data';
 import {filterRows, channelFor, NO_FILTERS} from './filters';
 import {GOAL, OWNERS, CHANNELS, FUNNEL, CURRENT, TODAY_LABEL, periodState, byPriority, sumValue, closedDelta, stageDot, PHOTOS} from './model';
-import {AllComponentsShowcase, ButtonShowcase, DropdownShowcase, TooltipShowcase, SearchShowcase, PeriodCardShowcase, ExpandableShowcase, AiTextShowcase, SkeletonShowcase, ToastShowcase, ColumnShowcase, ThemeSwitchShowcase, TableShowcase, ModalShowcase, FallbackShowcase, EmptyStateShowcase, PatternsShowcase} from './showcase';
 import {Sidebar, SettingsPanel, Filters, Summary, OpportunityTable} from './components';
 import {Button, IconButton} from '../ui/button';
 import {ColumnChart} from '../ui/columns';
@@ -19,13 +18,14 @@ import {DashboardSkeleton} from './skeletons';
 import {SkeletonState, SkWire, ChartSkeleton} from '../ui/skeleton';
 import {ToastProvider, useToast} from '../ui/toast';
 import {Dropdown} from '../ui/dropdown';
+import {useKeyboardSupport, useDrawer} from '../ui/keyboard';
+import {SkipLink} from '../ui/skip-link';
 import '../ui/fonts.css';
 import '../ui/tokens.css';
 import '../ui/base.css';
 import './layout.css';
 import '../ui/side-nav.css';
 import '../ui/kpis.css';
-import './showcase.css';
 import './entry.css';
 import '../ui/buttons.css';
 import '../ui/glass.css'; // capa vidrio: siempre la última hoja
@@ -59,7 +59,8 @@ const CARD_ERRORS = {
 // Para revisar una card concreta: ?fallo=period|table|stage|owner|month|channel la fuerza en esa carga.
 // ?fallo=all: no llega nada (servicio caído) y se muestra el fallback de página.
 const FAILING_CARD = (() => {
-  const forced = new URLSearchParams(location.search).get('fallo');
+  // Dentro de la demo (demo.html) la página vive en un iframe sin query propia: se lee la de la demo.
+  const forced = new URLSearchParams(location.search || (frameElement ? parent.location.search : '')).get('fallo');
   if (forced in CARD_ERRORS || forced === 'all') return forced;
   try {
     const loads = Number(localStorage.getItem('olibia-loads') || 0) + 1;
@@ -158,13 +159,10 @@ function App() {
     return () => darkQuery.removeEventListener('change', onSystemChange);
   }, [prefs]);
 
-  // El menú móvil se cierra con Escape.
-  useEffect(() => {
-    if (!menu) return;
-    const onKey = e => { if (e.key === 'Escape') setMenu(false); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [menu]);
+  // Teclado: el foco no se pierde cuando su elemento desaparece ni queda bajo la cabecera o los filtros fijos;
+  // el menú móvil es un panel modal (foco dentro, Escape cierra y devuelve el foco a «Menú»)
+  useKeyboardSupport();
+  useDrawer(menu, () => setMenu(false));
 
   const d = data[period];
   const info = periodState(period);
@@ -231,7 +229,8 @@ function App() {
   }
 
   return <>
-    <header className={loading && firstLoad.current ? 'top is-loading' : 'top'}><div><Button variant="transparent" className="menu-toggle" aria-expanded={menu} aria-controls="sidebar" onClick={() => setMenu(!menu)}><Icon name="menu"/>Menú</Button><span className="brand">olibia</span><small>Gestión comercial</small></div><span className="muted">Equipo comercial</span></header>
+    <SkipLink/>
+    <header className={loading && firstLoad.current ? 'top is-loading' : 'top'} data-obscures><div><Button variant="transparent" className="menu-toggle" aria-expanded={menu} aria-controls="sidebar" onClick={() => setMenu(!menu)}><Icon name="menu"/>Menú</Button><span className="brand">olibia</span><small>Gestión comercial</small></div><span className="muted">Equipo comercial</span></header>
     <div className={['shell', entering && 'is-entering'].filter(Boolean).join(' ')}>
       <Sidebar open={menu} loading={loading && firstLoad.current} onSettings={() => { setMenu(false); setSettings(true); }}/>
       {menu && <div className="drawer-backdrop" onClick={() => setMenu(false)}/>}
@@ -290,7 +289,6 @@ function App() {
         </ChartPanel></Reloading>
         </Reloading>}
 
-        <footer className="foot">Datos ficticios para el ejercicio de diseño · Sin conexión a sistemas de Bia/Olibia</footer>
       </main>
     </div>
 
@@ -339,18 +337,7 @@ function OwnerRanking({owners}) {
   return <BarList items={items} label="Cierres por ejecutivo" footer={['Cierres del equipo frente a la meta', `${closes} de ${GOAL}`]}/>;
 }
 
-// Guías del design system: #componentes muestra todos; #boton, #dropdown, #tooltip, #kpi y #search, uno a uno.
-const GUIDES = {'#componentes': AllComponentsShowcase, '#boton': ButtonShowcase, '#dropdown': DropdownShowcase, '#tooltip': TooltipShowcase, '#kpi': PeriodCardShowcase, '#search': SearchShowcase, '#resumen': PeriodCardShowcase, '#expandable': ExpandableShowcase, '#ia': AiTextShowcase, '#skeleton': SkeletonShowcase, '#toast': ToastShowcase, '#columnas': ColumnShowcase, '#tema': ThemeSwitchShowcase, '#tabla': TableShowcase, '#modal': ModalShowcase, '#error': FallbackShowcase, '#fallback': FallbackShowcase, '#vacio': EmptyStateShowcase, '#patrones': PatternsShowcase};
-
-function Root() {
-  const [hash, setHash] = useState(location.hash);
-  useEffect(() => {
-    const onHash = () => setHash(location.hash);
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-  const Guide = GUIDES[hash];
-  return Guide ? <Guide/> : <ToastProvider><App/></ToastProvider>;
-}
-
-createRoot(document.getElementById('root')).render(<Root/>);
+// El design system vive en su propia página (sistema.html). Los enlaces antiguos (#componentes, #boton…) llevan allí.
+const GUIDES = ['#componentes', '#boton', '#dropdown', '#tooltip', '#kpi', '#search', '#resumen', '#expandable', '#ia', '#skeleton', '#toast', '#columnas', '#tema', '#tabla', '#modal', '#error', '#fallback', '#vacio', '#patrones'];
+if (GUIDES.includes(location.hash)) location.replace(`sistema.html${location.hash}`);
+else createRoot(document.getElementById('root')).render(<ToastProvider><App/></ToastProvider>);

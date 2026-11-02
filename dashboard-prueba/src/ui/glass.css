@@ -6,7 +6,6 @@
   ítem activo en blanco, CTA morado con gradación y resplandor suave, pills con su propio resplandor.
   Oscuro: tinta violeta profunda con halos morados, vidrio oscuro con borde de luz y degradado oscuro al pie.
   Capas flotantes (header, menús, modales, toasts) translúcidas con desenfoque; el tooltip es opaco y oscuro en ambos.
-  Ver docs/02-design-system.md › 2.2.
 */
 /* Los tokens de la capa (marca, superficies, etiquetas, capas flotantes) viven en tokens.css. */
 
@@ -42,6 +41,7 @@ html.skin-glass:not([data-theme=dark]) .is-stuck .btn--transparent { --btn-fg: v
 .skin-glass aside .settings { margin-top: auto; }
 .skin-glass aside a, .skin-glass aside .soon, .skin-glass .settings-toggle { border-radius: var(--radius-md); padding-inline: var(--space-4); }
 .skin-glass aside .active { background: var(--glass-nav-active); color: var(--color-text); box-shadow: var(--glass-nav-active-shadow); }
+.skin-glass aside .active:focus-visible { box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus), var(--glass-nav-active-shadow); } /* Anillo de foco sobre la sombra del activo */
 
 /* Tarjetas y paneles: vidrio translúcido, borde de luz, radio xl (20 px) */
 .skin-glass .card, .skin-glass .panel, .skin-glass .banner { border-radius: var(--radius-xl); }
@@ -71,9 +71,9 @@ html.skin-glass[data-theme=dark] .card--featured {
 /* Banner: todo el borde de aviso, con un resplandor ligero */
 .skin-glass .banner { border: 1px solid var(--color-banner-border); box-shadow: var(--glass-banner-glow), var(--glass-shadow); }
 
-/* Tipografía: ningún título en mayúsculas (solo la inicial); gruesos y compactos. Las mayúsculas quedan para etiquetas de KPI, cabecera de tabla y pills */
+/* Tipografía: ningún título en mayúsculas (solo la inicial); semibold y compactos. Las mayúsculas quedan para etiquetas de KPI, cabecera de tabla y pills */
 .skin-glass h1 { font-size: var(--font-size-32); letter-spacing: var(--letter-spacing-tight); }
-.skin-glass h2, .skin-glass .panel > h3, .skin-glass .card h2 { font-weight: var(--font-weight-bold); }
+.skin-glass h2, .skin-glass .panel > h3, .skin-glass .card h2 { font-weight: var(--font-weight-semibold); }
 .skin-glass .kpi-label { text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-11); }
 .skin-glass .period-kpis .value { font-size: var(--font-size-28); letter-spacing: var(--letter-spacing-tighter); }
 
@@ -88,15 +88,14 @@ html.skin-glass[data-theme=dark] .card--featured {
 
 /* Etiquetas: la pill «Al día» y el estado del periodo en lima, como el «PAID» de la referencia */
 .skin-glass .badge, .skin-glass .chip { border-radius: var(--radius-sm); }
-/* Pills: 16 px de alto, 10 px en mayúsculas y radio 4, igual en la tabla y en los KPIs. El botón más pequeño mide 24 px, radio 6 y va en tipo oración:
+/* Pills: 16 px de alto, 11 px en mayúsculas y radio 4, igual en la tabla y en los KPIs. El botón más pequeño mide 24 px, radio 6 y va en tipo oración:
    tamaño, radio y caja distinguen una etiqueta de una acción */
 .skin-glass .status-pill, .skin-glass .badge.period-status, .skin-glass .pill.delta {
   min-height: 16px; padding: 0 var(--space-1); border-radius: var(--radius-xs); line-height: 16px;
-  text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-10); font-weight: var(--font-weight-bold);
+  text-transform: uppercase; letter-spacing: var(--letter-spacing-caps); font-size: var(--font-size-11); font-weight: var(--font-weight-bold);
 }
-.skin-glass .pill.delta { gap: 2px; }
 .skin-glass .pill .pill-unit { text-transform: none; } /* La unidad conserva su escritura: kWh, no KWH */
-.skin-glass .pill.delta .icon { width: 10px; height: 10px; font-size: var(--font-size-10); }
+.skin-glass .pill.delta .icon { width: 10px; height: 10px; }
 .skin-glass .kpi-label .pill { min-height: 16px; }
 .skin-glass .status-al-dia { --pill-color: var(--glass-tag-text); background: var(--glass-tag); color: var(--glass-tag-text); box-shadow: inset 0 0 0 1px var(--glass-tag-edge); }
 /* El delta de «Cierres del mes» usa el mismo verde lima que «En curso» */
@@ -134,7 +133,7 @@ html.skin-glass[data-theme=dark] .card--featured {
 .skin-glass .dropdown-menu li { border-radius: var(--radius-sm); }
 .skin-glass .infotip-bubble, .skin-glass .colchart-bar::after { background: var(--color-tooltip-bg); border-color: var(--color-tooltip-border); color: var(--color-tooltip-text); box-shadow: var(--color-tooltip-shadow); /* Sombra corta: solo separa del fondo */ backdrop-filter: none; -webkit-backdrop-filter: none; }
 .skin-glass .infotip-bubble, .skin-glass .colchart-bar::after { border-radius: var(--radius-md); text-transform: none; letter-spacing: normal; font: var(--font-caption); line-height: var(--line-height-relaxed); }
-.skin-glass .dialog-header h2 { font-weight: var(--font-weight-bold); }
+.skin-glass .dialog-header h2 { font-weight: var(--font-weight-semibold); }
 @media (max-width: 850px) {
   .skin-glass aside { background: var(--glass-chrome); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
   .skin-glass aside.open { border-right: 1px solid var(--glass-float-edge); }

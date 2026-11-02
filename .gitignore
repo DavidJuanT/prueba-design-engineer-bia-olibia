@@ -5,3 +5,6 @@ dashboard-prueba/dist/
 # Sistema y herramientas locales
 .DS_Store
 .claude/
+
+# Documentación de trabajo (solo local)
+docs/

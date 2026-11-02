@@ -10,6 +10,13 @@ button { cursor: pointer; }
 button:not(.btn):hover { background: var(--color-surface-hover); }
 /* Foco: anillo suave en lugar de contorno duro, siempre visible con teclado */
 button:focus-visible, input:focus-visible { outline: none; border-color: var(--color-focus); box-shadow: 0 0 0 3px var(--color-focus-ring); }
+/* El mismo anillo para enlaces y elementos con tabindex (menú lateral, columnas, gráfica de líneas, filas de listas) */
+:where(a, [tabindex]):focus-visible { outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring), 0 0 0 1px var(--color-focus); }
+/* Destinos de foco por código (main, títulos con tabindex -1): reciben el foco sin anillo; el lector anuncia dónde está */
+:where(main, h1, h2, h3, section)[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+/* «Saltar al contenido»: fuera de la vista hasta que recibe foco; entonces aparece arriba a la izquierda, sobre la cabecera */
+.skip-link { position: fixed; top: var(--space-2); left: var(--space-2); z-index: var(--z-toast); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-primary-text); font: var(--font-body); font-weight: var(--font-weight-medium); box-shadow: var(--shadow-lg); transform: translateY(calc(-100% - var(--space-4))); }
+.skip-link:focus { transform: none; }
 h1 { font: var(--font-title); margin: 0 0 var(--space-2); }
 /* Título → contenido: 32 px en todos los paneles. Si el título comparte fila con un icono o un campo más alto, la fila
    toma el alto del título (el resto sobresale centrado) para que los 32 px se midan desde el texto */
@@ -23,12 +30,14 @@ p { line-height: var(--line-height-base); }
 .banner { display: flex; align-items: flex-start; gap: var(--space-inline); border: 1px solid var(--color-banner-border); background: var(--color-banner-bg); color: var(--color-text); padding: var(--space-4) var(--space-5); margin: 0 0 var(--space-section); border-radius: var(--radius-lg); }
 /* Icono y título en una misma fila; texto y acción debajo, alineados con el borde izquierdo del icono */
 .banner-body { flex: 1; min-width: 0; }
-.banner:has(.banner-body > .banner-head:only-child) { align-items: center; } /* Solo título: título y botón de cerrar centrados en alto */
-.banner-head { display: flex; align-items: center; gap: var(--space-2); }
+.banner-head { display: flex; align-items: flex-start; gap: var(--space-2); } /* Icono arriba, con la primera línea del título; si el título se parte, sigue hacia abajo */
 /* Icono de aviso en el color del warning medio */
-.banner-head > .icon { color: var(--color-banner-icon); flex: none; border-radius: 50%; background: radial-gradient(circle, #fff 55%, transparent 56%); }   /* El «!» calado se ve blanco: un disco blanco detrás del círculo rojo */
+.banner-head > .icon { color: var(--color-banner-icon); flex: none; border-radius: 50%; background: radial-gradient(circle, var(--color-white) 55%, transparent 56%); }   /* El «!» calado se ve blanco: un disco blanco detrás del círculo rojo */
 /* Cerrar aviso: icono en el color del texto, como el título */
 .banner .btn--icon { --btn-fg: var(--color-text); }
+/* × arriba, centrada con la primera línea del título (aunque el título ocupe dos): el botón de 40 px sobresale por igual
+   arriba y abajo de esa línea, así no estira el aviso; el área táctil sigue en 44 px */
+.banner > .btn--icon { margin-block: calc((var(--font-size-14) * var(--line-height-base) - 40px) / 2); }
 .banner strong { font-weight: var(--font-weight-semibold); }
 .banner-head strong { font-weight: var(--font-weight-regular); } /* Título del aviso en regular: el ícono rojo ya marca la alerta */
 .banner p { margin: var(--space-1) 0 0; }
@@ -54,7 +63,7 @@ p { line-height: var(--line-height-base); }
 /* Seguimiento: fondo suave, sin contorno ni punto. Pendiente = amarillo de Contacto; Al día = verde de Negociación. */
 .status-pendiente { --pill-color: var(--color-warning-medium-text); background: var(--color-warning-medium-bg); }
 .status-al-dia { --pill-color: var(--color-success); background: var(--color-success-bg); }
-.pill.delta { gap: var(--space-1); padding: 2px var(--space-2); font-variant-numeric: var(--font-numeric); }
+.pill.delta { gap: var(--space-1); padding: 0 var(--space-2); min-height: 20px; font-variant-numeric: var(--font-numeric); }
 .delta--up { --pill-color: var(--color-delta-up-text); background: var(--color-delta-up-bg); }
 .delta--up .icon { color: var(--color-delta-up-icon); }
 .delta--down { --pill-color: var(--color-delta-down-text); background: var(--color-delta-down-bg); }

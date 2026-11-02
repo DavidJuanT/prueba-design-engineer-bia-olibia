@@ -13,12 +13,15 @@
 .chart-ring-arc, .chart-legend li { transition: opacity var(--duration-base) var(--ease-out); }
 .chart-form.has-active :is(.chart-ring-arc, .chart-legend li):not(.is-active) { opacity: .35; }
 
+.chart-ring:focus-visible { border-radius: var(--radius-full); } /* Anillo de foco redondo, como la gráfica */
 .chart-legend { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
 .chart-legend li { display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
 .chart-legend small { font: var(--font-caption); color: var(--color-text-muted); }
 /* Dos líneas cuando el item lleva meta: nombre y cifra arriba; meta y porcentaje abajo, el porcentaje bajo la cifra */
 .chart-legend li:has(> .bar-list-meta) { flex-wrap: wrap; row-gap: 0; }
 .chart-legend li > .bar-list-meta { order: 3; flex-basis: 100%; display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); padding-left: var(--space-4); }
+.chart-legend:has(> li > .bar-list-meta) { gap: var(--space-4); }
+.chart-legend li:has(> .bar-list-meta) + li { padding-top: var(--space-4); border-top: 1px solid var(--color-border); }   /* Leyenda de dos líneas: divisor entre elementos, 16 px arriba y abajo como las demás listas con divisor */
 .chart-legend .bar-list-value > .pill { display: inline-flex; vertical-align: middle; margin-left: var(--space-1); }   /* Porcentaje en pill neutra, como en BarList */
 
 @keyframes chart-form-in { from { opacity: 0; transform: scale(.92); } }

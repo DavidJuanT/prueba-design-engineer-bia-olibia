@@ -2,7 +2,7 @@
   Componente Botón
 
   Una sola familia de color (morado de marca) y tres variantes por jerarquía:
-  - primary: relleno morado principal (#6E4CED), texto blanco. La acción principal de la vista.
+  - primary: relleno morado principal (--color-action), texto --color-on-primary. La acción principal de la vista.
   - secondary: relleno morado suave, texto morado. Acciones que acompañan a la principal.
   - transparent: sin relleno, texto morado; el fondo aparece en hover. Acciones terciarias.
   Disabled es un estado común a las tres.
@@ -33,6 +33,8 @@
   position: relative;
   transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
 }
+/* Un enlace con aspecto de botón (<a class="btn">) se ve igual que el botón */
+a.btn { text-decoration: none; }
 .btn:not(:disabled):hover, .btn.is-hover { background: var(--btn-bg-hover); }
 .btn:not(:disabled):active, .btn.is-press { background: var(--btn-bg-press); }
 .btn > * { position: relative; }
@@ -60,7 +62,7 @@
 .btn--secondary { --btn-bg: var(--color-primary-50); --btn-bg-hover: var(--color-primary-100); --btn-bg-press: var(--color-primary-200); --btn-fg: var(--color-primary-text); }
 .btn--transparent { --btn-bg-hover: var(--color-primary-50); --btn-bg-press: var(--color-primary-100); --btn-fg: var(--color-primary-link); }
 
-/* Deshabilitado: lavanda suave (#E3E0FF / #B6B2DE) en todas las variantes; transparent sin fondo */
+/* Deshabilitado: lavanda suave (--color-disabled-bg / --color-disabled-text) en todas las variantes; transparent sin fondo */
 .btn:disabled { cursor: not-allowed; background: var(--color-disabled-bg); color: var(--color-disabled-text); }
 .btn--transparent:disabled { background: none; }
 .btn.btn--hc:disabled, .is-stuck .btn:disabled { color: var(--color-disabled-text-hc); }   /* Alto contraste: sobre superficies tintadas (filtros fijos) el disabled normal se pierde */

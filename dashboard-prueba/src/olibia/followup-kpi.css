@@ -10,12 +10,9 @@
   debajo empresa · valor · cuándo; a la derecha «Registrar» (secondary small); registrado, la pill «Al día» y «Deshacer» (transparent small).
 */
 .period-kpis.has-extra { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-/* Escritorio: los 5 KPIs comparten tres filas (subgrid): etiqueta, cifra y pie. Si una etiqueta ocupa dos líneas,
-   todas las cifras siguen alineadas; la barra de la meta y el CTA se apoyan al pie, alineados abajo */
+/* Escritorio: las tres filas compartidas (subgrid) vienen de ui/kpis.css; aquí la barra de la meta y el CTA se apoyan
+   al pie, alineados abajo */
 @media (min-width: 851px) {
-  .period-kpis.has-extra { grid-template-rows: auto auto auto; }
-  .period-kpis.has-extra > div { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
-  .period-kpis.has-extra .kpi-label { align-self: start; }
   .period-kpis.has-extra .goal-bar, .period-kpis.has-extra .followup-cta { align-self: end; }
 }
 .followup-value { color: var(--color-primary-link); transition: color var(--duration-slow) var(--ease-out); }
