@@ -72,6 +72,7 @@
 
 @media (max-width: 850px) {
   .bia-top { display: flex; }
+  .bia-top .bia-logo { position: absolute; left: 50%; transform: translateX(-50%); } /* Logo centrado en la cabecera móvil */
   .bia-shell { min-height: calc(100vh - var(--header-height)); }
   .bia-split, .bia-kpi-card .period-kpis { grid-template-columns: 1fr; }
   .bia-filters { flex-direction: column; align-items: stretch; width: 100%; }
