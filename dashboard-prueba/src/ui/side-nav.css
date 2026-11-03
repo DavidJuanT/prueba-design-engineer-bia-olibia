@@ -15,6 +15,9 @@ aside .active { background: var(--color-primary-100); color: var(--color-primary
 /* Con icono: 20 px a la izquierda del texto; en el activo, el color primario */
 aside a:has(> .icon), aside .soon:has(> .icon) { display: flex; align-items: center; gap: var(--space-3); }
 aside .active > .icon { color: var(--color-primary-link); }
+/* Con icono y nota «Próximamente»: icono a la izquierda del nombre y la nota debajo del nombre */
+aside .soon:has(> .icon):has(> small) { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0 var(--space-3); } /* Sin espacio entre filas: la nota queda a 4 px del nombre (su margen), como en Olibia */
+aside .soon:has(> .icon) > small { grid-column: 2; }
 .btn.menu-toggle { display: none; }
 .drawer-backdrop { display: none; }
 /* Cabecera del cajón móvil: título «Menú» (dónde está el usuario) y la X para cerrarlo. Solo con el cajón abierto */

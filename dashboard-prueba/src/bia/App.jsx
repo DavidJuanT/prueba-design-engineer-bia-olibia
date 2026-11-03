@@ -255,14 +255,14 @@ function OffHours({failed, onRetry, site, month}) {
   </section>;
 }
 
-// Menú lateral (SideNav de la librería). Solo Resumen está construido; el resto se muestra deshabilitado, sin nota.
+// Menú lateral (SideNav de la librería). Solo Resumen está construido; el resto se muestra deshabilitado con «Próximamente», como en Olibia.
 const MENU = [
-  {label: 'Inicio', icon: 'home'},
+  {label: 'Inicio', soon: 'Próximamente', icon: 'home'},
   {label: 'Resumen', icon: 'summary', active: true},
-  {label: 'Consumo', icon: 'bars'},
-  {label: 'Sedes', icon: 'store'},
-  {label: 'Facturación', icon: 'receipt'},
-  {label: 'Reportes', icon: 'usage'},
+  {label: 'Consumo', soon: 'Próximamente', icon: 'bars'},
+  {label: 'Sedes', soon: 'Próximamente', icon: 'store'},
+  {label: 'Facturación', soon: 'Próximamente', icon: 'receipt'},
+  {label: 'Reportes', soon: 'Próximamente', icon: 'usage'},
 ];
 
 function PageSkeleton() {
