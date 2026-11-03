@@ -18,6 +18,7 @@
 .showcase-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-section); padding: var(--space-3) 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
 .showcase-index { flex: 1; min-width: 0; display: flex; }
 .showcase-index .dropdown { flex: 1; }
+.showcase-index .dropdown-trigger { padding-left: var(--space-1); } /* 4 px de aire a la izquierda: la barra va a ras del borde */
 /* Menú lateral de la guía: el <aside> de la librería, fijo desde arriba (la guía no tiene cabecera) y con scroll propio.
    Un grupo por parte (Fundamentos, Componentes…), con su rótulo encima. En escritorio sustituye al índice de botones */
 .showcase-shell { min-height: 100vh; }
