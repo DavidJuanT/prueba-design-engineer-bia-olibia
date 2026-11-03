@@ -184,7 +184,7 @@ function Evolution({failed, onRetry, site, month}) {
     <div className="heading-info"><h2 id="evolution-title">Evolución del consumo {site ? `de ${SITE_NAMES[site]}` : 'total'} (kWh)</h2></div>
     {failed ? <Fallback message={ERRORS.periodos} onRetry={onRetry}/>
       : <ColumnChart label="Consumo por mes, en miles de kWh" max={max} trend highlight={[month]} track={false} yTitle="Miles de kWh"
-          footer={['Consumo promedio de los 6 meses', kwh(Math.round(values.reduce((sum, n) => sum + n, 0) / values.length))]}
+          footer={['Promedio de 6 meses', kwh(Math.round(values.reduce((sum, n) => sum + n, 0) / values.length))]}
           items={MONTHS.map(([short, name], i) => [short, values[i] / 1000, `${name[0].toUpperCase()}${name.slice(1)}: ${kwh(values[i])}${i ? ` (${signed(change(values[i], values[i - 1]), n => `${n} %`)})` : ''}`])}/>}
   </section>;
 }

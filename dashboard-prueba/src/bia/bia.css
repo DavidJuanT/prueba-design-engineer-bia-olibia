@@ -156,3 +156,9 @@
   .bia > .bia-filters::before { content: ''; position: absolute; left: -1px; right: -1px; bottom: 100%; height: calc(var(--space-6) + 1px); background: var(--glass-page); background-attachment: fixed; opacity: 0; pointer-events: none; transition: opacity 400ms cubic-bezier(.4, 0, .2, 1); }
   .bia > .bia-filters.is-stuck::before { opacity: 1; }
 }
+/* Evolución y Distribución comparten fila: el pie («Promedio…», «Consumo total») va al fondo de cada tarjeta, así los dos quedan a la misma altura */
+@media (min-width: 851px) {
+  .bia-split--3 > .panel { display: flex; flex-direction: column; }
+  .bia-split--3 > .panel > .colchart, .bia-split--3 > .panel > .chart-form { flex: 1; display: flex; flex-direction: column; }
+  .bia-split--3 .colchart-footer { margin-top: auto; }
+}
