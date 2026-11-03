@@ -16,7 +16,8 @@
 .showcase-narrow { max-width: 180px; }
 /* Página con todos los componentes */
 .showcase-bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-section); padding: var(--space-3) 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
-.showcase-index { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.showcase-index { flex: 1; min-width: 0; display: flex; }
+.showcase-index .dropdown { flex: 1; }
 /* Menú lateral de la guía: el <aside> de la librería, fijo desde arriba (la guía no tiene cabecera) y con scroll propio.
    Un grupo por parte (Fundamentos, Componentes…), con su rótulo encima. En escritorio sustituye al índice de botones */
 .showcase-shell { min-height: 100vh; }
@@ -33,7 +34,7 @@ aside.showcase-menu { top: 0; height: 100vh; gap: var(--space-4); overflow-y: au
 .btn.showcase-top { position: fixed; right: var(--space-6); bottom: var(--space-6); z-index: 10; border-radius: var(--radius-full); box-shadow: var(--shadow-md);
   opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out), background-color var(--duration-fast) var(--ease-out); }
 .btn.showcase-top.is-visible { opacity: 1; transform: none; pointer-events: auto; }
-.showcase-group { margin-bottom: var(--space-section); scroll-margin-top: 64px; }
+.showcase-group { margin-bottom: var(--space-section); }
 /* Partes de la página del sistema (Fundamentos, Componentes…): rótulo con divisor encima */
 .showcase-part + .showcase-part { margin-top: var(--space-8); }
 .showcase-part-title { margin: 0 0 var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border); font: var(--font-label); letter-spacing: var(--letter-spacing-wide); text-transform: uppercase; color: var(--color-text-muted); }

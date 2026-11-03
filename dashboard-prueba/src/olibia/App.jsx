@@ -232,7 +232,7 @@ function App() {
     <SkipLink/>
     <header className={loading && firstLoad.current ? 'top is-loading' : 'top'} data-obscures><div><Button variant="transparent" className="menu-toggle" aria-expanded={menu} aria-controls="sidebar" onClick={() => setMenu(!menu)}><Icon name="menu"/>Menú</Button><span className="brand">olibia</span><small>Gestión comercial</small></div><span className="muted">Equipo comercial</span></header>
     <div className={['shell', entering && 'is-entering'].filter(Boolean).join(' ')}>
-      <Sidebar open={menu} loading={loading && firstLoad.current} onSettings={() => { setMenu(false); setSettings(true); }}/>
+      <Sidebar open={menu} loading={loading && firstLoad.current} onSettings={() => { setMenu(false); setSettings(true); }} onClose={() => setMenu(false)}/>
       {menu && <div className="drawer-backdrop" onClick={() => setMenu(false)}/>}
       <main>
         {/* Nada llegó del back: el fallback de página sustituye todo el contenido */}

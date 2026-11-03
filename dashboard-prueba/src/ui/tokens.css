@@ -377,8 +377,9 @@
   --z-fade: 14;                      /* Velos: barrido de entrada, degradado inferior */
   --z-header: 15;                    /* Barra superior */
   --z-sidebar: 16;                   /* Barra lateral sobre el velo (vidrio oscuro) */
+  --z-dock: 18;                      /* Barra fija inferior (móvil), bajo el cajón y su fondo */
   --z-backdrop: 19;                  /* Fondo del cajón móvil */
-  --z-drawer: 20;                    /* Cajón móvil y barra fija inferior */
+  --z-drawer: 20;                    /* Cajón móvil */
   --z-overlay: 30;                   /* Modales, bottom sheets y menús desplegables */
   --z-popover: 40;                   /* Tooltips */
   --z-toast: 60;                     /* Notificaciones */

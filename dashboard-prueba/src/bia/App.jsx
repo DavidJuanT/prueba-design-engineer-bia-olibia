@@ -316,7 +316,7 @@ function App() {
     </header>
     <div className="bia-shell">
     <aside id="sidebar" className={menu ? 'open' : undefined}>
-      <span className="bia-logo bia-aside-logo"><Icon name="bolt" size={28}/>Bia</span>
+      <div className="bia-aside-head"><span className="bia-logo bia-aside-logo"><Icon name="bolt" size={28}/>Bia</span><IconButton icon="close" label="Cerrar menú" className="drawer-close" onClick={() => setMenu(false)}/></div>
       <SideNav items={MENU}/>
       <div className="bia-aside-foot"><ThemeSwitch value={theme} onChange={onTheme}/><Avatar name="Administradora Demo"/></div>
     </aside>

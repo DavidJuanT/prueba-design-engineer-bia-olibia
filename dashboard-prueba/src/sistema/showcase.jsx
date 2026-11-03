@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useEffect, useRef, useState} from 'react';
 import {Button, IconButton} from '../ui/button';
 import {DeltaPill, FilteredBadge} from '../ui/badges';
 import {Dropdown, MultiDropdown} from '../ui/dropdown';
@@ -914,14 +914,28 @@ const SYSTEM = [
   ]],
 ];
 
-// Página con índice por grupos; el índice desplaza con scrollIntoView (un #ancla cambiaría la ruta de la guía).
+// Página con índice por grupos; el índice desplaza con scrollTo (un #ancla cambiaría la ruta de la guía).
+// El título del componente queda 24 px bajo la barra fija del índice (en escritorio la barra no se ve y queda a 24 px del borde).
 function IndexedPage({title, description, groups}) {
-  const go = id => document.getElementById(`ds-${id}`)?.scrollIntoView({behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start'});
+  const jumping = useRef(false);
+  const go = id => {
+    const section = document.getElementById(`ds-${id}`), bar = document.querySelector('.showcase-bar');
+    if (!section) return;
+    setCurrent(id);
+    // Mientras dura el desplazamiento, el índice muestra el destino en lugar de cada sección por la que pasa
+    jumping.current = true;
+    const release = () => { jumping.current = false; };
+    window.addEventListener('scrollend', release, {once: true});
+    setTimeout(release, 1200);
+    const top = section.getBoundingClientRect().top + window.scrollY - (bar?.offsetHeight || 0) - 24;
+    window.scrollTo({top, behavior: reducedMotion() ? 'auto' : 'smooth'});
+  };
   // Sección activa: la última cuyo título ya pasó el tercio superior de la ventana
   const ids = groups.flatMap(([, items]) => items.map(([id]) => id));
   const [current, setCurrent] = useState(ids[0]);
   useEffect(() => {
     const onScroll = () => {
+      if (jumping.current) return;
       const line = window.innerHeight / 3;
       const passed = ids.filter(id => (document.getElementById(`ds-${id}`)?.getBoundingClientRect().top ?? Infinity) <= line);
       setCurrent(passed.at(-1) || ids[0]);
@@ -937,8 +951,9 @@ function IndexedPage({title, description, groups}) {
     const {top, bottom} = link.getBoundingClientRect(), box = menu.getBoundingClientRect();
     if (top < box.top + 48 || bottom > box.bottom - 48) menu.scrollTop += top - box.top - box.height / 2;
   }, [current]);
-  const index = <nav className="showcase-index" aria-label="Índice">{groups.flatMap(([, items]) => items).map(([id, label]) =>
-    <Button key={id} variant="secondary" size="small" onClick={() => go(id)}>{label}</Button>)}</nav>;
+  // Móvil: el índice es un desplegable con la sección en la que está el usuario; al elegir otra, salta a su inicio
+  const index = <nav className="showcase-index" aria-label="Índice"><Dropdown aria-label="Ir al componente" value={current}
+    options={groups.flatMap(([, items]) => items).map(([id, label]) => [id, label])} onChange={go}/></nav>;
   const nav = groups.map(([group, items]) => <div key={group} className="showcase-nav-group">
     <p className="showcase-nav-title">{group}</p>
     <SideNav label={group} items={items.map(([id, label]) => ({label, active: id === current, onSelect: () => go(id)}))}/>

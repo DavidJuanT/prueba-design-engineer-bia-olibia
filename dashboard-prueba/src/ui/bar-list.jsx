@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect, useRef} from 'react';
 import {Avatar} from './avatar';
 import {ChartFooter} from './columns';
 import {useRoving} from './keyboard';
@@ -22,7 +22,15 @@ export function BarList({items, footer, label}) {
   const [active, setActive] = useState(null);
   const top = Math.max(...items.map(i => i.value), 1);
   const rove = useRoving(items.length);
-  return <div className={['bar-list', active !== null && 'has-active'].filter(Boolean).join(' ')}>
+  // Si el tooltip se sale por la derecha (móvil, barra larga), se corre a la izquierda y la flecha sigue en el final de la barra
+  const list = useRef(null);
+  useLayoutEffect(() => {
+    const tip = list.current?.querySelector('.bar-list-tip');
+    if (!tip) return;
+    const over = tip.getBoundingClientRect().right - (document.documentElement.clientWidth - 16);
+    if (over > 0) { tip.style.setProperty('--shift', `${-over}px`); tip.style.setProperty('--arrow-x', `${12 + over}px`); }
+  }, [active]);
+  return <div ref={list} className={['bar-list', active !== null && 'has-active'].filter(Boolean).join(' ')}>
     <ul aria-label={label} onMouseLeave={() => setActive(null)}>
       {items.map((item, i) => <li key={item.key ?? item.label} {...rove(i)} className={active === i ? 'is-active' : undefined}
         aria-label={`${item.label}: ${item.display}${item.pill ? ` (${item.pill}${item.meta ? ` ${item.meta}` : ''})` : item.meta ? `, ${item.meta}` : ''}${item.tip ? `, ${item.tip}` : ''}`}

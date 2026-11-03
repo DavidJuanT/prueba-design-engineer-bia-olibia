@@ -15,13 +15,13 @@ export const negotiationsToFollow = closers => closers.filter(r => r[1] === 'Neg
 // tienen seguimiento («0 de 2») y el CTA «Dar seguimiento», que abre el resumen de las negociaciones.
 // Solo se muestra si hay negociaciones que cierran la brecha; al registrar todas queda «2 de 2» en verde y sin CTA
 // (no queda nada que hacer).
-export function FollowUpKpi({deals, isDone, onOpen}) {
+export function FollowUpKpi({deals, isDone, onOpen, ctaSize = 'small'}) {
   const followed = deals.filter(isDone).length;
   const complete = followed === deals.length;
   return <>
     <div className="kpi-label">Negociaciones al día<KpiIcon icon="handshake" tip="Negociaciones que cierran la brecha"/></div>
     <div className={['value', 'followup-value', complete && 'is-complete'].filter(Boolean).join(' ')}>{followed} de {deals.length}</div>
-    {!complete && <Button variant="primary" size="small" fullWidth className="followup-cta" aria-haspopup="dialog" onClick={onOpen}>Dar seguimiento</Button>}
+    {!complete && <Button variant="primary" size={ctaSize} fullWidth className="followup-cta" aria-haspopup="dialog" onClick={onOpen}>Dar seguimiento</Button>}
   </>;
 }
 
@@ -53,7 +53,8 @@ export function FollowUpDock({paused, ...props}) {
   }, [phase === 'gone']);
   if (phase === 'gone') return null;
   return createPortal(<div ref={dock} className={['followup-dock', 'card', 'card--featured', phase === 'leaving' && 'is-leaving'].filter(Boolean).join(' ')} data-theme="dark" role="region" aria-label="Seguimiento de negociaciones" data-obscures>
-    <FollowUpKpi {...props}/>
+    {/* En la barra, el CTA mide como los botones de los bottom sheets (32 px) */}
+    <FollowUpKpi {...props} ctaSize="medium"/>
   </div>, document.body);
 }
 

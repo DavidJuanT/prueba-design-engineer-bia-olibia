@@ -17,10 +17,15 @@ aside a:has(> .icon), aside .soon:has(> .icon) { display: flex; align-items: cen
 aside .active > .icon { color: var(--color-primary-link); }
 .btn.menu-toggle { display: none; }
 .drawer-backdrop { display: none; }
+/* Cabecera del cajón móvil: título «Menú» (dónde está el usuario) y la X para cerrarlo. Solo con el cajón abierto */
+.drawer-head, .btn.drawer-close { display: none; }
 
 @media (max-width: 850px) {
   aside { display: none; }
   .btn.menu-toggle { display: inline-flex; margin-right: var(--space-3); }
   aside.open { display: flex; position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; width: 240px; z-index: var(--z-drawer); border-radius: 0 var(--radius-xl) var(--radius-xl) 0; box-shadow: var(--shadow-lg); animation: slide-in var(--duration-base) var(--ease-out); }
+  aside.open .btn.drawer-close { display: inline-flex; }
+  aside.open .drawer-head { display: flex; align-items: center; justify-content: space-between; margin: calc(-1 * var(--space-2)) 0 var(--space-2); padding-left: var(--space-5); }
+  .drawer-title { font: var(--font-heading); }
   .drawer-backdrop { display: block; position: fixed; inset: 0; background: var(--color-backdrop); z-index: var(--z-backdrop); animation: fade-in var(--duration-base) var(--ease-out); }
 }

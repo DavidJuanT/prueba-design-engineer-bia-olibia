@@ -4,6 +4,8 @@
 */
 /* Base */
 * { box-sizing: border-box; }
+/* Ninguna capa flotante (tooltip, menú) puede abrir scroll horizontal en la página; clip no crea contenedor de scroll, así los elementos sticky siguen funcionando */
+html, body { overflow-x: clip; }
 body { margin: 0; background: var(--color-bg); font: var(--font-body); color: var(--color-text); }
 button, input { font: inherit; padding: var(--space-control); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out); }
 button { cursor: pointer; }

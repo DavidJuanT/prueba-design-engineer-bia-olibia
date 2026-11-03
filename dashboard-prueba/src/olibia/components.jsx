@@ -18,6 +18,7 @@ import {Avatar} from '../ui/avatar';
 import {Button} from '../ui/button';
 import {NoData} from '../ui/badges';
 import {SideNav} from '../ui/side-nav';
+import {IconButton} from '../ui/button';
 
 // Menú vertical: áreas del producto para el líder comercial. Solo el Dashboard está construido en esta demo.
 const MENU = ['Dashboard', 'Oportunidades', 'Agenda de contactos', 'Equipo', 'Reportes'].map((label, i) => i === 0 ? {label, active: true} : {label, soon: 'Próximamente'});
@@ -25,8 +26,9 @@ const MENU = ['Dashboard', 'Oportunidades', 'Agenda de contactos', 'Equipo', 'Re
 
 // En móvil el menú es un panel lateral que se abre con el botón «Menú» de la cabecera.
 // loading: primera carga; el menú se muestra como skeleton y la corriente recorre su línea divisoria.
-export function Sidebar({open, loading, onSettings}) {
+export function Sidebar({open, loading, onSettings, onClose}) {
   return <aside id="sidebar" className={[open && 'open', loading && 'is-loading'].filter(Boolean).join(' ') || undefined}>
+    {onClose && <div className="drawer-head"><span className="drawer-title">Menú</span><IconButton icon="close" label="Cerrar menú" className="drawer-close" onClick={onClose}/></div>}
     {loading ? <SidebarSkeleton/> : <>
     <SideNav items={MENU}/>
     <div className="settings"><button className="settings-toggle" aria-haspopup="dialog" onClick={onSettings}><Icon name="settings"/>Configuración</button></div>

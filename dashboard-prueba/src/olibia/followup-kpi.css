@@ -42,7 +42,7 @@
   body:has(.followup-dock) .period-kpis.has-extra .kpi-extra { display: none; }
   .followup-dock {
     display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: var(--space-4);
-    position: fixed; z-index: var(--z-drawer); left: var(--space-4); right: var(--space-4); bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+    position: fixed; z-index: var(--z-dock); left: var(--space-4); right: var(--space-4); bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
     margin: 0; padding: var(--space-4) var(--space-5);
     animation: followup-dock-in 400ms var(--ease-out) backwards;
   }

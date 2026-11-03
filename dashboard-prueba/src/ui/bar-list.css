@@ -32,7 +32,7 @@
 @keyframes bar-list-grow { from { transform: scaleX(0); } }
 /* Tooltip opcional (item.tip): la burbuja del sistema bajo el final de la barra, con la flecha apuntando a ese final */
 .bar-list-fill { position: relative; }
-.bar-list-tip { left: calc(100% - 20px); pointer-events: none; }
+.bar-list-tip { left: calc(100% - 20px + var(--shift, 0px)); pointer-events: none; }
 .bar-list li.is-active:has(.bar-list-tip) { position: relative; z-index: 1; } /* Encima de las filas siguientes (la opacidad crea capas) */
 
 @media (prefers-reduced-motion: reduce) { .bar-list-fill, .bar-list li { animation: none; transition: none; } }
