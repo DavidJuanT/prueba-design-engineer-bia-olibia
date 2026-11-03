@@ -99,7 +99,8 @@ export function Dropdown({id, value, options, onChange, icon, disabled, classNam
   function close() { if (open) setClosing(true); }
   function finishClose() { setOpen(false); setClosing(false); }
   // Elegir: el menú empieza a recogerse en el mismo clic y, a la vez, el valor nuevo entra suave en el disparador.
-  function choose(index) { onChange?.(options[index][0]); close(); setPicked(n => n + 1); root.current?.querySelector('button')?.focus(); }
+  // El foco vuelve al disparador sin desplazar la página: si onChange inicia un scroll (índice del sistema), no lo corta
+  function choose(index) { onChange?.(options[index][0]); close(); setPicked(n => n + 1); root.current?.querySelector('button')?.focus({preventScroll: true}); }
 
   // Buscar escribiendo, como en el <select> nativo: las letras se acumulan durante 500 ms;
   // repetir la misma letra recorre las opciones que empiezan por ella.
@@ -202,7 +203,7 @@ export function MultiDropdown({id, value, options, onApply, allLabel, unit, labe
   function close() { if (open) setClosing(true); }
   function finishClose() { setOpen(false); setClosing(false); }
   const toggle = v => setDraft(d => d.includes(v) ? d.filter(x => x !== v) : options.map(([o]) => o).filter(o => o === v || d.includes(o)));
-  function apply() { onApply?.(draft); setPicked(n => n + 1); close(); root.current?.querySelector('button')?.focus(); }
+  function apply() { onApply?.(draft); setPicked(n => n + 1); close(); root.current?.querySelector('button')?.focus({preventScroll: true}); }
 
   function onKeyDown(e) {
     const last = options.length - 1;
