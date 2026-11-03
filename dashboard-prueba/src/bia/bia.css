@@ -156,3 +156,6 @@
   .bia > .bia-filters::before { content: ''; position: absolute; left: -1px; right: -1px; bottom: 100%; height: calc(var(--space-6) + 1px); background: var(--glass-page); background-attachment: fixed; opacity: 0; pointer-events: none; transition: opacity 400ms cubic-bezier(.4, 0, .2, 1); }
   .bia > .bia-filters.is-stuck::before { opacity: 1; }
 }
+/* Distribución junto a Evolución: el anillo y su leyenda toman el alto que sobra, así «Consumo total» baja hasta la línea de «Promedio de 6 meses» */
+.bia-split--3 > .panel:has(.chart-form--h) { display: flex; flex-direction: column; }
+.bia-split--3 .chart-form--h { flex: 1; grid-template-rows: 1fr auto; }
