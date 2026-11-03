@@ -20,8 +20,9 @@ import {NoData} from '../ui/badges';
 import {SideNav} from '../ui/side-nav';
 import {IconButton} from '../ui/button';
 
-// Menú vertical: áreas del producto para el líder comercial. Solo el Dashboard está construido en esta demo.
-const MENU = ['Dashboard', 'Oportunidades', 'Agenda de contactos', 'Equipo', 'Reportes'].map((label, i) => i === 0 ? {label, active: true} : {label, soon: 'Próximamente'});
+// Menú vertical: áreas del producto para el líder comercial, con icono (como en Bia). Solo el Dashboard está construido en esta demo.
+const MENU = [['Dashboard', 'summary'], ['Oportunidades', 'trendUp'], ['Contactos', 'contacts'], ['Equipo', 'group'], ['Reportes', 'usage']]
+  .map(([label, icon], i) => i === 0 ? {label, icon, active: true} : {label, icon, soon: 'Próximamente'});
 
 
 // En móvil el menú es un panel lateral que se abre con el botón «Menú» de la cabecera.

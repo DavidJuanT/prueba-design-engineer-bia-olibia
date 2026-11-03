@@ -1,4 +1,5 @@
 import React, {useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
 import {Icon} from './icons';
 import {fixedBox} from './dropdown';
 import './tooltip.css';
@@ -17,12 +18,16 @@ function useTooltip(forceOpen, follow = false) {
   const bubble = useRef(null);
   const pointerX = useRef(null); // follow: posición x del ratón; la burbuja y su flecha la siguen
   const placeRef = useRef(null);
+  // Dentro de un contenedor con scroll (la tabla) la burbuja se monta fuera de él, en su padre: Safari en iOS pinta la
+  // burbuja dentro de la capa del scroll y las filas siguientes le quedan encima.
+  const [host, setHost] = useState(null);
+  useLayoutEffect(() => { setHost(root.current?.closest('.scroll')?.parentElement || null); }, []);
   const open = forceOpen || ((hover || focus || pinned) && !dismissed);
 
   // Fijado con clic o toque: se cierra al tocar fuera.
   useEffect(() => {
     if (!pinned) return;
-    const onDown = e => { if (!root.current?.contains(e.target)) setPinned(false); };
+    const onDown = e => { if (!root.current?.contains(e.target) && !bubble.current?.contains(e.target)) setPinned(false); };
     document.addEventListener('pointerdown', onDown);
     return () => document.removeEventListener('pointerdown', onDown);
   }, [pinned]);
@@ -42,14 +47,14 @@ function useTooltip(forceOpen, follow = false) {
   useLayoutEffect(() => {
     const el = bubble.current;
     if (!open || !el) return;
-    const clipped = root.current.closest('.scroll');
+    const clipped = host;
     const place = () => {
       // Se mide con offsetLeft/offsetWidth y rects del disparador: no los altera la escala de la animación de entrada.
       el.style.removeProperty('--shift');
       const t = trigger.current, tr = t.getBoundingClientRect();
       let left;
       if (clipped) {
-        const box = fixedBox(root.current), rr = root.current.getBoundingClientRect();
+        const box = fixedBox(el), rr = root.current.getBoundingClientRect();
         left = rr.left - 8;
         Object.assign(el.style, {position: 'fixed', top: `${tr.bottom + 8 - box.top}px`, left: `calc(${left - box.left}px + var(--shift, 0px))`});
       } else left = root.current.getBoundingClientRect().left + el.offsetLeft;
@@ -67,10 +72,12 @@ function useTooltip(forceOpen, follow = false) {
     addEventListener('scroll', place, true);
     addEventListener('resize', place);
     return () => { placeRef.current = null; removeEventListener('scroll', place, true); removeEventListener('resize', place); };
-  }, [open]);
+  }, [open, host]);
 
   return {
     open,
+    // La burbuja va en su sitio o, dentro de un scroll, en el padre del scroll
+    mount: node => host ? createPortal(node, host) : node,
     rootProps: {
       ref: root,
       onPointerEnter: e => { if (e.pointerType === 'mouse') { setHover(true); setDismissed(false); } },
@@ -94,12 +101,12 @@ function useTooltip(forceOpen, follow = false) {
 // Icono de información con tooltip, junto a un título.
 // forceOpen: lo deja abierto (solo para la guía). className: variante visual.
 export function InfoTip({label, children, forceOpen = false, className}) {
-  const {open, rootProps, triggerProps, bubbleProps} = useTooltip(forceOpen);
+  const {open, mount, rootProps, triggerProps, bubbleProps} = useTooltip(forceOpen);
   return <span {...rootProps} className={['infotip', open && 'is-open', className].filter(Boolean).join(' ')}>
     <button type="button" className="btn btn--transparent infotip-trigger" aria-label={label} {...triggerProps}>
       <Icon name="info" size={18}/>
     </button>
-    <span {...bubbleProps}>{children}</span>
+    {mount(<span {...bubbleProps}>{children}</span>)}
   </span>;
 }
 
@@ -109,11 +116,11 @@ export function InfoTip({label, children, forceOpen = false, className}) {
 // Con teclado o toque se coloca como siempre, bajo el centro del disparador.
 // rove (opcional): props de useRoving cuando varios tooltips forman un grupo con una sola parada de Tab (barras de una gráfica).
 export function Tooltip({content, label, children, forceOpen = false, follow = false, rove}) {
-  const {open, rootProps, triggerProps, bubbleProps} = useTooltip(forceOpen, follow);
+  const {open, mount, rootProps, triggerProps, bubbleProps} = useTooltip(forceOpen, follow);
   const roving = rove && {tabIndex: rove.tabIndex, onKeyDown: rove.onKeyDown,
     ref: el => { triggerProps.ref.current = el; rove.ref(el); }, onFocus: e => { triggerProps.onFocus(e); rove.onFocus(e); }};
   return <span {...rootProps} className={['infotip', 'tooltip', open && 'is-open'].filter(Boolean).join(' ')}>
     <span tabIndex={0} role="button" aria-label={label} className="tooltip-trigger" {...triggerProps} {...roving}>{children}</span>
-    <span {...bubbleProps}>{content}</span>
+    {mount(<span {...bubbleProps}>{content}</span>)}
   </span>;
 }

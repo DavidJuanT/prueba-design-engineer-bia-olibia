@@ -38,10 +38,11 @@ import building from '@material-symbols/svg-400/rounded/domain.svg';
 import summary from '@material-symbols/svg-400/rounded/space_dashboard.svg';
 import bars from '@material-symbols/svg-400/rounded/bar_chart.svg';
 import download from '@material-symbols/svg-400/rounded/download.svg';
+import contacts from '@material-symbols/svg-400/rounded/contacts.svg';
 // IA: destellos dibujados a mano (este paquete de Material Symbols no incluye auto_awesome), misma retícula 960.
 const ai = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 -960 960 960"><path d="M400 -760Q438.4 -478.4 720 -440Q438.4 -401.6 400 -120Q361.6 -401.6 80 -440Q361.6 -478.4 400 -760ZM740 -920Q756.8 -796.8 880 -780Q756.8 -763.2 740 -640Q723.2 -763.2 600 -780Q723.2 -796.8 740 -920ZM760 -300Q772.0 -212.0 860 -200Q772.0 -188.0 760 -100Q748.0 -188.0 660 -200Q748.0 -212.0 760 -300Z"/></svg>';
 
-const ICONS = {home, usage, bell, building, summary, bars, download, store, bolt, receipt, back, group, prev, next, handshake, close, menu, settings, calendar, warning, warningFill, chevron, info, search, top, trendUp, trendDown, filter, ai, success, error: errorIcon, check, sun, sunFill, moon, moonFill, computer, computerFill, flag};
+const ICONS = {contacts, home, usage, bell, building, summary, bars, download, store, bolt, receipt, back, group, prev, next, handshake, close, menu, settings, calendar, warning, warningFill, chevron, info, search, top, trendUp, trendDown, filter, ai, success, error: errorIcon, check, sun, sunFill, moon, moonFill, computer, computerFill, flag};
 
 // Icono decorativo: hereda el color del texto (currentColor). El nombre accesible lo pone el botón.
 export function Icon({name, size = 20}) {
